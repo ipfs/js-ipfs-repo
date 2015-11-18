@@ -26,8 +26,8 @@ Repo.prototype = {
     return adaptor
   },
 
-  version: function () {
-    return stores.version(this.store)
+  api: function () {
+    return stores.config(this.store)
   },
 
   config: function () {
@@ -36,6 +36,10 @@ Repo.prototype = {
 
   logs: function () {
     return stores.logs(this.store)
+  },
+
+  version: function () {
+    return stores.version(this.store)
   }
 }
 

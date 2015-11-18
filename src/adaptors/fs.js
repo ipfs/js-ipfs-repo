@@ -13,7 +13,9 @@ BlobStore.prototype = {
     var LOCK_PATH = this.LOCK_PATH
 
     function onFinish (buff) {
-      lockFile.unlock(LOCK_PATH, function () {
+      lockFile.unlock(LOCK_PATH, function (err) {
+        if (err) return cb(err)
+
         cb(null, buff.toString('utf8'))
       })
     }
@@ -30,12 +32,31 @@ BlobStore.prototype = {
     lockFile.lock(LOCK_PATH, {}, onLock)
   },
 
+  readWithoutLock: function (key, cb) {
+    var rs = this.store.createReadStream(key)
+
+    rs.on('error', cb)
+    rs.pipe(concat(function (buff) {
+      cb(null, buff.toString('utf8'))
+    }))
+  },
+
   append: function (key, content, cb) {
     return this._write(key, content, 'a', cb)
   },
 
   write: function (key, content, cb) {
     return this._write(key, content, 'w', cb)
+  },
+
+  writeWithoutLock: function (key, content, cb) {
+    var ws = this.store.createWriteStream(key, {flags: 'w'})
+
+    ws.on('error', cb)
+    ws.on('finish', cb)
+
+    ws.write(content)
+    ws.end()
   },
 
   _write: function (key, content, flags, cb) {

@@ -31,6 +31,20 @@ repo.version().write(3, function (err) {
 })
 ```
 
+### `#api`
+
+Read/Write the JSON configuration for that repository.
+
+```js
+repo.api().read(function (err, multiaddr) {
+  console.log(err, multiaddr)
+})
+
+repo.api().write('/ip4/127.0.0.1/tcp/5001', function (err) {
+  console.log(err)
+})
+```
+
 ### `#config`
 
 Read/Write the JSON configuration for that repository.
@@ -55,6 +69,20 @@ repo.logs().truncate(function (err) {
 })
 
 repo.logs().log('error: not found', function (err) {
+  console.log(err)
+})
+```
+
+### `#repo`
+
+Read/Write the `repo.lock` file.
+
+```js
+repo.repo().read(function (err, content) {
+  console.log(err, content)
+})
+
+repo.repo().write('foo', function (err) {
   console.log(err)
 })
 ```
