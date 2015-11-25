@@ -1,0 +1,33 @@
+{
+  "name": "js-ipfs-repo",
+  "version": "0.0.1",
+  "description": "IPFS Repo implementation",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "lint": "./node_modules/.bin/standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diasdavid/js-ipfs-repo.git"
+  },
+  "keywords": [
+    "IPFS"
+  ],
+  "pre-commit": [
+    "lint"
+  ],
+  "homepage": "https://github.com/diasdavid/js-libp2p-record",
+  "devDependencies": {
+    "pre-commit": "^1.1.1",
+    "standard": "^5.1.1"
+  },
+  "dependencies": {
+    "abstract-blob-store": "^3.2.0",
+    "concat-stream": "^1.5.1",
+    "fs-blob-store": "^5.2.0",
+    "level-js": "^2.2.2",
+    "lockfile": "^1.0.1",
+    "multihashes": "^0.2.0"
+  }
+}
