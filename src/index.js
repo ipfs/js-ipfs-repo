@@ -17,7 +17,7 @@ function Repo (root_path, options) {
 
 Repo.prototype = {
   _chooseAdaptor: function () {
-    var adaptor = adaptors[this.options.adaptor || 'fs']
+    var adaptor = adaptors[this.options.adaptor || 'fs-repo']
 
     if (!adaptor) {
       throw new Error('Adaptor "' + this.options.adaptor + '" not supported')
@@ -34,12 +34,12 @@ Repo.prototype = {
     return stores.config(this.store)
   },
 
-  logs: function () {
-    return stores.logs(this.store)
-  },
-
   version: function () {
     return stores.version(this.store)
+  },
+
+  blocks: function () {
+    return stores.blocks(this.store)
   }
 }
 

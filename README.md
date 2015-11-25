@@ -59,17 +59,19 @@ repo.config().write({foo: 'bar'}, function (err) {
 })
 ```
 
-### `#logs`
+### `#blocks`
 
-Truncate/Append logs.
+Store data on the block store.
 
 ```js
-repo.logs().truncate(function (err) {
+repo.blocks().read('12200007d4e3a319cd8c7c9979280e150fc5dbaae1ce54e790f84ae5fd3c3c1a0475', function (buff, err) {
   console.log(err)
 })
+```
 
-repo.logs().log('error: not found', function (err) {
-  console.log(err)
+```js
+repo.blocks().write(buff, function (buff, err) {
+  console.log(buff.toString('utf-8'), err)
 })
 ```
 
@@ -89,13 +91,17 @@ repo.repo().write('foo', function (err) {
 
 ## Adaptors
 
-By default it will use the `fs` adaptor. Eventually we can write other adaptors
+By default it will use the `fs-repo` adaptor. Eventually we can write other adaptors
 and make those available on configuration.
 
-### `fs`
+### `fs-repo`
 
 The default adaptor. Uses the `repo.lock` file to ensure there are no simultaneous reads
 nor writes. Uses the `fs-blob-store`.
+
+### `memory-repo`
+
+Ideal for testing purposes. Uses the `abstract-blob-store`.
 
 ## Tests
 

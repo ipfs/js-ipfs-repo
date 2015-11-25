@@ -1,3 +1,4 @@
 module.exports = {
-  fs: require('./fs')
+  'fs-repo': require('./fs-repo'),
+  'memory-repo': require('./memory-repo')
 }

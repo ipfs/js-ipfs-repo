@@ -4,7 +4,7 @@ module.exports = function (store) {
       return store.read('version', function (err, num) {
         if (err) return cb(err)
 
-        cb(null, parseInt(num.split('\n')[0], 10))
+        cb(null, num.split('\n')[0])
       })
     },
 
