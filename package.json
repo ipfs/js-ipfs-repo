@@ -1,5 +1,5 @@
 {
-  "name": "js-ipfs-repo",
+  "name": "ipfs-repo",
   "version": "0.0.1",
   "description": "IPFS Repo implementation",
   "main": "src/index.js",

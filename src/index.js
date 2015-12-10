@@ -11,6 +11,7 @@ var fs = require('fs')
 function Repo (root_path, options) {
   this.root_path = root_path
   this.options = options || {}
+  this.loaded = false
 }
 
 Repo.prototype = {
@@ -24,22 +25,6 @@ Repo.prototype = {
     return adaptor
   },
 
-  api: function () {
-    return stores.config(this.store)
-  },
-
-  config: function () {
-    return stores.config(this.store)
-  },
-
-  version: function () {
-    return stores.version(this.store)
-  },
-
-  blocks: function () {
-    return stores.blocks(this.store)
-  },
-
   exists: function () {
     try {
       return !!fs.statSync(this.root_path)
@@ -49,10 +34,16 @@ Repo.prototype = {
   },
 
   load: function () {
+    if (this.loaded) { return }
     var Adaptor = this._chooseAdaptor()
     this.store = new Adaptor(this.root_path)
-  }
 
+    this.api = stores.config(this.store)
+    this.config = stores.config(this.store)
+    this.version = stores.version(this.store)
+    this.blocks = stores.blocks(this.store)
+    this.loaded = true
+  }
 }
 
 module.exports = Repo

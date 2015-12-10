@@ -48,15 +48,10 @@ describe('IPFS Repo Tests', function () {
   describe('config', function () {})
   describe('version', function () {
     it('get version', function (done) {
-      var readStream = repo.version().read()
-      var buffer = ''
-      readStream.on('data', function (chunk) {
-        buffer += chunk.toString()
-      })
-
-      readStream.on('end', function () {
-        expect(buffer).to.be.a('string')
-        expect(Number(buffer)).to.be.a('number')
+      repo.version.read(function (err, version) {
+        expect(err).to.equal(null)
+        expect(version).to.be.a('string')
+        expect(Number(version)).to.be.a('number')
         done()
       })
     })
