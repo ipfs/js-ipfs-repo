@@ -1,5 +1,6 @@
 var stores = require('./stores')
 var adaptors = require('./adaptors')
+var fs = require('fs')
 
 /**
  * Constructor
@@ -10,9 +11,6 @@ var adaptors = require('./adaptors')
 function Repo (root_path, options) {
   this.root_path = root_path
   this.options = options || {}
-
-  var Adaptor = this._chooseAdaptor()
-  this.store = new Adaptor(this.root_path)
 }
 
 Repo.prototype = {
@@ -40,7 +38,21 @@ Repo.prototype = {
 
   blocks: function () {
     return stores.blocks(this.store)
+  },
+
+  exists: function () {
+    try {
+      return !!fs.statSync(this.root_path)
+    } catch (err) {
+      return false
+    }
+  },
+
+  load: function () {
+    var Adaptor = this._chooseAdaptor()
+    this.store = new Adaptor(this.root_path)
   }
+
 }
 
 module.exports = Repo
