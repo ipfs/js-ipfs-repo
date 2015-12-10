@@ -45,7 +45,16 @@ describe('IPFS Repo Tests', function () {
   it('init another Repo', function (done) { done() })
 
   describe('api', function () {})
-  describe('config', function () {})
+  describe('config', function () {
+    it('get config', function (done) {
+      repo.config.read(function (err, config) {
+        expect(err).to.equal(null)
+        expect(config).to.be.a('object')
+        done()
+      })
+    })
+  })
+
   describe('version', function () {
     it('get version', function (done) {
       repo.version.read(function (err, version) {
