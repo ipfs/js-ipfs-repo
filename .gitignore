@@ -2,6 +2,8 @@
 logs
 *.log
 
+coverage
+
 # Runtime data
 pids
 *.pid
