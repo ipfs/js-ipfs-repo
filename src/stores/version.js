@@ -15,6 +15,8 @@ exports.setUp = function (basePath, blobStore, locks) {
           callback(null, version.toString('utf8'))
         }))
     },
-    set: function (value, callback) {}
+    set: function (value, callback) {
+      // 1. get lock
+    }
   }
 }

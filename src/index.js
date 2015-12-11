@@ -50,15 +50,15 @@ function Repo (repoPath, options) {
   self.exists = function (callback) {
     self.version.get(function (err, version) {
       if (err) {
-        return callback(new Error('Repo does not exist yet'))
+        return callback(new Error('Repo does not exist'))
       }
       callback(null, true)
     })
   }
 
   self.version = stores
-                  .version
-                  .setUp(repoPath, options.stores.version, self.locks)
+                   .version
+                   .setUp(repoPath, options.stores.version, self.locks)
 
   /*
   self.keys = stores

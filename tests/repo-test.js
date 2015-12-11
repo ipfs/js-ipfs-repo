@@ -54,6 +54,15 @@ describe('IPFS Repo Tests', function () {
     })
   })
 
+  describe('locks', function () {
+    it('lock, unlock', function (done) {
+      done()
+    })
+    it('lock, lock', function (done) {
+      done()
+    })
+  })
+
   describe('api', function () {})
   describe('config', function () {
     it('get config', function (done) {
@@ -80,13 +89,4 @@ describe('IPFS Repo Tests', function () {
     })
   })
   describe('blocks', function () {})
-
-  describe('locks', function () {
-    it('lock, unlock', function (done) {
-      done()
-    })
-    it('lock on operation', function (done) {
-      done()
-    })
-  })
 })
