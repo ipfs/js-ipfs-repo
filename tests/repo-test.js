@@ -56,10 +56,32 @@ describe('IPFS Repo Tests', function () {
 
   describe('locks', function () {
     it('lock, unlock', function (done) {
-      done()
+      repo.locks.lock(function (err) {
+        expect(err).to.equal(undefined)
+        repo.locks.unlock(function (err) {
+          expect(err).to.equal(undefined)
+          done()
+        })
+      })
     })
+
     it('lock, lock', function (done) {
-      done()
+      repo.locks.lock(function (err) {
+        expect(err).to.equal(undefined)
+        repo.locks.lock(function (err) {
+          expect(err).to.equal(undefined)
+          repo.locks.unlock(function (err) {
+            expect(err).to.equal(undefined)
+            done()
+          })
+        })
+
+        setTimeout(function () {
+          repo.locks.unlock(function (err) {
+            expect(err).to.equal(undefined)
+          })
+        }, 500)
+      })
     })
   })
 
@@ -85,7 +107,14 @@ describe('IPFS Repo Tests', function () {
     })
 
     it('set version', function (done) {
-      done()
+      repo.version.set('9000', function (err) {
+        expect(err).to.equal(undefined)
+        repo.version.get(function (err, version) {
+          expect(err).to.equal(null)
+          expect(version).to.equal('9000')
+          done()
+        })
+      })
     })
   })
   describe('blocks', function () {})

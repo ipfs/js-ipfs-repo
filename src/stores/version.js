@@ -16,7 +16,18 @@ exports.setUp = function (basePath, blobStore, locks) {
         }))
     },
     set: function (value, callback) {
-      // 1. get lock
+      locks.lock(function (err) {
+        if (err) {
+          return callback(err)
+        }
+
+        store.createWriteStream('version')
+          .on('finish', function () {
+            locks.unlock(callback)
+          })
+          // .write(value)
+          .end(value)
+      })
     }
   }
 }
