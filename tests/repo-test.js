@@ -33,16 +33,14 @@ describe('IPFS Repo Tests', function () {
 
   it('check if Repo exists', function (done) {
     repo = new IPFSRepo(repoPath)
-    expect(repo.exists()).to.equal(true)
-    done()
+    repo.exists(function (err, exists) {
+      expect(err).to.equal(null)
+      expect(exists).to.equal(true)
+      done()
+    })
   })
 
-  it('load the Repo', function (done) {
-    repo.load()
-    done()
-  })
-
-  it('init another Repo', function (done) {
+  it.skip('init another Repo', function (done) {
     var tmpRepoPath = __dirname + '/tmp-repo'
     var tmpRepo = new IPFSRepo(tmpRepoPath)
     tmpRepo.init({ ID: 'ID' }, function (err) {
@@ -56,9 +54,40 @@ describe('IPFS Repo Tests', function () {
     })
   })
 
+  describe('locks', function () {
+    it('lock, unlock', function (done) {
+      repo.locks.lock(function (err) {
+        expect(err).to.equal(undefined)
+        repo.locks.unlock(function (err) {
+          expect(err).to.equal(undefined)
+          done()
+        })
+      })
+    })
+
+    it('lock, lock', function (done) {
+      repo.locks.lock(function (err) {
+        expect(err).to.equal(undefined)
+        repo.locks.lock(function (err) {
+          expect(err).to.equal(undefined)
+          repo.locks.unlock(function (err) {
+            expect(err).to.equal(undefined)
+            done()
+          })
+        })
+
+        setTimeout(function () {
+          repo.locks.unlock(function (err) {
+            expect(err).to.equal(undefined)
+          })
+        }, 500)
+      })
+    })
+  })
+
   describe('api', function () {})
   describe('config', function () {
-    it('get config', function (done) {
+    it.skip('get config', function (done) {
       repo.config.read(function (err, config) {
         expect(err).to.equal(null)
         expect(config).to.be.a('object')
@@ -69,7 +98,7 @@ describe('IPFS Repo Tests', function () {
 
   describe('version', function () {
     it('get version', function (done) {
-      repo.version.read(function (err, version) {
+      repo.version.get(function (err, version) {
         expect(err).to.equal(null)
         expect(version).to.be.a('string')
         expect(Number(version)).to.be.a('number')
@@ -78,7 +107,14 @@ describe('IPFS Repo Tests', function () {
     })
 
     it('set version', function (done) {
-      done()
+      repo.version.set('9000', function (err) {
+        expect(err).to.equal(undefined)
+        repo.version.get(function (err, version) {
+          expect(err).to.equal(null)
+          expect(version).to.equal('9000')
+          done()
+        })
+      })
     })
   })
   describe('blocks', function () {})

@@ -68,13 +68,13 @@ repo.config.write({foo: 'bar'}, function (err) {
 Store data on the block store.
 
 ```js
-repo.blocks.read('12200007d4e3a319cd8c7c9979280e150fc5dbaae1ce54e790f84ae5fd3c3c1a0475', function (buff, err) {
+repo.blocks.read('12200007d4e3a319cd8c7c9979280e150fc5dbaae1ce54e790f84ae5fd3c3c1a0475', function (err, buff) {
   console.log(err)
 })
 ```
 
 ```js
-repo.blocks.write(buff, function (buff, err) {
+repo.blocks.write(buff, function (err, buffer) {
   console.log(buff.toString('utf-8'), err)
 })
 ```

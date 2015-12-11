@@ -1,22 +1,33 @@
-module.exports = function (store) {
+var bl = require('bl')
+
+exports = module.exports
+
+exports.setUp = function (basePath, blobStore, locks) {
+  var store = blobStore(basePath)
   return {
-    read: function (cb) {
-      store.read('version', function (err, num) {
-        if (err) return cb(err)
-
-        cb(null, num.split('\n')[0])
-      })
+    get: function (callback) {
+      store
+        .createReadStream('version')
+        .pipe(bl(function (err, version) {
+          if (err) {
+            return callback(err)
+          }
+          callback(null, version.toString('utf8'))
+        }))
     },
+    set: function (value, callback) {
+      locks.lock(function (err) {
+        if (err) {
+          return callback(err)
+        }
 
-    readStream: function () {
-      // TODO impl it properly - this works because store.read is returning the stream, but it needs to be actually aware we expect to receive the stream
-      return store.read('version', function (err, num) {
-        if (err) {}
+        store.createWriteStream('version')
+          .on('finish', function () {
+            locks.unlock(callback)
+          })
+          // .write(value)
+          .end(value)
       })
-    },
-
-    write: function (content, cb) {
-      return store.write('version', content, cb)
     }
   }
 }
