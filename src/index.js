@@ -1,6 +1,8 @@
 var stores = require('./stores')
 var adaptors = require('./adaptors')
 var fs = require('fs')
+var ncp = require('ncp')
+var path = require('path')
 
 /**
  * Constructor
@@ -31,6 +33,23 @@ Repo.prototype = {
     } catch (err) {
       return false
     }
+  },
+
+  init: function (config, callback) {
+    if (this.exists()) {
+      throw new Error('Repo already exists')
+    }
+
+    ncp(path.resolve(__dirname, './../default-repo'), this.root_path, (err) => {
+      if (err) {
+        return callback(err)
+      }
+
+      var Adaptor = this._chooseAdaptor()
+      this.store = new Adaptor(this.root_path)
+
+      stores.config(this.store).write(config, callback)
+    })
   },
 
   load: function () {
