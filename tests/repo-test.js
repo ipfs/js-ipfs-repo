@@ -82,4 +82,13 @@ describe('IPFS Repo Tests', function () {
     })
   })
   describe('blocks', function () {})
+
+  describe('locks', function () {
+    it('lock, unlock', function (done) {
+      done()
+    })
+    it('lock on operation', function (done) {
+      done()
+    })
+  })
 })
