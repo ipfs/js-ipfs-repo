@@ -42,7 +42,19 @@ describe('IPFS Repo Tests', function () {
     done()
   })
 
-  it('init another Repo', function (done) { done() })
+  it('init another Repo', function (done) {
+    var tmpRepoPath = __dirname + '/tmp-repo'
+    var tmpRepo = new IPFSRepo(tmpRepoPath)
+    tmpRepo.init({ ID: 'ID' }, function (err) {
+      expect(err).to.equal(undefined)
+      rimraf(tmpRepoPath, function (err) {
+        if (err) {
+          expect(err).to.equal(null)
+        }
+        done()
+      })
+    })
+  })
 
   describe('api', function () {})
   describe('config', function () {
