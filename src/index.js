@@ -1,8 +1,6 @@
 var stores = require('./stores')
 var extend = require('xtend')
 var fs = require('fs-blob-store')
-var path = require('path')
-var ncp = require('ncp')
 
 exports = module.exports = Repo
 
@@ -33,16 +31,9 @@ function Repo (repoPath, options) {
       throw new Error('Repo already exists')
     }
 
-    ncp(path.resolve(__dirname, './../default-repo'), this.root_path, (err) => {
-      if (err) {
-        return callback(err)
-      }
-
-      var Adaptor = this._chooseAdaptor()
-      this.store = new Adaptor(this.root_path)
-
-      stores.config(this.store).write(config, callback)
-    })
+    // TODO
+    // 1. load remaining stores
+    // 2. init all of them
   }
 
   self.locks = require('./stores').locks.setUp(repoPath, options.stores.locks)
@@ -64,14 +55,18 @@ function Repo (repoPath, options) {
   self.keys = stores
                 .keys
                 .setUp(repoPath, options.stores.keys, self.locks)
+
   self.config = stores
-                  .config
-                  .setUp(repoPath, options.stores.config, self.locks)
+                .config
+                .setUp(repoPath, options.stores.config, self.locks)
+
   self.datastore = stores
-                    .datastore
-                    .setUp(repoPath, options.stores.datastore, self.locks)
+                .datastore
+                .setUp(repoPath, options.stores.datastore, self.locks)
+
   self.logs = stores
                 .logs
                 .setUp(repoPath, options.stores.logs, self.locks)
+
   */
 }

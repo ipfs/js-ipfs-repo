@@ -40,7 +40,7 @@ describe('IPFS Repo Tests', function () {
     })
   })
 
-  it('init another Repo', function (done) {
+  it.skip('init another Repo', function (done) {
     var tmpRepoPath = __dirname + '/tmp-repo'
     var tmpRepo = new IPFSRepo(tmpRepoPath)
     tmpRepo.init({ ID: 'ID' }, function (err) {
@@ -87,7 +87,7 @@ describe('IPFS Repo Tests', function () {
 
   describe('api', function () {})
   describe('config', function () {
-    it('get config', function (done) {
+    it.skip('get config', function (done) {
       repo.config.read(function (err, config) {
         expect(err).to.equal(null)
         expect(config).to.be.a('object')
