@@ -1,41 +1,34 @@
 var stores = require('./stores')
-var adaptors = require('./adaptors')
-var fs = require('fs')
-var ncp = require('ncp')
+var extend = require('xtend')
+var fs = require('fs-blob-store')
 var path = require('path')
+var ncp = require('ncp')
 
-/**
- * Constructor
- *
- * @param {String} root_path
- * @param {Maybe<Object>} options
- */
-function Repo (root_path, options) {
-  this.root_path = root_path
-  this.options = options || {}
-  this.loaded = false
-}
+exports = module.exports = Repo
 
-Repo.prototype = {
-  _chooseAdaptor: function () {
-    var adaptor = adaptors[this.options.adaptor || 'fs-repo']
-
-    if (!adaptor) {
-      throw new Error('Adaptor "' + this.options.adaptor + '" not supported')
+function Repo (repoPath, options) {
+  var self = this
+  var base = {
+    stores: {
+      keys: fs,
+      config: fs,
+      datastore: fs,
+      logs: fs,
+      locks: fs,
+      version: fs
     }
+  }
+  options = extend(base, options)
 
-    return adaptor
-  },
-
-  exists: function () {
+  self.exists = function () {
     try {
-      return !!fs.statSync(this.root_path)
+      return !!fs.statSync(this.repoPath)
     } catch (err) {
       return false
     }
-  },
+  }
 
-  init: function (config, callback) {
+  self.init = function (config, callback) {
     if (this.exists()) {
       throw new Error('Repo already exists')
     }
@@ -50,19 +43,35 @@ Repo.prototype = {
 
       stores.config(this.store).write(config, callback)
     })
-  },
-
-  load: function () {
-    if (this.loaded) { return }
-    var Adaptor = this._chooseAdaptor()
-    this.store = new Adaptor(this.root_path)
-
-    this.api = stores.config(this.store)
-    this.config = stores.config(this.store)
-    this.version = stores.version(this.store)
-    this.blocks = stores.blocks(this.store)
-    this.loaded = true
   }
-}
 
-module.exports = Repo
+  self.locks = require('./stores').locks.setUp(repoPath, options.stores.locks)
+
+  self.exists = function (callback) {
+    self.version.get(function (err, version) {
+      if (err) {
+        return callback(new Error('Repo does not exist yet'))
+      }
+      callback(null, true)
+    })
+  }
+
+  self.version = stores
+                  .version
+                  .setUp(repoPath, options.stores.version, self.locks)
+
+  /*
+  self.keys = stores
+                .keys
+                .setUp(repoPath, options.stores.keys, self.locks)
+  self.config = stores
+                  .config
+                  .setUp(repoPath, options.stores.config, self.locks)
+  self.datastore = stores
+                    .datastore
+                    .setUp(repoPath, options.stores.datastore, self.locks)
+  self.logs = stores
+                .logs
+                .setUp(repoPath, options.stores.logs, self.locks)
+  */
+}

@@ -33,13 +33,11 @@ describe('IPFS Repo Tests', function () {
 
   it('check if Repo exists', function (done) {
     repo = new IPFSRepo(repoPath)
-    expect(repo.exists()).to.equal(true)
-    done()
-  })
-
-  it('load the Repo', function (done) {
-    repo.load()
-    done()
+    repo.exists(function (err, exists) {
+      expect(err).to.equal(null)
+      expect(exists).to.equal(true)
+      done()
+    })
   })
 
   it('init another Repo', function (done) {
@@ -69,7 +67,7 @@ describe('IPFS Repo Tests', function () {
 
   describe('version', function () {
     it('get version', function (done) {
-      repo.version.read(function (err, version) {
+      repo.version.get(function (err, version) {
         expect(err).to.equal(null)
         expect(version).to.be.a('string')
         expect(Number(version)).to.be.a('number')

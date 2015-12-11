@@ -1,3 +1,9 @@
+exports = module.exports
+
+exports.setUp = function (basePath, blobStore) {
+
+}
+/*
 module.exports = function (store) {
   return {
     read: function (cb) {
@@ -9,3 +15,4 @@ module.exports = function (store) {
     }
   }
 }
+*/
