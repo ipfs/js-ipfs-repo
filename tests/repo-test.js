@@ -86,11 +86,22 @@ describe('IPFS Repo Tests', function () {
   })
 
   describe('config', function () {
-    it.skip('get config', function (done) {
+    it('get config', function (done) {
       repo.config.get(function (err, config) {
         expect(err).to.equal(null)
         expect(config).to.be.a('object')
         done()
+      })
+    })
+
+    it('set config', function (done) {
+      repo.config.set({a: 'b'}, function (err) {
+        expect(err).to.equal(undefined)
+        repo.config.get(function (err, config) {
+          expect(err).to.equal(null)
+          expect(config).to.deep.equal({a: 'b'})
+          done()
+        })
       })
     })
   })
