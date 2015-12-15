@@ -85,6 +85,16 @@ describe('IPFS Repo Tests', function () {
     })
   })
 
+  describe('keys', function () {
+    it('get PrivKey', function (done) {
+      repo.keys.get(function (err, privKey) {
+        expect(err).to.equal(null)
+        expect(privKey).to.be.a('string')
+        done()
+      })
+    })
+  })
+
   describe('config', function () {
     it('get config', function (done) {
       repo.config.get(function (err, config) {
@@ -127,5 +137,6 @@ describe('IPFS Repo Tests', function () {
       })
     })
   })
-  describe('blocks', function () {})
+  describe('datastore', function () {})
+  describe('datastore-legacy', function () {})
 })

@@ -56,10 +56,9 @@ function Repo (repoPath, options) {
                 .config
                 .setUp(repoPath, options.stores.config, self.locks)
 
-  // TODO
-  // self.keys = stores
-  //              .keys
-  //              .setUp(repoPath, options.stores.keys, self.locks)
+  self.keys = stores
+                .keys
+                .setUp(repoPath, options.stores.keys, self.locks, self.config)
 
   // TODO
   // self.datastore = stores
