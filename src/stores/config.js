@@ -1,6 +1,6 @@
 module.exports = function (store) {
   return {
-    read: function (cb) {
+    get: function (cb) {
       return store.read('config', function (err, content) {
         if (err) return cb(err)
 
@@ -12,7 +12,7 @@ module.exports = function (store) {
       })
     },
 
-    write: function (content, cb) {
+    set: function (content, cb) {
       return store.write('config', JSON.stringify(content), cb)
     }
   }

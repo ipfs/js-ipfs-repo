@@ -85,10 +85,9 @@ describe('IPFS Repo Tests', function () {
     })
   })
 
-  describe('api', function () {})
   describe('config', function () {
     it.skip('get config', function (done) {
-      repo.config.read(function (err, config) {
+      repo.config.get(function (err, config) {
         expect(err).to.equal(null)
         expect(config).to.be.a('object')
         done()
