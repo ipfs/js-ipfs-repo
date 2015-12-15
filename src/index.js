@@ -52,15 +52,14 @@ function Repo (repoPath, options) {
                    .version
                    .setUp(repoPath, options.stores.version, self.locks)
 
+  self.config = stores
+                .config
+                .setUp(repoPath, options.stores.config, self.locks)
+
   // TODO
   // self.keys = stores
   //              .keys
   //              .setUp(repoPath, options.stores.keys, self.locks)
-
-  // TODO
-  // self.config = stores
-  //              .config
-  //              .setUp(repoPath, options.stores.config, self.locks)
 
   // TODO
   // self.datastore = stores

@@ -25,7 +25,6 @@ exports.setUp = function (basePath, blobStore, locks) {
           .on('finish', function () {
             locks.unlock(callback)
           })
-          // .write(value)
           .end(value)
       })
     }
