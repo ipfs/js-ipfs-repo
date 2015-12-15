@@ -113,6 +113,14 @@ repo.config.write({foo: 'bar'}, function (err) {
 })
 ```
 
+### keys
+
+Read/Write keys inside the repo. This feature will be expanded once [IPRS](https://github.com/ipfs/specs/tree/master/records) and [KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and implemented on go-ipfs.
+
+```js
+repo.keys.get(function (err, privKey) {})
+```
+
 ### datastore
 
 Store data on the block store.
