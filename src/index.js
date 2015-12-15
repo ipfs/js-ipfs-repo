@@ -11,6 +11,7 @@ function Repo (repoPath, options) {
       keys: fs,
       config: fs,
       datastore: fs,
+      // datastoreLegacy: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
       logs: fs,
       locks: fs,
       version: fs
@@ -51,22 +52,28 @@ function Repo (repoPath, options) {
                    .version
                    .setUp(repoPath, options.stores.version, self.locks)
 
-  /*
-  self.keys = stores
-                .keys
-                .setUp(repoPath, options.stores.keys, self.locks)
+  // TODO
+  // self.keys = stores
+  //              .keys
+  //              .setUp(repoPath, options.stores.keys, self.locks)
 
-  self.config = stores
-                .config
-                .setUp(repoPath, options.stores.config, self.locks)
+  // TODO
+  // self.config = stores
+  //              .config
+  //              .setUp(repoPath, options.stores.config, self.locks)
 
-  self.datastore = stores
-                .datastore
-                .setUp(repoPath, options.stores.datastore, self.locks)
+  // TODO
+  // self.datastore = stores
+  //              .datastore
+  //              .setUp(repoPath, options.stores.datastore, self.locks)
 
-  self.logs = stores
-                .logs
-                .setUp(repoPath, options.stores.logs, self.locks)
+  // TODO: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
+  // self.datastoreLegacy = stores
+  //              .datastore
+  //              .setUp(repoPath, options.stores.datastore, self.locks)
 
-  */
+  // TODO: Currently this was also deprecated in go-ipfs
+  // self.logs = stores
+  //               .logs
+  //               .setUp(repoPath, options.stores.logs, self.locks)
 }
