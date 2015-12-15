@@ -155,7 +155,7 @@ repo.locks.unlock(function (err) {})
 
 ### logs
 
-> WIP (also not available in go-ipfs at the moment)
+> No longer supported, see https://github.com/ipfs/js-ipfs-repo/issues/8
 
 ## Contribute
 
