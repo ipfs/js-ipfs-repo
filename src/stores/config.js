@@ -12,11 +12,13 @@ exports.setUp = function (basePath, blobStore, locks) {
           if (err) {
             return callback(err)
           }
+          var result
           try {
-            callback(null, JSON.parse(config))
+            result = JSON.parse(config)
           } catch (err) {
-            callback(err)
+            return callback(err)
           }
+          callback(null, result)
         }))
     },
 
