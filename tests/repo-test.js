@@ -6,6 +6,7 @@ var rimraf = require('rimraf')
 var base58 = require('bs58')
 var bl = require('bl')
 var fs = require('fs')
+var pbs = require('protocol-buffers-stream')
 
 var IPFSRepo = require('./../src')
 
@@ -155,6 +156,9 @@ describe('IPFS Repo Tests', function () {
     })
 
     it('reads block and parses into protobuf', function (done) {
+      var schema = fs.readFileSync(__dirname + '/block.proto')
+      var protoStream = pbs(schema)
+      // protoStream()
       done()
     })
 
