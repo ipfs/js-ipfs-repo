@@ -1,23 +1,27 @@
-// TODO: This may end up being configurable
-// TODO: This should belong to the `fs` implementation
-var PREFIX_LENGTH = 8
-var multihash = require('multihashes')
-var path = require('path')
+const PREFIX_LENGTH = 8
 
-module.exports = function (store) {
-  function hashToPath (hash) {
-    var folder = hash.slice(0, PREFIX_LENGTH)
-    return path.join(folder, hash) + '.data'
-  }
+exports = module.exports
+
+exports.setUp = function (basePath, blobStore, locks) {
+  var store = blobStore(basePath + '/blocks/')
 
   return {
-    read: function (hash, cb) {
-      return store.read(hashToPath(hash), cb)
+    createReadStream: function (multihash) {
+      var path = multihashToPath(multihash)
+      return store.createReadStream(path)
     },
 
-    write: function (buf, cb) {
-      var mh = multihash.encode(buf, 'hex')
-      return store.write(hashToPath(mh), buf, cb)
+    createWriteStream: function (multihash, cb) {
+      var path = multihashToPath(multihash)
+      return store.createWriteStream(path, cb)
     }
   }
+}
+
+function multihashToPath (multihash) {
+  var filename = multihash.toString('hex') + '.data'
+  var folder = filename.slice(0, PREFIX_LENGTH)
+  var path = folder + '/' + filename
+
+  return path
 }

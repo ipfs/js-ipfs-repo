@@ -60,10 +60,9 @@ function Repo (repoPath, options) {
                 .keys
                 .setUp(repoPath, options.stores.keys, self.locks, self.config)
 
-  // TODO
-  // self.datastore = stores
-  //              .datastore
-  //              .setUp(repoPath, options.stores.datastore, self.locks)
+  self.datastore = stores
+                .datastore
+                .setUp(repoPath, options.stores.datastore, self.locks)
 
   // TODO: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
   // self.datastoreLegacy = stores

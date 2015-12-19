@@ -1,9 +1,11 @@
 /* globals describe, before, after, it*/
 
-// var assert = require('assert')
 var expect = require('chai').expect
 var ncp = require('ncp').ncp
 var rimraf = require('rimraf')
+var base58 = require('bs58')
+var bl = require('bl')
+var fs = require('fs')
 
 var IPFSRepo = require('./../src')
 
@@ -137,6 +139,29 @@ describe('IPFS Repo Tests', function () {
       })
     })
   })
-  describe('datastore', function () {})
+
+  describe('datastore', function () {
+    var baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
+
+    it('reads block', function (done) {
+      var buf = new Buffer(base58.decode(baseFileHash))
+      repo.datastore.createReadStream(buf)
+        .pipe(bl(function (err, data) {
+          expect(err).to.equal(null)
+          var eq = fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(data)
+          expect(eq).to.equal(true)
+          done()
+        }))
+    })
+
+    it('reads block and parses into protobuf', function (done) {
+      done()
+    })
+
+    it('writes protobuf into valid block', function (done) {
+      done()
+    })
+  })
+
   describe('datastore-legacy', function () {})
 })
