@@ -6,7 +6,6 @@ var rimraf = require('rimraf')
 var base58 = require('bs58')
 var bl = require('bl')
 var fs = require('fs')
-var pbs = require('protocol-buffers-stream')
 
 var IPFSRepo = require('./../src')
 
@@ -155,15 +154,16 @@ describe('IPFS Repo Tests', function () {
         }))
     })
 
-    it('reads block and parses into protobuf', function (done) {
-      var schema = fs.readFileSync(__dirname + '/block.proto')
-      var protoStream = pbs(schema)
-      // protoStream()
-      done()
-    })
+    it('write a block', function (done) {
+      var rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
+      var mh = new Buffer(base58.decode(rnd))
+      var data = new Buffer('Oh the data')
 
-    it('writes protobuf into valid block', function (done) {
-      done()
+      repo.datastore.createWriteStream(mh, function (err, metadata) {
+        expect(err).to.equal(null)
+        expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
+        done()
+      }).end(data)
     })
   })
 
