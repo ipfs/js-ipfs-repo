@@ -21,6 +21,8 @@
   ],
   "homepage": "https://github.com/ipfs/js-ipfs-record",
   "devDependencies": {
+    "bl": "^1.0.0",
+    "bs58": "^3.0.0",
     "chai": "^3.4.1",
     "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
@@ -30,7 +32,6 @@
     "standard": "^5.1.1"
   },
   "dependencies": {
-    "abstract-blob-store": "^3.2.0",
     "bl": "^1.0.0",
     "concat-stream": "^1.5.1",
     "fs-blob-store": "^5.2.0",

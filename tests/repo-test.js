@@ -1,9 +1,11 @@
 /* globals describe, before, after, it*/
 
-// var assert = require('assert')
 var expect = require('chai').expect
 var ncp = require('ncp').ncp
 var rimraf = require('rimraf')
+var base58 = require('bs58')
+var bl = require('bl')
+var fs = require('fs')
 
 var IPFSRepo = require('./../src')
 
@@ -137,6 +139,33 @@ describe('IPFS Repo Tests', function () {
       })
     })
   })
-  describe('datastore', function () {})
+
+  describe('datastore', function () {
+    var baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
+
+    it('reads block', function (done) {
+      var buf = new Buffer(base58.decode(baseFileHash))
+      repo.datastore.createReadStream(buf)
+        .pipe(bl(function (err, data) {
+          expect(err).to.equal(null)
+          var eq = fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(data)
+          expect(eq).to.equal(true)
+          done()
+        }))
+    })
+
+    it('write a block', function (done) {
+      var rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
+      var mh = new Buffer(base58.decode(rnd))
+      var data = new Buffer('Oh the data')
+
+      repo.datastore.createWriteStream(mh, function (err, metadata) {
+        expect(err).to.equal(null)
+        expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
+        done()
+      }).end(data)
+    })
+  })
+
   describe('datastore-legacy', function () {})
 })
