@@ -19,14 +19,6 @@ function Repo (repoPath, options) {
   }
   options = extend(base, options)
 
-  self.exists = function () {
-    try {
-      return !!fs.statSync(this.repoPath)
-    } catch (err) {
-      return false
-    }
-  }
-
   self.init = function (config, callback) {
     if (this.exists()) {
       throw new Error('Repo already exists')
