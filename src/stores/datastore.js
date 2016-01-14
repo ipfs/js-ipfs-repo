@@ -2,16 +2,16 @@ const PREFIX_LENGTH = 8
 
 exports = module.exports
 
-exports.setUp = function (basePath, blobStore, locks) {
+exports.setUp = (basePath, blobStore, locks) => {
   var store = blobStore(basePath + '/blocks/')
 
   return {
-    createReadStream: function (multihash) {
+    createReadStream: multihash => {
       var path = multihashToPath(multihash)
       return store.createReadStream(path)
     },
 
-    createWriteStream: function (multihash, cb) {
+    createWriteStream: (multihash, cb) => {
       var path = multihashToPath(multihash)
       return store.createWriteStream(path, cb)
     }

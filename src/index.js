@@ -1,12 +1,11 @@
-var stores = require('./stores')
-var extend = require('xtend')
-var fs = require('fs-blob-store')
+const stores = require('./stores')
+const extend = require('xtend')
+const fs = require('fs-blob-store')
 
 exports = module.exports = Repo
 
 function Repo (repoPath, options) {
-  var self = this
-  var base = {
+  const base = {
     stores: {
       keys: fs,
       config: fs,
@@ -17,9 +16,10 @@ function Repo (repoPath, options) {
       version: fs
     }
   }
+
   options = extend(base, options)
 
-  self.init = function (config, callback) {
+  this.init = (config, callback) => {
     if (this.exists()) {
       throw new Error('Repo already exists')
     }
@@ -29,10 +29,10 @@ function Repo (repoPath, options) {
     // 2. init all of them
   }
 
-  self.locks = require('./stores').locks.setUp(repoPath, options.stores.locks)
+  this.locks = require('./stores').locks.setUp(repoPath, options.stores.locks)
 
-  self.exists = function (callback) {
-    self.version.get(function (err, version) {
+  this.exists = callback => {
+    this.version.get((err, version) => {
       if (err) {
         return callback(new Error('Repo does not exist'))
       }
@@ -40,29 +40,29 @@ function Repo (repoPath, options) {
     })
   }
 
-  self.version = stores
+  this.version = stores
                    .version
-                   .setUp(repoPath, options.stores.version, self.locks)
+                   .setUp(repoPath, options.stores.version, this.locks)
 
-  self.config = stores
+  this.config = stores
                 .config
-                .setUp(repoPath, options.stores.config, self.locks)
+                .setUp(repoPath, options.stores.config, this.locks)
 
-  self.keys = stores
+  this.keys = stores
                 .keys
-                .setUp(repoPath, options.stores.keys, self.locks, self.config)
+                .setUp(repoPath, options.stores.keys, this.locks, this.config)
 
-  self.datastore = stores
+  this.datastore = stores
                 .datastore
-                .setUp(repoPath, options.stores.datastore, self.locks)
+                .setUp(repoPath, options.stores.datastore, this.locks)
 
   // TODO: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-  // self.datastoreLegacy = stores
+  // this.datastoreLegacy = stores
   //              .datastore
-  //              .setUp(repoPath, options.stores.datastore, self.locks)
+  //              .setUp(repoPath, options.stores.datastore, this.locks)
 
   // TODO: Currently this was also deprecated in go-ipfs
-  // self.logs = stores
+  // this.logs = stores
   //               .logs
-  //               .setUp(repoPath, options.stores.logs, self.locks)
+  //               .setUp(repoPath, options.stores.logs, this.locks)
 }

@@ -2,27 +2,28 @@ var bl = require('bl')
 
 exports = module.exports
 
-exports.setUp = function (basePath, blobStore, locks) {
+exports.setUp = (basePath, blobStore, locks) => {
   var store = blobStore(basePath)
+
   return {
-    get: function (callback) {
+    get: callback => {
       store
         .createReadStream('version')
-        .pipe(bl(function (err, version) {
+        .pipe(bl((err, version) => {
           if (err) {
             return callback(err)
           }
           callback(null, version.toString('utf8'))
         }))
     },
-    set: function (value, callback) {
-      locks.lock(function (err) {
+    set: (value, callback) => {
+      locks.lock(err => {
         if (err) {
           return callback(err)
         }
 
         store.createWriteStream('version')
-          .on('finish', function () {
+          .on('finish', () => {
             locks.unlock(callback)
           })
           .end(value)
