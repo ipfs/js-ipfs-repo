@@ -1,6 +1,6 @@
 exports = module.exports
 
-exports.setUp = function (basePath, blobStore) {
+exports.setUp = (basePath, blobStore) => {
   var store = blobStore(basePath)
   var lockFile = 'repo.lock'
 
@@ -25,20 +25,20 @@ exports.setUp = function (basePath, blobStore) {
       function createLock () {
         store
           .createWriteStream(lockFile)
-          .on('finish', function () {
+          .on('finish', () => {
             cb()
           })
           .end()
       }
     },
-    unlock: function (cb) {
-      store.remove(lockFile, function (err) {
-        if (err) cb(err)
-        store.exists(lockFile, function (err, exists) {
-          if (err) cb(err)
+    unlock: cb => {
+      store.remove(lockFile, err => {
+        if (err) { return cb(err) }
+        store.exists(lockFile, (err, exists) => {
+          if (err) { return cb(err) }
 
-          store.exists(lockFile, function (err, exists) {
-            if (err) cb(err)
+          store.exists(lockFile, (err, exists) => {
+            if (err) { return cb(err) }
             cb()
           })
         })

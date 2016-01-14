@@ -1,9 +1,9 @@
 exports = module.exports
 
-exports.setUp = function (basePath, blobStore, locks, config) {
+exports.setUp = (basePath, blobStore, locks, config) => {
   return {
-    get: function (callback) {
-      config.get(function (err, config) {
+    get: callback => {
+      config.get((err, config) => {
         if (err) {
           return callback(err)
         }

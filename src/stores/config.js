@@ -2,13 +2,13 @@ var bl = require('bl')
 
 exports = module.exports
 
-exports.setUp = function (basePath, blobStore, locks) {
+exports.setUp = (basePath, blobStore, locks) => {
   var store = blobStore(basePath)
   return {
-    get: function (callback) {
+    get: callback => {
       store
         .createReadStream('config')
-        .pipe(bl(function (err, config) {
+        .pipe(bl((err, config) => {
           if (err) {
             return callback(err)
           }
@@ -22,14 +22,14 @@ exports.setUp = function (basePath, blobStore, locks) {
         }))
     },
 
-    set: function (config, callback) {
-      locks.lock(function (err) {
+    set: (config, callback) => {
+      locks.lock(err => {
         if (err) {
           return callback(err)
         }
 
         store.createWriteStream('config')
-          .on('finish', function () {
+          .on('finish', () => {
             locks.unlock(callback)
           })
           .end(JSON.stringify(config))
