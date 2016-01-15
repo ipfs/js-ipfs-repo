@@ -1,19 +1,19 @@
 /* globals describe, before, after, it*/
 
-var expect = require('chai').expect
-var ncp = require('ncp').ncp
-var rimraf = require('rimraf')
-var base58 = require('bs58')
-var bl = require('bl')
-var fs = require('fs')
+const expect = require('chai').expect
+const ncp = require('ncp').ncp
+const rimraf = require('rimraf')
+const base58 = require('bs58')
+const bl = require('bl')
+const fs = require('fs')
 
-var IPFSRepo = require('./../src')
+const IPFSRepo = require('./../src')
 
 describe('IPFS Repo Tests', () => {
   var repo
-  var testRepoPath = __dirname + '/test-repo'
-  var date = Date.now().toString()
-  var repoPath = testRepoPath + date
+  const testRepoPath = __dirname + '/test-repo'
+  const date = Date.now().toString()
+  const repoPath = testRepoPath + date
 
   before(done => {
     ncp(testRepoPath, repoPath, err => {
@@ -39,8 +39,8 @@ describe('IPFS Repo Tests', () => {
   })
 
   it.skip('init another Repo', done => {
-    var tmpRepoPath = __dirname + '/tmp-repo'
-    var tmpRepo = new IPFSRepo(tmpRepoPath)
+    const tmpRepoPath = __dirname + '/tmp-repo'
+    const tmpRepo = new IPFSRepo(tmpRepoPath)
     tmpRepo.init({ ID: 'ID' }, err => {
       expect(err).to.not.exist
       rimraf(tmpRepoPath, err => {
@@ -135,29 +135,50 @@ describe('IPFS Repo Tests', () => {
   })
 
   describe('datastore', () => {
-    var baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
+    const baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
 
     it('reads block', done => {
-      var buf = new Buffer(base58.decode(baseFileHash))
+      const buf = new Buffer(base58.decode(baseFileHash))
       repo.datastore.createReadStream(buf)
         .pipe(bl((err, data) => {
           expect(err).to.not.exist
-          var eq = fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(data)
+          const eq = fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data').equals(data)
           expect(eq).to.equal(true)
           done()
         }))
     })
 
     it('write a block', done => {
-      var rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
-      var mh = new Buffer(base58.decode(rnd))
-      var data = new Buffer('Oh the data')
+      const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
+      const mh = new Buffer(base58.decode(rnd))
+      const data = new Buffer('Oh the data')
 
       repo.datastore.createWriteStream(mh, (err, metadata) => {
         expect(err).to.not.exist
         expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
         done()
       }).end(data)
+    })
+
+    it('block exists', done => {
+      const buf = new Buffer(base58.decode(baseFileHash))
+      repo.datastore.exists(buf, (err, exists) => {
+        expect(err).to.not.exist
+        expect(exists).to.equal(true)
+        done()
+      })
+    })
+
+    it('remove a block', done => {
+      const buf = new Buffer(base58.decode(baseFileHash))
+      repo.datastore.remove(buf, (err) => {
+        expect(err).to.not.exist
+        repo.datastore.exists(buf, (err, exists) => {
+          expect(err).to.not.exist
+          expect(exists).to.equal(false)
+          done()
+        })
+      })
     })
   })
 
