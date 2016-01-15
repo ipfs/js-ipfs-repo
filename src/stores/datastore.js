@@ -14,6 +14,14 @@ exports.setUp = (basePath, blobStore, locks) => {
     createWriteStream: (multihash, cb) => {
       var path = multihashToPath(multihash)
       return store.createWriteStream(path, cb)
+    },
+    exists: (multihash, cb) => {
+      var path = multihashToPath(multihash)
+      return store.exists(path, cb)
+    },
+    remove: (multihash, cb) => {
+      var path = multihashToPath(multihash)
+      return store.remove(path, cb)
     }
   }
 }
