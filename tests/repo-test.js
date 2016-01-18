@@ -162,9 +162,20 @@ describe('IPFS Repo Tests', () => {
 
     it('block exists', done => {
       const buf = new Buffer(base58.decode(baseFileHash))
+
       repo.datastore.exists(buf, (err, exists) => {
         expect(err).to.not.exist
         expect(exists).to.equal(true)
+        done()
+      })
+    })
+
+    it('check for non existent block', done => {
+      const buf = new Buffer('random buffer')
+
+      repo.datastore.exists(buf, (err, exists) => {
+        expect(err).to.not.exist
+        expect(exists).to.equal(false)
         done()
       })
     })
