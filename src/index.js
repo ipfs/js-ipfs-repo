@@ -1,35 +1,17 @@
 const stores = require('./stores')
-const extend = require('xtend')
-const fs = require('fs-blob-store')
 
 exports = module.exports = Repo
 
 function Repo (repoPath, options) {
-  const base = {
-    stores: {
-      keys: fs,
-      config: fs,
-      datastore: fs,
-      // datastoreLegacy: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-      logs: fs,
-      locks: fs,
-      version: fs
-    }
-  }
-
-  options = extend(base, options)
-
   this.init = (config, callback) => {
     if (this.exists()) {
       throw new Error('Repo already exists')
     }
-
-    // TODO
-    // 1. load remaining stores
-    // 2. init all of them
   }
 
-  this.locks = require('./stores').locks.setUp(repoPath, options.stores.locks)
+  this.locks = stores
+                  .locks
+                  .setUp(repoPath, options.stores.locks)
 
   this.exists = callback => {
     this.version.get((err, version) => {
