@@ -26,7 +26,7 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
       ▼               ▼               ▼               ▼               ▼               ▼
 ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐
 │ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │
-│ -blog     │   │ -blog     │   │ -blog     │   │ -blog     │   │ -blog     │   │ -blog     │
+│ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │
 │ -store    │   │ -store    │   │ -store    │   │ -store    │   │ -store    │   │ -store    │
 │ interface │   │ interface │   │ interface │   │ interface │   │ interface │   │ interface │
 ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤
