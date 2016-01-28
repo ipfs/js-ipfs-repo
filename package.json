@@ -26,6 +26,7 @@
     "async": "^1.5.2",
     "bl": "^1.0.0",
     "bs58": "^3.0.0",
+    "buffer-loader": "^0.0.1",
     "chai": "^3.4.1",
     "fs-blob-store": "^5.2.1",
     "idb-plus-blob-store": "^1.0.0",
@@ -42,7 +43,6 @@
     "mocha": "^2.3.4",
     "ncp": "^2.0.0",
     "pre-commit": "^1.1.1",
-    "raw-loader": "^0.5.1",
     "rimraf": "^2.4.4",
     "standard": "^5.1.1",
     "webpack": "github:diasdavid/webpack#webpack-1"

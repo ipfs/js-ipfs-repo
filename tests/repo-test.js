@@ -9,10 +9,10 @@ const isNode = !global.window
 
 const fileA = isNode
   ? fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
-  : new Buffer(require('raw!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
+  : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
 module.exports = function (repo) {
-  describe('IPFS Repo Tests', () => {
+  describe('IPFS Repo Tests', function () {
     it('check if Repo exists', done => {
       repo.exists((err, exists) => {
         expect(err).to.not.exist
@@ -105,10 +105,10 @@ module.exports = function (repo) {
       })
     })
 
-    describe('datastore', () => {
+    describe('datastore', function () {
       const baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
 
-      it('reads block', done => {
+      it('reads block', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
         repo.datastore.createReadStream(buf)
           .pipe(bl((err, data) => {
@@ -118,7 +118,7 @@ module.exports = function (repo) {
           }))
       })
 
-      it('write a block', done => {
+      it('write a block', function (done) {
         const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
         const mh = new Buffer(base58.decode(rnd))
         const data = new Buffer('Oh the data')
@@ -130,7 +130,7 @@ module.exports = function (repo) {
         }).end(data)
       })
 
-      it('block exists', done => {
+      it('block exists', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
 
         repo.datastore.exists(buf, (err, exists) => {
@@ -140,7 +140,7 @@ module.exports = function (repo) {
         })
       })
 
-      it('check for non existent block', done => {
+      it('check for non existent block', function (done) {
         const buf = new Buffer('random buffer')
 
         repo.datastore.exists(buf, (err, exists) => {
@@ -150,7 +150,7 @@ module.exports = function (repo) {
         })
       })
 
-      it('remove a block', done => {
+      it('remove a block', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
         repo.datastore.remove(buf, (err) => {
           expect(err).to.not.exist

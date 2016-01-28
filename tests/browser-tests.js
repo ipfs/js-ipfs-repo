@@ -6,7 +6,7 @@ const tests = require('./repo-test')
 const _ = require('lodash')
 const IPFSRepo = require('../src')
 
-const repoContext = require.context('raw!./test-repo', true)
+const repoContext = require.context('buffer!./test-repo', true)
 
 const idb = window.indexedDB ||
         window.mozIndexedDB ||
@@ -16,6 +16,7 @@ const idb = window.indexedDB ||
 idb.deleteDatabase('ipfs')
 idb.deleteDatabase('ipfs/blocks')
 
+// TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
 describe('IPFS Repo Tests on the Browser', function () {
   before(function (done) {
     var repoData = []
