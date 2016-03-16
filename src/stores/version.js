@@ -1,15 +1,17 @@
-var bl = require('bl')
+'use strict'
+
+const bl = require('bl')
 
 exports = module.exports
 
 exports.setUp = (basePath, blobStore, locks) => {
-  var store = blobStore(basePath)
+  const store = blobStore(basePath)
 
   return {
-    exists: callback => {
+    exists: (callback) => {
       store.exists('version', callback)
     },
-    get: callback => {
+    get: (callback) => {
       store
         .createReadStream('version')
         .pipe(bl((err, version) => {
@@ -20,7 +22,7 @@ exports.setUp = (basePath, blobStore, locks) => {
         }))
     },
     set: (value, callback) => {
-      locks.lock(err => {
+      locks.lock((err) => {
         if (err) {
           return callback(err)
         }

@@ -1,3 +1,5 @@
+'use strict'
+
 const stores = require('./stores')
 
 exports = module.exports = Repo

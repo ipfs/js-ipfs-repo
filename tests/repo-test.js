@@ -1,4 +1,6 @@
-/* globals describe, it*/
+/* eslint-env mocha */
+
+'use strict'
 
 const expect = require('chai').expect
 const base58 = require('bs58')
@@ -13,7 +15,7 @@ const fileA = isNode
 
 module.exports = function (repo) {
   describe('IPFS Repo Tests', function () {
-    it('check if Repo exists', done => {
+    it('check if Repo exists', (done) => {
       repo.exists((err, exists) => {
         expect(err).to.not.exist
         expect(exists).to.equal(true)
@@ -22,29 +24,29 @@ module.exports = function (repo) {
     })
 
     describe('locks', () => {
-      it('lock, unlock', done => {
-        repo.locks.lock(err => {
+      it('lock, unlock', (done) => {
+        repo.locks.lock((err) => {
           expect(err).to.not.exist
-          repo.locks.unlock(err => {
+          repo.locks.unlock((err) => {
             expect(err).to.not.exist
             done()
           })
         })
       })
 
-      it('lock, lock', done => {
-        repo.locks.lock(err => {
+      it('lock, lock', (done) => {
+        repo.locks.lock((err) => {
           expect(err).to.not.exist
-          repo.locks.lock(err => {
+          repo.locks.lock((err) => {
             expect(err).to.not.exist
-            repo.locks.unlock(err => {
+            repo.locks.unlock((err) => {
               expect(err).to.not.exist
               done()
             })
           })
 
           setTimeout(() => {
-            repo.locks.unlock(err => {
+            repo.locks.unlock((err) => {
               expect(err).to.not.exist
             })
           }, 500)
@@ -53,7 +55,7 @@ module.exports = function (repo) {
     })
 
     describe('keys', () => {
-      it('get PrivKey', done => {
+      it('get PrivKey', (done) => {
         repo.keys.get((err, privKey) => {
           expect(err).to.not.exist
           expect(privKey).to.be.a('string')
@@ -63,7 +65,7 @@ module.exports = function (repo) {
     })
 
     describe('config', () => {
-      it('get config', done => {
+      it('get config', (done) => {
         repo.config.get((err, config) => {
           expect(err).to.not.exist
           expect(config).to.be.a('object')
@@ -71,8 +73,8 @@ module.exports = function (repo) {
         })
       })
 
-      it('set config', done => {
-        repo.config.set({a: 'b'}, err => {
+      it('set config', (done) => {
+        repo.config.set({a: 'b'}, (err) => {
           expect(err).to.not.exist
           repo.config.get((err, config) => {
             expect(err).to.not.exist
@@ -84,7 +86,7 @@ module.exports = function (repo) {
     })
 
     describe('version', () => {
-      it('get version', done => {
+      it('get version', (done) => {
         repo.version.get((err, version) => {
           expect(err).to.not.exist
           expect(version).to.be.a('string')
@@ -93,8 +95,8 @@ module.exports = function (repo) {
         })
       })
 
-      it('set version', done => {
-        repo.version.set('9000', err => {
+      it('set version', (done) => {
+        repo.version.set('9000', (err) => {
           expect(err).to.not.exist
           repo.version.get((err, version) => {
             expect(err).to.not.exist
