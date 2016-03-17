@@ -4,21 +4,24 @@ exports = module.exports = Repo
 
 function Repo (repoPath, options) {
   this.init = (config, callback) => {
-    if (this.exists()) {
-      throw new Error('Repo already exists')
-    }
+    this.exists((err, exists) => {
+      if (err) { throw err }
+      if (exists) { throw new Error('Repo already exists') }
+      throw new Error('not implemented')
+    })
   }
 
   this.locks = stores
                   .locks
                   .setUp(repoPath, options.stores.locks)
 
-  this.exists = callback => {
-    this.version.get((err, version) => {
+  this.exists = (callback) => {
+    this.version.exists((err, exists) => {
       if (err) {
-        return callback(new Error('Repo does not exist'))
+        callback(new Error('repo does not exist'), false)
+      } else {
+        callback(null, exists)
       }
-      callback(null, true)
     })
   }
 

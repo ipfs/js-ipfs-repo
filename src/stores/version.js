@@ -6,6 +6,9 @@ exports.setUp = (basePath, blobStore, locks) => {
   var store = blobStore(basePath)
 
   return {
+    exists: callback => {
+      store.exists('version', callback)
+    },
     get: callback => {
       store
         .createReadStream('version')

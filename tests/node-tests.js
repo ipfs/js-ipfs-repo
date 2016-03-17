@@ -6,7 +6,7 @@ const rimraf = require('rimraf')
 
 const IPFSRepo = require('../src')
 
-describe('IPFS Repo Testson on Node.js', () => {
+describe('IPFS Repo Tests on on Node.js', () => {
   const testRepoPath = __dirname + '/test-repo'
   const date = Date.now().toString()
   const repoPath = testRepoPath + date
