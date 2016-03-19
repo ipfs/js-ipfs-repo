@@ -17,8 +17,8 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 ## Architecture
 
 ```bash
-┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
-  interface defined by Repo Spec
+┌─────────────────────────────────┐
+│ interface defined by Repo Spec  │
 ├─────────────────────────────────┤
 │                                 │                                  ┌──────────────────────┐
 │                                 │                                  │ abstract-blob-store  │
@@ -51,129 +51,96 @@ IPFS repo exposes a well defined interface by the Repo Spec. Each of the individ
 
 ## Usage
 
-### Install
+```js
+var blobStore = require('abstract-blob-store')  // an in-memory blob store
+var IPFSRepo = require('js-ipfs-repo')
+var repo = new IPFSRepo('/Users/someone/.ipfs', {
+  stores: blobStore
+})
+```
 
-Standard Node.js way.
+## API
+
+```js
+var IPFSRepo = require('ipfs-repo')
+```
+
+### var repo = new IPFSRepo(path, opts)
+
+Creates a **reference** to an IPFS repository at the path `path`. This does
+*not* create the repo, but is an object that refers to the repo at such a path.
+
+Valid keys for `opts` include:
+
+- `stores`: either an
+  [abstract-blob-store](https://github.com/maxogden/abstract-blob-store), or a
+  map of the form
+
+```js
+{
+  keys: someBlobStore,
+  config: someBlobStore,
+  datastore: someBlobStore,
+  logs: someBlobStore,
+  locks: someBlobStore,
+  version: someBlobStore
+}
+```
+
+If you use the former form, all of the sub-blob-stores will use the same store.
+
+### repo.init(config, cb)
+
+Initializes the IPFS repository at the repo's `path`. Currently this is a no-op.
+Consumes a config object `config` *(TODO: specification?)* By default, init
+requires the repo not yet exist (by default). Calls the callback `cb(err)` on
+completion or error.
+
+### repo.exists(cb)
+
+Check if the repo you are going to access already exists. Calls the callback
+`cb(err, exists)`, where `exists` is true or false.
+
+### repo.version.get(cb(err, version))
+### repo.version.set(version, cb(err))
+
+Read/write the version number of the repository.
+
+*TODO: what does the version value mean?*
+
+### repo.config.get(cb(err, config))
+### repo.config.set(config, cb(err))
+
+Read/write the configuration object of the repository.
+
+### repo.keys
+
+Read/write keys inside the repo. This feature will be expanded once
+[IPRS](https://github.com/ipfs/specs/tree/master/records) and
+[KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and
+implemented on go-ipfs.
+
+### repo.datastore.read(key, cb(err, buffer))
+### repo.datastore.write(buffer, cb(err, buffer))
+
+Read and write buffers to/from the repo's block store.
+
+### repo.datastoreLegacy
+
+**WIP**
+
+## Install
+
+Install via npm:
 
 ```bash
 $ npm i ipfs-repo
 ```
 
-### Repo
-
-Constructor, accepts a path and options:
-
-```js
-var IPFSRepo = require('js-ipfs-repo')
-var repo = new IPFSRepo('/Users/someone/.ipfs', {
-  stores: {
-    keys: <something that implements abstract-blob-store>,
-    config: <something that implements abstract-blob-store>,
-    datastore: <something that implements abstract-blob-store>,
-    logs: <something that implements abstract-blob-store>,
-    locks: <something that implements abstract-blob-store>,
-    version: <something that implements abstract-blob-store>
-  }})
-```
-
-You can check if the repo you are going to access already exists on the path you passed to the constructor by:
-
-```js
-repo.exists(function (err, exists) {
-  // exists is a boolean value
-})
-```
-
-If the repo doesn't exist yet, you can start it by executing the `init` cuntion
-
-```js
-repo.init(opts, function (err) {})
-```
-
-### version
-
-Read/Write the version number of that repository.
-
-```js
-repo.version.get(function (err, version) {
-  console.log(err, num) // => 2
-})
-
-repo.version.set(3, function (err) {
-  console.log(err)
-})
-```
-
-### config
-
-Read/Write the JSON configuration for that repository.
-
-```js
-repo.config.read(function (err, json) {
-  console.log(err, json)
-})
-
-repo.config.write({foo: 'bar'}, function (err) {
-  console.log(err)
-})
-```
-
-### keys
-
-Read/Write keys inside the repo. This feature will be expanded once [IPRS](https://github.com/ipfs/specs/tree/master/records) and [KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and implemented on go-ipfs.
-
-```js
-repo.keys.get(function (err, privKey) {})
-```
-
-### datastore
-
-Store data on the block store.
-
-```js
-repo.datastore.read('12200007d4e3a319cd8c7c9979280e150fc5dbaae1ce54e790f84ae5fd3c3c1a0475', function (err, buff) {
-  console.log(err)
-})
-```
-
-```js
-repo.datastore.write(buff, function (err, buffer) {
-  console.log(buff.toString('utf-8'), err)
-})
-```
-
-### datastore legacy
-
-> WIP
-
-```js
-repo.datastoreLegacy
-```
-
-```js
-repo.datastoreLegacy
-```
-
-### locks
-
-> **Note: You shouldn't need to use this. It is used internally**
-
-Read/Write the `repo.lock` file.
-
-```js
-repo.locks.lock(function (err) {})
-
-repo.locks.unlock(function (err) {})
-```
-
-### logs
-
-> No longer supported, see https://github.com/ipfs/js-ipfs-repo/issues/8
-
 ## Contribute
 
-There is some ways you can make this module better:
+There are some ways you can make this module better:
 
-- You can consult our open issues and take on one of them
+- Consult our open issues and take on one of them
 - Make the tests better
 - Make the tests work in the Browser

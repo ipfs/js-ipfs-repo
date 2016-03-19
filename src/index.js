@@ -3,6 +3,23 @@ const stores = require('./stores')
 exports = module.exports = Repo
 
 function Repo (repoPath, options) {
+  if (!options) { throw new Error('missing options param') }
+  if (!options.stores) { throw new Error('missing options.stores param') }
+
+  // If options.stores is an abstract-blob-store instead of a map, use it for
+  // all stores.
+  if (options.stores.prototype && options.stores.prototype.createWriteSteam) {
+    var store = options.stores
+    options.stores = {
+      keys: store,
+      config: store,
+      datastore: store,
+      logs: store,
+      locks: store,
+      version: store
+    }
+  }
+
   this.init = (config, callback) => {
     this.exists((err, exists) => {
       if (err) { throw err }
