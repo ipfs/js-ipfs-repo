@@ -92,9 +92,8 @@ If you use the former form, all of the sub-blob-stores will use the same store.
 ### repo.init(config, cb)
 
 Initializes the IPFS repository at the repo's `path`. Currently this is a no-op.
-Consumes a config object `config` *(TODO: specification?)* By default, init
-requires the repo not yet exist (by default). Calls the callback `cb(err)` on
-completion or error.
+
+Consumes a config object `config` *(TODO: specification?)* By default, init requires the repo not yet exist (by default). Calls the callback `cb(err)` on completion or error.
 
 ### repo.exists(cb)
 
@@ -104,9 +103,7 @@ Check if the repo you are going to access already exists. Calls the callback
 ### repo.version.get(cb(err, version))
 ### repo.version.set(version, cb(err))
 
-Read/write the version number of the repository.
-
-*TODO: what does the version value mean?*
+Read/write the version number of the repository. The version number is the repo version number.
 
 ### repo.config.get(cb(err, config))
 ### repo.config.set(config, cb(err))
@@ -117,8 +114,7 @@ Read/write the configuration object of the repository.
 
 Read/write keys inside the repo. This feature will be expanded once
 [IPRS](https://github.com/ipfs/specs/tree/master/records) and
-[KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and
-implemented on go-ipfs.
+[KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and implemented on go-ipfs.
 
 ### repo.datastore.read(key, cb(err, buffer))
 ### repo.datastore.write(buffer, cb(err, buffer))
