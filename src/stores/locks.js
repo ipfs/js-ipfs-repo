@@ -1,8 +1,10 @@
+'use strict'
+
 exports = module.exports
 
 exports.setUp = (basePath, blobStore) => {
-  var store = blobStore(basePath)
-  var lockFile = 'repo.lock'
+  const store = blobStore(basePath)
+  const lockFile = 'repo.lock'
 
   return {
     lock: function (cb) {
@@ -31,8 +33,8 @@ exports.setUp = (basePath, blobStore) => {
           .end()
       }
     },
-    unlock: cb => {
-      store.remove(lockFile, err => {
+    unlock: (cb) => {
+      store.remove(lockFile, (err) => {
         if (err) { return cb(err) }
         store.exists(lockFile, (err, exists) => {
           if (err) { return cb(err) }
