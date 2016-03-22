@@ -4,6 +4,14 @@ const PREFIX_LENGTH = 8
 
 exports = module.exports
 
+function multihashToPath (multihash) {
+  const filename = multihash.toString('hex') + '.data'
+  const folder = filename.slice(0, PREFIX_LENGTH)
+  const path = folder + '/' + filename
+
+  return path
+}
+
 exports.setUp = (basePath, blobStore, locks) => {
   const store = blobStore(basePath + '/blocks')
 
@@ -26,12 +34,4 @@ exports.setUp = (basePath, blobStore, locks) => {
       return store.remove(path, cb)
     }
   }
-}
-
-function multihashToPath (multihash) {
-  const filename = multihash.toString('hex') + '.data'
-  const folder = filename.slice(0, PREFIX_LENGTH)
-  const path = folder + '/' + filename
-
-  return path
 }

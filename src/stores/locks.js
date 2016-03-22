@@ -8,7 +8,14 @@ exports.setUp = (basePath, blobStore) => {
 
   return {
     lock: function (cb) {
-      store.exists(lockFile, doesExist)
+      function createLock () {
+        store
+          .createWriteStream(lockFile)
+          .on('finish', () => {
+            cb()
+          })
+          .end()
+      }
 
       function doesExist (err, exists) {
         if (err) {
@@ -24,14 +31,7 @@ exports.setUp = (basePath, blobStore) => {
         createLock()
       }
 
-      function createLock () {
-        store
-          .createWriteStream(lockFile)
-          .on('finish', () => {
-            cb()
-          })
-          .end()
-      }
+      store.exists(lockFile, doesExist)
     },
     unlock: (cb) => {
       store.remove(lockFile, (err) => {

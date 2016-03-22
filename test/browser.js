@@ -21,7 +21,7 @@ idb.deleteDatabase('ipfs/blocks')
 // TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
 describe('IPFS Repo Tests on the Browser', function () {
   before(function (done) {
-    var repoData = []
+    const repoData = []
     repoContext.keys().forEach(function (key) {
       repoData.push({
         key: key.replace('./', ''),
