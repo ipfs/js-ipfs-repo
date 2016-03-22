@@ -2,7 +2,6 @@
 
 'use strict'
 
-require('babel-polyfill')
 const async = require('async')
 const store = require('idb-plus-blob-store')
 const tests = require('./repo-test')

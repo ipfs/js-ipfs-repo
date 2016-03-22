@@ -10,7 +10,7 @@ const fs = require('fs')
 const isNode = !global.window
 
 const fileA = isNode
-  ? fs.readFileSync(process.cwd() + '/tests/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
+  ? fs.readFileSync(process.cwd() + '/test/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
   : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
 module.exports = function (repo) {
