@@ -34,7 +34,7 @@ exports.setUp = (basePath, blobStore, locks) => {
           .on('finish', () => {
             locks.unlock(callback)
           })
-          .end(JSON.stringify(config))
+          .end(JSON.stringify(config, null, 2))
       })
     }
   }
