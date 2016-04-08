@@ -8,7 +8,7 @@
     "test:node": "dignified-test node",
     "test:browser": "dignified-test browser",
     "build": "dignified-build",
-    "coverage": "istanbul cover --print both -- _mocha test/node.js",
+    "coverage": "dignified-coverage",
     "lint": "dignified-lint",
     "release": "dignified-release"
   },
@@ -33,7 +33,6 @@
     "dignified.js": "^1.0.0",
     "fs-blob-store": "^5.2.1",
     "idb-plus-blob-store": "^1.0.0",
-    "istanbul": "^0.4.2",
     "local-storage-blob-store": "0.0.3",
     "lodash": "^4.6.1",
     "ncp": "^2.0.0",

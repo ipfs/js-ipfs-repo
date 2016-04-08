@@ -29,17 +29,6 @@ describe('IPFS Repo Tests on on Node.js', () => {
   })
 
   const fs = require('fs-blob-store')
-  const options = {
-    stores: {
-      keys: fs,
-      config: fs,
-      datastore: fs,
-      // datastoreLegacy: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-      logs: fs,
-      locks: fs,
-      version: fs
-    }
-  }
-  const repo = new IPFSRepo(repoPath, options)
+  const repo = new IPFSRepo(repoPath, {stores: fs})
   require('./repo-test')(repo)
 })

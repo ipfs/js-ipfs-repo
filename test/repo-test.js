@@ -6,16 +6,11 @@ const expect = require('chai').expect
 const base58 = require('bs58')
 const bl = require('bl')
 const fs = require('fs')
+const join = require('path').join
 
-const isNode = !global.window
+const fileA = fs.readFileSync(join(__dirname, 'test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
 
-const fileA = isNode
-  ? fs.readFileSync(process.cwd() + '/test/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
-  : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
-
-const fileAExt = isNode
-  ? fs.readFileSync(process.cwd() + '/test/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext')
-  : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext')
+const fileAExt = fs.readFileSync(join(__dirname, 'test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext'))
 
 module.exports = function (repo) {
   describe('IPFS Repo Tests', function () {
