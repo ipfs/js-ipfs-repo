@@ -13,6 +13,10 @@ const fileA = isNode
   ? fs.readFileSync(process.cwd() + '/test/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
   : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data')
 
+const fileAExt = isNode
+  ? fs.readFileSync(process.cwd() + '/test/test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext')
+  : require('buffer!./test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext')
+
 module.exports = function (repo) {
   describe('IPFS Repo Tests', function () {
     it('check if Repo exists', (done) => {
@@ -109,6 +113,7 @@ module.exports = function (repo) {
 
     describe('datastore', function () {
       const baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
+      const baseExtFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
 
       it('reads block', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
@@ -116,6 +121,16 @@ module.exports = function (repo) {
           .pipe(bl((err, data) => {
             expect(err).to.not.exist
             expect(data.equals(fileA)).to.equal(true)
+            done()
+          }))
+      })
+
+      it('reads block, with custom extension', function (done) {
+        const buf = new Buffer(base58.decode(baseFileHash))
+        repo.datastore.createReadStream(buf, 'ext')
+          .pipe(bl((err, data) => {
+            expect(err).to.not.exist
+            expect(data.equals(fileAExt)).to.equal(true)
             done()
           }))
       })
@@ -132,10 +147,32 @@ module.exports = function (repo) {
         }).end(data)
       })
 
+      it('write a block with custom extension', function (done) {
+        const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
+        const mh = new Buffer(base58.decode(rnd))
+        const data = new Buffer('Oh the data')
+
+        repo.datastore.createWriteStream(mh, 'ext', (err, metadata) => {
+          expect(err).to.not.exist
+          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.ext')
+          done()
+        }).end(data)
+      })
+
       it('block exists', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
 
         repo.datastore.exists(buf, (err, exists) => {
+          expect(err).to.not.exist
+          expect(exists).to.equal(true)
+          done()
+        })
+      })
+
+      it('block exists, with custom extension', function (done) {
+        const buf = new Buffer(base58.decode(baseExtFileHash))
+
+        repo.datastore.exists(buf, 'ext', (err, exists) => {
           expect(err).to.not.exist
           expect(exists).to.equal(true)
           done()
@@ -157,6 +194,18 @@ module.exports = function (repo) {
         repo.datastore.remove(buf, (err) => {
           expect(err).to.not.exist
           repo.datastore.exists(buf, (err, exists) => {
+            expect(err).to.not.exist
+            expect(exists).to.equal(false)
+            done()
+          })
+        })
+      })
+
+      it('remove a block, with custom extension', function (done) {
+        const buf = new Buffer(base58.decode(baseExtFileHash))
+        repo.datastore.remove(buf, 'ext', (err) => {
+          expect(err).to.not.exist
+          repo.datastore.exists(buf, 'ext', (err, exists) => {
             expect(err).to.not.exist
             expect(exists).to.equal(false)
             done()

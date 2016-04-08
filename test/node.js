@@ -12,7 +12,7 @@ const IPFSRepo = require('../src')
 describe('IPFS Repo Tests on on Node.js', () => {
   const testRepoPath = path.join(__dirname, 'test-repo')
   const date = Date.now().toString()
-  const repoPath = testRepoPath + date
+  const repoPath = testRepoPath + '-for-' + date
 
   before((done) => {
     ncp(testRepoPath, repoPath, (err) => {
