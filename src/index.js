@@ -8,7 +8,7 @@ function Repo (repoPath, options) {
 
   // If options.stores is an abstract-blob-store instead of a map, use it for
   // all stores.
-  if (options.stores.prototype && options.stores.prototype.createWriteSteam) {
+  if (options.stores.prototype && options.stores.prototype.createWriteStream) {
     const store = options.stores
     options.stores = {
       keys: store,
