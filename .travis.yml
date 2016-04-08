@@ -11,6 +11,7 @@ before_install:
   - npm i -g npm
   # Workaround for a permissions issue with Travis virtual machine images
 script:
+  - npm run lint
   - npm test
 
 before_script:

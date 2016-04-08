@@ -17,8 +17,8 @@ exports.setUp = (basePath, blobStore, locks) => {
           let result
           try {
             result = JSON.parse(config.toString())
-          } catch (err) {
-            return callback(err)
+          } catch (error) {
+            return callback(error)
           }
           callback(null, result)
         }))
