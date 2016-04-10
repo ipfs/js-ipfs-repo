@@ -50,10 +50,43 @@ IPFS repo exposes a well defined interface by the Repo Spec. Each of the individ
 - The blocks folder is the current version of datastore.
 - The keys repo doesn't exist yet, as the private key is simply stored inside config
 
-## Usage
+# Installation
+
+## npm
+
+```sh
+> npm i ipfs-repo
+```
+
+## Use in Node.js
+
+```JavaScript
+var IPFSRepo = require('ipfs-repo')
+```
+
+## Use in a browser with browserify, webpack or any other bundler
+
+The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust asset management process.
+
+```JavaScript
+var IPFSRepo = require('ipfs-repo')
+```
+
+## Use in a browser Using a script tag
+
+Loading this module through a script tag will make the `Unixfs` obj available in the global namespace.
+
+```html
+<script src="https://npmcdn.com/ipfs-repo/dist/index.min.js"></script>
+<!-- OR -->
+<script src="https://npmcdn.com/ipfs-repo/dist/index.js"></script>
+```
+
+
+# Usage
 
 ```js
-var blobStore = require('abstract-blob-store')  // an in-memory blob store
+var fsBlobStore = require('fs-blob-store')  // an in-memory blob store
 var IPFSRepo = require('js-ipfs-repo')
 var repo = new IPFSRepo('/Users/someone/.ipfs', {
   stores: blobStore
