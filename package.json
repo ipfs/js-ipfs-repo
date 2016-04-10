@@ -2,7 +2,8 @@
   "name": "ipfs-repo",
   "version": "0.5.4",
   "description": "IPFS Repo implementation",
-  "main": "src/index.js",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "test": "dignified-test",
     "test:node": "dignified-test node",
@@ -11,8 +12,8 @@
     "coverage": "dignified-coverage",
     "lint": "dignified-lint",
     "release": "dignified-release",
-    "release-minor": "dignified-release --minor",
-    "release-major": "dignified-release --major"
+    "release-minor": "dignified-release minor",
+    "release-major": "dignified-release major"
 
   },
   "repository": {
