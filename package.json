@@ -37,7 +37,7 @@
     "fs-blob-store": "^5.2.1",
     "idb-plus-blob-store": "^1.0.0",
     "local-storage-blob-store": "0.0.3",
-    "lodash": "^4.11.0",
+    "lodash": "^4.11.1",
     "ncp": "^2.0.0",
     "pre-commit": "^1.1.2",
     "rimraf": "^2.5.2"
