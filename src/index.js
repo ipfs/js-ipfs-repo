@@ -20,6 +20,8 @@ function Repo (repoPath, options) {
     }
   }
 
+  this.path = repoPath
+
   this.init = (config, callback) => {
     this.exists((err, exists) => {
       if (err) { throw err }

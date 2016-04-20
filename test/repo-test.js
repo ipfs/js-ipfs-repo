@@ -22,6 +22,10 @@ module.exports = function (repo) {
       })
     })
 
+    it('exposes the path', () => {
+      expect(typeof repo.path).to.be.equal('string')
+    })
+
     describe('locks', () => {
       it('lock, unlock', (done) => {
         repo.locks.lock((err) => {
