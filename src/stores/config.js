@@ -31,7 +31,7 @@ exports.setUp = (basePath, blobStore, locks) => {
         }
 
         store.createWriteStream('config')
-          .on('finish', () => {
+          .once('finish', () => {
             locks.unlock(callback)
           })
           .end(JSON.stringify(config, null, 2))
