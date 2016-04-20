@@ -11,7 +11,7 @@ exports.setUp = (basePath, blobStore) => {
       function createLock () {
         store
           .createWriteStream(lockFile)
-          .on('finish', () => {
+          .once('finish', () => {
             cb()
           })
           .end()

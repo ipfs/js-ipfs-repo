@@ -28,7 +28,7 @@ exports.setUp = (basePath, blobStore, locks) => {
         }
 
         store.createWriteStream('version')
-          .on('finish', () => {
+          .once('finish', () => {
             locks.unlock(callback)
           })
           .end(value)
