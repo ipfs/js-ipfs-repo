@@ -22,14 +22,6 @@ function Repo (repoPath, options) {
 
   this.path = repoPath
 
-  this.init = (config, callback) => {
-    this.exists((err, exists) => {
-      if (err) { throw err }
-      if (exists) { throw new Error('Repo already exists') }
-      throw new Error('not implemented')
-    })
-  }
-
   this.locks = stores
                   .locks
                   .setUp(repoPath, options.stores.locks)

@@ -122,12 +122,6 @@ Valid keys for `opts` include:
 
 If you use the former form, all of the sub-blob-stores will use the same store.
 
-### repo.init(config, cb)
-
-Initializes the IPFS repository at the repo's `path`. Currently this is a no-op.
-
-Consumes a config object `config` *(TODO: specification?)* By default, init requires the repo not yet exist (by default). Calls the callback `cb(err)` on completion or error.
-
 ### repo.exists(cb)
 
 Check if the repo you are going to access already exists. Calls the callback
