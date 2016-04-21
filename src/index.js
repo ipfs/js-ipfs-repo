@@ -3,6 +3,9 @@
 const stores = require('./stores')
 
 function Repo (repoPath, options) {
+  if (!(this instanceof Repo)) {
+    return new Repo(repoPath, options)
+  }
   if (!options) { throw new Error('missing options param') }
   if (!options.stores) { throw new Error('missing options.stores param') }
 
