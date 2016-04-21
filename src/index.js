@@ -51,16 +51,6 @@ function Repo (repoPath, options) {
   this.datastore = stores
                 .datastore
                 .setUp(repoPath, options.stores.datastore, this.locks)
-
-  // TODO: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-  // this.datastoreLegacy = stores
-  //              .datastore
-  //              .setUp(repoPath, options.stores.datastore, this.locks)
-
-  // TODO: Currently this was also deprecated in go-ipfs
-  // this.logs = stores
-  //               .logs
-  //               .setUp(repoPath, options.stores.logs, this.locks)
 }
 
 exports = module.exports = Repo
