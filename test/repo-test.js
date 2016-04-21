@@ -27,7 +27,7 @@ module.exports = function (repo) {
 
     it('bad repo init 1', (done) => {
       function run () {
-        new Repo()
+        return new Repo()
       }
       expect(run).to.throw(Error)
       done()
@@ -35,7 +35,7 @@ module.exports = function (repo) {
 
     it('bad repo init 2', (done) => {
       function run () {
-        new Repo('', {})
+        return new Repo('', {})
       }
       expect(run).to.throw(Error)
       done()
