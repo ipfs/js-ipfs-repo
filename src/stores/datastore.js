@@ -1,5 +1,8 @@
 'use strict'
 
+const Lock = require('lock')
+const stream = require('stream')
+
 const PREFIX_LENGTH = 8
 
 exports = module.exports
@@ -15,6 +18,7 @@ function multihashToPath (multihash, extension) {
 
 exports.setUp = (basePath, blobStore, locks) => {
   const store = blobStore(basePath + '/blocks')
+  const lock = new Lock()
 
   return {
     createReadStream: (multihash, extension) => {
@@ -29,8 +33,16 @@ exports.setUp = (basePath, blobStore, locks) => {
       }
 
       const path = multihashToPath(multihash, extension)
-      return store.createWriteStream(path, cb)
+      const through = stream.PassThrough()
+
+      lock(path, (release) => {
+        const ws = store.createWriteStream(path, release(cb))
+        through.pipe(ws)
+      })
+
+      return through
     },
+
     exists: (multihash, extension, cb) => {
       if (typeof extension === 'function') {
         cb = extension
@@ -40,6 +52,7 @@ exports.setUp = (basePath, blobStore, locks) => {
       const path = multihashToPath(multihash, extension)
       return store.exists(path, cb)
     },
+
     remove: (multihash, extension, cb) => {
       if (typeof extension === 'function') {
         cb = extension
