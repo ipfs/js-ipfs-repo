@@ -3,6 +3,9 @@
 const stores = require('./stores')
 
 function Repo (repoPath, options) {
+  if (!(this instanceof Repo)) {
+    return new Repo(repoPath, options)
+  }
   if (!options) { throw new Error('missing options param') }
   if (!options.stores) { throw new Error('missing options.stores param') }
 
@@ -21,14 +24,6 @@ function Repo (repoPath, options) {
   }
 
   this.path = repoPath
-
-  this.init = (config, callback) => {
-    this.exists((err, exists) => {
-      if (err) { throw err }
-      if (exists) { throw new Error('Repo already exists') }
-      throw new Error('not implemented')
-    })
-  }
 
   this.locks = stores
                   .locks
@@ -59,16 +54,6 @@ function Repo (repoPath, options) {
   this.datastore = stores
                 .datastore
                 .setUp(repoPath, options.stores.datastore, this.locks)
-
-  // TODO: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-  // this.datastoreLegacy = stores
-  //              .datastore
-  //              .setUp(repoPath, options.stores.datastore, this.locks)
-
-  // TODO: Currently this was also deprecated in go-ipfs
-  // this.logs = stores
-  //               .logs
-  //               .setUp(repoPath, options.stores.logs, this.locks)
 }
 
 exports = module.exports = Repo

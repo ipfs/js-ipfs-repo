@@ -2,6 +2,7 @@
 
 'use strict'
 
+const Repo = require('../src/index')
 const expect = require('chai').expect
 const base58 = require('bs58')
 const bl = require('bl')
@@ -14,6 +15,32 @@ const fileAExt = fs.readFileSync(join(__dirname, 'test-repo/blocks/12207028/1220
 
 module.exports = function (repo) {
   describe('IPFS Repo Tests', function () {
+    it('can init repo /wo new', (done) => {
+      var repo
+      function run () {
+        repo = Repo('foo', { stores: require('abstract-blob-store') })
+      }
+      expect(run).to.not.throw(Error)
+      expect(repo).to.be.an.instanceof(Repo)
+      done()
+    })
+
+    it('bad repo init 1', (done) => {
+      function run () {
+        return new Repo()
+      }
+      expect(run).to.throw(Error)
+      done()
+    })
+
+    it('bad repo init 2', (done) => {
+      function run () {
+        return new Repo('', {})
+      }
+      expect(run).to.throw(Error)
+      done()
+    })
+
     it('check if Repo exists', (done) => {
       repo.exists((err, exists) => {
         expect(err).to.not.exist
