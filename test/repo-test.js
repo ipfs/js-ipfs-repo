@@ -185,6 +185,30 @@ module.exports = function (repo) {
         }).end(data)
       })
 
+      it('write locks', (done) => {
+        const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
+        const mh = new Buffer(base58.decode(rnd))
+        const data = new Buffer('Oh the data')
+
+        let i = 0
+        const finish = () => {
+          i++
+          if (i === 2) done()
+        }
+
+        repo.datastore.createWriteStream(mh, (err, metadata) => {
+          expect(err).to.not.exist
+          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
+          finish()
+        }).end(data)
+
+        repo.datastore.createWriteStream(mh, (err, metadata) => {
+          expect(err).to.not.exist
+          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
+          finish()
+        }).end(data)
+      })
+
       it('block exists', function (done) {
         const buf = new Buffer(base58.decode(baseFileHash))
 
