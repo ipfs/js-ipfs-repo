@@ -4,14 +4,7 @@
 
 const Repo = require('../src/index')
 const expect = require('chai').expect
-const base58 = require('bs58')
-const bl = require('bl')
-const fs = require('fs')
-const join = require('path').join
-
-const fileA = fs.readFileSync(join(__dirname, 'test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.data'))
-
-const fileAExt = fs.readFileSync(join(__dirname, 'test-repo/blocks/12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07606bfdb812303d.ext'))
+const Block = require('ipfs-block')
 
 module.exports = function (repo) {
   describe('IPFS Repo Tests', function () {
@@ -138,112 +131,114 @@ module.exports = function (repo) {
     })
 
     describe('datastore', function () {
-      const baseFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
-      const baseExtFileHash = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVzxTt3qVe'
+      const helloKey = '1220b94d/1220b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9.data'
+      const helloIpldKey = '1220b94d/1220b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9.ipld'
 
-      it('reads block', function (done) {
-        const buf = new Buffer(base58.decode(baseFileHash))
-        repo.datastore.createReadStream(buf)
-          .pipe(bl((err, data) => {
+      describe('.put', () => {
+        it('simple', function (done) {
+          const b = new Block('hello world')
+          repo.datastore.put(b, (err, meta) => {
             expect(err).to.not.exist
-            expect(data.equals(fileA)).to.equal(true)
+            expect(meta.key).to.be.eql(helloKey)
             done()
-          }))
-      })
+          })
+        })
 
-      it('reads block, with custom extension', function (done) {
-        const buf = new Buffer(base58.decode(baseFileHash))
-        repo.datastore.createReadStream(buf, 'ext')
-          .pipe(bl((err, data) => {
+        it('multi write (locks)', (done) => {
+          const b = new Block('hello world')
+
+          let i = 0
+          const finish = () => {
+            i++
+            if (i === 2) done()
+          }
+
+          repo.datastore.put(b, (err, meta) => {
             expect(err).to.not.exist
-            expect(data.equals(fileAExt)).to.equal(true)
+            expect(meta.key).to.equal(helloKey)
+            finish()
+          })
+
+          repo.datastore.put(b, (err, meta) => {
+            expect(err).to.not.exist
+            expect(meta.key).to.equal(helloKey)
+            finish()
+          })
+        })
+
+        it('custom extension', function (done) {
+          const b = new Block('hello world', 'ipld')
+          repo.datastore.put(b, (err, meta) => {
+            expect(err).to.not.exist
+            expect(meta.key).to.be.eql(helloIpldKey)
             done()
-          }))
-      })
+          })
+        })
 
-      it('write a block', function (done) {
-        const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
-        const mh = new Buffer(base58.decode(rnd))
-        const data = new Buffer('Oh the data')
-
-        repo.datastore.createWriteStream(mh, (err, metadata) => {
-          expect(err).to.not.exist
-          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
-          done()
-        }).end(data)
-      })
-
-      it('write a block with custom extension', function (done) {
-        const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
-        const mh = new Buffer(base58.decode(rnd))
-        const data = new Buffer('Oh the data')
-
-        repo.datastore.createWriteStream(mh, 'ext', (err, metadata) => {
-          expect(err).to.not.exist
-          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.ext')
-          done()
-        }).end(data)
-      })
-
-      it('write locks', (done) => {
-        const rnd = 'QmVtU7ths96fMgZ8YSZAbKghyieq7AjxNdcqyVtesthash'
-        const mh = new Buffer(base58.decode(rnd))
-        const data = new Buffer('Oh the data')
-
-        let i = 0
-        const finish = () => {
-          i++
-          if (i === 2) done()
-        }
-
-        repo.datastore.createWriteStream(mh, (err, metadata) => {
-          expect(err).to.not.exist
-          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
-          finish()
-        }).end(data)
-
-        repo.datastore.createWriteStream(mh, (err, metadata) => {
-          expect(err).to.not.exist
-          expect(metadata.key).to.equal('12207028/122070286b9afa6620a66f715c7020d68af3d10e1a497971629c07605f55537ce990.data')
-          finish()
-        }).end(data)
-      })
-
-      it('block exists', function (done) {
-        const buf = new Buffer(base58.decode(baseFileHash))
-
-        repo.datastore.exists(buf, (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(true)
-          done()
+        it('returns an error on invalid block', (done) => {
+          repo.datastore.put('hello', (err) => {
+            expect(err.message).to.be.eql('Invalid block')
+            done()
+          })
         })
       })
 
-      it('block exists, with custom extension', function (done) {
-        const buf = new Buffer(base58.decode(baseExtFileHash))
+      describe('.get', () => {
+        it('simple', (done) => {
+          const b = new Block('hello world')
 
-        repo.datastore.exists(buf, 'ext', (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(true)
-          done()
+          repo.datastore.get(b.key, (err, data) => {
+            expect(err).to.not.exist
+            expect(data).to.be.eql(b)
+
+            done()
+          })
+        })
+
+        it('custom extension', (done) => {
+          const b = new Block('hello world', 'ipld')
+
+          repo.datastore.get(b.key, b.extension, (err, data) => {
+            expect(err).to.not.exist
+            expect(data).to.be.eql(b)
+
+            done()
+          })
+        })
+
+        it('returns an error on invalid block', (done) => {
+          repo.datastore.get(null, (err) => {
+            expect(err.message).to.be.eql('Invalid key')
+            done()
+          })
         })
       })
 
-      it('check for non existent block', function (done) {
-        const buf = new Buffer('random buffer')
+      describe('.has', () => {
+        it('existing block', (done) => {
+          const b = new Block('hello world')
 
-        repo.datastore.exists(buf, (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(false)
-          done()
+          repo.datastore.has(b.key, (err, exists) => {
+            expect(err).to.not.exist
+            expect(exists).to.equal(true)
+            done()
+          })
         })
-      })
 
-      it('remove a block', function (done) {
-        const buf = new Buffer(base58.decode(baseFileHash))
-        repo.datastore.remove(buf, (err) => {
-          expect(err).to.not.exist
-          repo.datastore.exists(buf, (err, exists) => {
+        it('with extension', (done) => {
+          const b = new Block('hello world')
+
+          repo.datastore.has(b.key, 'data', (err, exists) => {
+            expect(err).to.not.exist
+            expect(exists).to.equal(true)
+            done()
+          })
+        })
+
+        it('non existent block', (done) => {
+          const b = new Block('wooot')
+
+          repo.datastore.has(b.key, (err, exists) => {
             expect(err).to.not.exist
             expect(exists).to.equal(false)
             done()
@@ -251,14 +246,32 @@ module.exports = function (repo) {
         })
       })
 
-      it('remove a block, with custom extension', function (done) {
-        const buf = new Buffer(base58.decode(baseExtFileHash))
-        repo.datastore.remove(buf, 'ext', (err) => {
-          expect(err).to.not.exist
-          repo.datastore.exists(buf, 'ext', (err, exists) => {
+      describe('.delete', () => {
+        it('simple', (done) => {
+          const b = new Block('hello world')
+
+          repo.datastore.delete(b.key, (err) => {
             expect(err).to.not.exist
-            expect(exists).to.equal(false)
-            done()
+
+            repo.datastore.has(b.key, (err, exists) => {
+              expect(err).to.not.exist
+              expect(exists).to.equal(false)
+              done()
+            })
+          })
+        })
+
+        it('custom extension', (done) => {
+          const b = new Block('hello world', 'ipld')
+
+          repo.datastore.delete(b.key, b.extension, (err) => {
+            expect(err).to.not.exist
+
+            repo.datastore.has(b.key, b.extension, (err, exists) => {
+              expect(err).to.not.exist
+              expect(exists).to.equal(false)
+              done()
+            })
           })
         })
       })
