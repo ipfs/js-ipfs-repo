@@ -12,8 +12,8 @@
     "coverage": "aegir-coverage",
     "lint": "aegir-lint",
     "release": "aegir-release",
-    "release-minor": "aegir-release minor",
-    "release-major": "aegir-release major",
+    "release-minor": "aegir-release --type minor",
+    "release-major": "aegir-release --type major",
     "coverage-publish": "aegir-coverage publish"
   },
   "repository": {
