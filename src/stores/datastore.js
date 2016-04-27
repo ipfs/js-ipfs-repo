@@ -43,19 +43,21 @@ exports.setUp = (basePath, blobStore, locks) => {
     get: (key, extension, cb) => {
       if (typeof extension === 'function') {
         cb = extension
-        extension = undefined
+        extension = 'data'
       }
 
       if (!key) {
         return cb(new Error('Invalid key'))
       }
 
-      createReadStream(key, 'data')
+      createReadStream(key, extension)
         .pipe(bl((err, data) => {
           if (err) {
             return cb(err)
           }
-
+          if (extension === 'data') {
+            extension = 'protobuf'
+          }
           cb(null, new Block(data, extension))
         }))
     },
@@ -76,6 +78,10 @@ exports.setUp = (basePath, blobStore, locks) => {
         extension = undefined
       }
 
+      if (!key) {
+        return cb(new Error('Invalid key'))
+      }
+
       const path = multihashToPath(key, extension)
       store.exists(path, cb)
     },
@@ -84,6 +90,10 @@ exports.setUp = (basePath, blobStore, locks) => {
       if (typeof extension === 'function') {
         cb = extension
         extension = undefined
+      }
+
+      if (!key) {
+        return cb(new Error('Invalid key'))
       }
 
       const path = multihashToPath(key, extension)

@@ -132,7 +132,7 @@ module.exports = function (repo) {
 
     describe('datastore', function () {
       const helloKey = '1220b94d/1220b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9.data'
-      const helloIpldKey = '1220b94d/1220b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9.ipld'
+      const helloIpldKey = '1220ed12/1220ed12932f3ef94c0792fbc55263968006e867e522cf9faa88274340a2671d4441.ipld'
 
       describe('.put', () => {
         it('simple', function (done) {
@@ -167,7 +167,7 @@ module.exports = function (repo) {
         })
 
         it('custom extension', function (done) {
-          const b = new Block('hello world', 'ipld')
+          const b = new Block('hello world 2', 'ipld')
           repo.datastore.put(b, (err, meta) => {
             expect(err).to.not.exist
             expect(meta.key).to.be.eql(helloIpldKey)
@@ -196,7 +196,7 @@ module.exports = function (repo) {
         })
 
         it('custom extension', (done) => {
-          const b = new Block('hello world', 'ipld')
+          const b = new Block('hello world 2', 'ipld')
 
           repo.datastore.get(b.key, b.extension, (err, data) => {
             expect(err).to.not.exist
