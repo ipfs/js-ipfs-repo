@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "IPFS Repo implementation",
   "main": "lib/index.js",
   "browser": "src/index.js",
