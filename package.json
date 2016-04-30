@@ -3,7 +3,7 @@
   "version": "0.7.3",
   "description": "IPFS Repo implementation",
   "main": "lib/index.js",
-  "jsnext:main": "src/index.js",
+  "browser": "src/index.js",
   "scripts": {
     "test": "aegir-test",
     "test:node": "aegir-test node",
