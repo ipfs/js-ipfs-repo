@@ -45,7 +45,7 @@
     "babel-runtime": "^6.6.1",
     "bl": "^1.1.2",
     "concat-stream": "^1.5.1",
-    "ipfs-block": "^0.2.2",
+    "ipfs-block": "^0.3.0",
     "lock": "^0.1.2",
     "lockfile": "^1.0.1",
     "multihashes": "^0.2.1",
