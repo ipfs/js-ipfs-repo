@@ -30,13 +30,7 @@ function Repo (repoPath, options) {
                   .setUp(repoPath, options.stores.locks)
 
   this.exists = (callback) => {
-    this.version.exists((err, exists) => {
-      if (err) {
-        callback(new Error('repo does not exist'), false)
-      } else {
-        callback(null, exists)
-      }
-    })
+    this.version.exists(callback)
   }
 
   this.version = stores
