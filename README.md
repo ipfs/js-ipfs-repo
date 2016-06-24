@@ -1,20 +1,44 @@
-IPFS Repo JavaScript Implementation
-===================================
-
-> Implementation of the IPFS repo spec (https://github.com/ipfs/specs/tree/master/repo) in JavaScript
+# IPFS Repo JavaScript Implementation
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Build Status](https://travis-ci.org/ipfs/js-ipfs-repo.svg)](https://travis-ci.org/ipfs/js-ipfs-repo)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs-repo/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs-repo?branch=master) [![Dependency Status](https://david-dm.org/diasdavid/js-peer-id.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
-## Description
+> Implementation of the IPFS repo spec (https://github.com/ipfs/specs/tree/master/repo) in JavaScript
 
 This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/tree/master/repo) in JavaScript.
 
-## Architecture
+## Table of Contents
+
+- [Background](#background)
+  - [Good to know (historical context)](#good-to-know-historical-context)
+- [Install](#install)
+  - [npm](#npm)
+  - [Use in Node.js](#use-in-nodejs)
+  - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
+  - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
+- [Usage](#usage)
+- [API](#api)
+  - [var repo = new IPFSRepo(path, opts)](#var-repo--new-ipfsrepopath-opts)
+  - [repo.exists(cb)](#repoexistscb)
+  - [repo.version.get(cb(err, version))](#repoversiongetcberr-version)
+  - [repo.version.set(version, cb(err))](#repoversionsetversion-cberr)
+  - [repo.config.get(cb(err, config))](#repoconfiggetcberr-config)
+  - [repo.config.set(config, cb(err))](#repoconfigsetconfig-cberr)
+  - [repo.keys](#repokeys)
+  - [repo.datastore.read(key, cb(err, buffer))](#repodatastorereadkey-cberr-buffer)
+  - [repo.datastore.write(buffer, cb(err, buffer))](#repodatastorewritebuffer-cberr-buffer)
+  - [repo.datastoreLegacy](#repodatastorelegacy)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Background
+
+Here is the architectural reasoning for this repo:
 
 ```bash
 ┌─────────────────────────────────┐
@@ -48,13 +72,47 @@ more. Each of the individual repos has an interface defined by
 enables us to make IPFS Repo portable (running on Node.js vs the browser) and
 accept different types of storage mechanisms for each repo (fs, levelDB, etc).
 
-## Good to know (historical context)
+### Good to know (historical context)
 
 - The datastore folder holds the legacy version of datastore, still built in levelDB, there is a current endeavour of pushing it to fs completely.
 - The blocks folder is the current version of datastore.
 - The keys repo doesn't exist yet, as the private key is simply stored inside config
 
-# Example
+## Install
+
+### npm
+
+```sh
+> npm i ipfs-repo
+```
+
+### Use in Node.js
+
+```JavaScript
+var IPFSRepo = require('ipfs-repo')
+```
+
+### Use in a browser with browserify, webpack or any other bundler
+
+The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust asset management process.
+
+```JavaScript
+var IPFSRepo = require('ipfs-repo')
+```
+
+### Use in a browser Using a script tag
+
+Loading this module through a script tag will make the `Unixfs` obj available in the global namespace.
+
+```html
+<script src="https://npmcdn.com/ipfs-repo/dist/index.min.js"></script>
+<!-- OR -->
+<script src="https://npmcdn.com/ipfs-repo/dist/index.js"></script>
+```
+
+## Usage
+
+Example:
 
 ```js
 var fsBlobStore = require('fs-blob-store')  // an in-memory blob store
@@ -124,42 +182,18 @@ Read and write buffers to/from the repo's block store.
 
 **WIP**
 
-# Installation
-
-## npm
-
-```sh
-> npm i ipfs-repo
-```
-
-## Use in Node.js
-
-```JavaScript
-var IPFSRepo = require('ipfs-repo')
-```
-
-## Use in a browser with browserify, webpack or any other bundler
-
-The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust asset management process.
-
-```JavaScript
-var IPFSRepo = require('ipfs-repo')
-```
-
-## Use in a browser Using a script tag
-
-Loading this module through a script tag will make the `Unixfs` obj available in the global namespace.
-
-```html
-<script src="https://npmcdn.com/ipfs-repo/dist/index.min.js"></script>
-<!-- OR -->
-<script src="https://npmcdn.com/ipfs-repo/dist/index.js"></script>
-```
-
 ## Contribute
 
 There are some ways you can make this module better:
 
 - Consult our [open issues](https://github.com/ipfs/js-ipfs-repo/issues) and take on one of them
 - Help our tests reach 100% coverage!
+
+This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
+
+## License
+
+[MIT](LICENSE)
 
