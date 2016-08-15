@@ -1,53 +1,56 @@
 'use strict'
 
+const assert = require('assert')
+
 const stores = require('./stores')
 
-function Repo (repoPath, options) {
-  if (!(this instanceof Repo)) {
-    return new Repo(repoPath, options)
-  }
-  if (!options) { throw new Error('missing options param') }
-  if (!options.stores) { throw new Error('missing options.stores param') }
+module.exports = class Repo {
+  constructor (repoPath, options) {
+    assert.equal(typeof repoPath, 'string', 'missing repoPath')
+    assert(options, 'missing options')
+    assert(options.stores, 'missing options.stores')
 
-  // If options.stores is an abstract-blob-store instead of a map, use it for
-  // all stores.
-  if (options.stores.prototype && options.stores.prototype.createWriteStream) {
-    const store = options.stores
-    options.stores = {
+    this.path = repoPath
+
+    const blobStores = initializeBlobStores(options.stores)
+
+    const setup = (name, needs) => {
+      needs = needs || {}
+      const args = [repoPath, blobStores[name]]
+      if (needs.locks) {
+        args.push(this.locks)
+      }
+
+      if (needs.config) {
+        args.push(this.config)
+      }
+
+      return stores[name].setUp.apply(stores[name], args)
+    }
+
+    this.locks = setup('locks')
+    this.version = setup('version', {locks: true})
+    this.config = setup('config', {locks: true})
+    this.keys = setup('keys', {locks: true, config: true})
+    this.blockstore = setup('blockstore', {locks: true})
+  }
+
+  exists (callback) {
+    this.version.exists(callback)
+  }
+}
+
+function initializeBlobStores (store) {
+  if (store.constructor) {
+    return {
       keys: store,
       config: store,
-      datastore: store,
+      blockstore: store,
       logs: store,
       locks: store,
       version: store
     }
   }
 
-  this.path = repoPath
-
-  this.locks = stores
-                  .locks
-                  .setUp(repoPath, options.stores.locks)
-
-  this.exists = (callback) => {
-    this.version.exists(callback)
-  }
-
-  this.version = stores
-                   .version
-                   .setUp(repoPath, options.stores.version, this.locks)
-
-  this.config = stores
-                .config
-                .setUp(repoPath, options.stores.config, this.locks)
-
-  this.keys = stores
-                .keys
-                .setUp(repoPath, options.stores.keys, this.locks, this.config)
-
-  this.datastore = stores
-                .datastore
-                .setUp(repoPath, options.stores.datastore, this.locks)
+  return store
 }
-
-exports = module.exports = Repo

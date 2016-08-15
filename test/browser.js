@@ -2,11 +2,13 @@
 
 'use strict'
 
-const eachSeries = require('async/eachSeries')
-const store = require('idb-plus-blob-store')
-const tests = require('./repo-test')
+const series = require('run-series')
+const Store = require('idb-pull-blob-store')
 const _ = require('lodash')
+const pull = require('pull-stream')
+
 const IPFSRepo = require('../src')
+const tests = require('./repo-test')
 
 const repoContext = require.context('buffer!./test-repo', true)
 
@@ -29,10 +31,10 @@ describe('IPFS Repo Tests on the Browser', function () {
       })
     })
 
-    const mainBlob = store('ipfs')
-    const blocksBlob = store('ipfs/blocks')
+    const mainBlob = new Store('ipfs')
+    const blocksBlob = new Store('ipfs/blocks')
 
-    eachSeries(repoData, (file, cb) => {
+    series(repoData.map((file) => (cb) => {
       if (_.startsWith(file.key, 'datastore/')) {
         return cb()
       }
@@ -42,23 +44,13 @@ describe('IPFS Repo Tests on the Browser', function () {
 
       const key = blocks ? file.key.replace(/^blocks\//, '') : file.key
 
-      blob.createWriteStream({
-        key: key
-      }).end(file.value, cb)
-    }, done)
+      pull(
+        pull.values([file.value]),
+        blob.write(key, cb)
+      )
+    }), done)
   })
 
-  const options = {
-    stores: {
-      keys: store,
-      config: store,
-      datastore: store,
-      // datastoreLegacy: needs https://github.com/ipfs/js-ipfs-repo/issues/6#issuecomment-164650642
-      logs: store,
-      locks: store,
-      version: store
-    }
-  }
-  const repo = new IPFSRepo('ipfs', options)
+  const repo = new IPFSRepo('ipfs', {stores: Store})
   tests(repo)
 })
