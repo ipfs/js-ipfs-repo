@@ -2,7 +2,7 @@
 
 'use strict'
 
-const async = require('async')
+const eachSeries = require('async/eachSeries')
 const store = require('idb-plus-blob-store')
 const tests = require('./repo-test')
 const _ = require('lodash')
@@ -32,7 +32,7 @@ describe('IPFS Repo Tests on the Browser', function () {
     const mainBlob = store('ipfs')
     const blocksBlob = store('ipfs/blocks')
 
-    async.eachSeries(repoData, (file, cb) => {
+    eachSeries(repoData, (file, cb) => {
       if (_.startsWith(file.key, 'datastore/')) {
         return cb()
       }
