@@ -30,7 +30,7 @@
   "homepage": "https://github.com/ipfs/js-ipfs-repo",
   "devDependencies": {
     "abstract-blob-store": "^3.2.0",
-    "aegir": "^5.0.1",
+    "aegir": "^7.0.0",
     "async": "^2.0.1",
     "buffer-loader": "^0.0.1",
     "chai": "^3.5.0",
