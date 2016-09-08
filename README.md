@@ -30,9 +30,9 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
   - [repo.config.get(cb(err, config))](#repoconfiggetcberr-config)
   - [repo.config.set(config, cb(err))](#repoconfigsetconfig-cberr)
   - [repo.keys](#repokeys)
-  - [repo.datastore.read(key, cb(err, buffer))](#repodatastorereadkey-cberr-buffer)
-  - [repo.datastore.write(buffer, cb(err, buffer))](#repodatastorewritebuffer-cberr-buffer)
-  - [repo.datastoreLegacy](#repodatastorelegacy)
+  - [repo.blockstore.putStream()](#)
+  - [repo.blockstore.getStream(key, extension)](#)
+  - [repo.datastore](#repodatastore)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -45,7 +45,7 @@ Here is the architectural reasoning for this repo:
 │ interface defined by Repo Spec  │
 ├─────────────────────────────────┤
 │                                 │                                  ┌──────────────────────┐
-│                                 │                                  │ abstract-blob-store  │
+│                                 │                                  │ interface-pull-blob-store  │
 │           IPFS REPO             │─────────────────────────────────▶│     interface        │
 │                                 │                                  ├──────────────────────┤
 │                                 │                                  │      locks           │
@@ -60,15 +60,15 @@ Here is the architectural reasoning for this repo:
 │ interface │   │ interface │   │ interface │   │ interface │   │ interface │   │ interface │
 ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤
 │           │   │           │   │           │   │           │   │           │   │           │
-│   keys    │   │  config   │   │ datastore │   │ datastore │   │   logs    │   │  version  │
-│           │   │           │   │           │   │ -legacy   │   │           │   │           │
+│   keys    │   │  config   │   │ blockstore │   │ datastore │   │   logs    │   │  version  │
+│           │   │           │   │           │   │           │   │           │   │           │
 └───────────┘   └───────────┘   └───────────┘   └───────────┘   └───────────┘   └───────────┘
 ```
 
 This provides a well defined interface for creating and interacting with an IPFS
 Repo backed by a group of abstract backends for keys, configuration, logs, and
 more. Each of the individual repos has an interface defined by
-[abstract-blob-store](https://github.com/maxogden/abstract-blob-store): this
+[interface-pull-blob-store](https://github.com/ipfs/interface-pull-blob-store): this
 enables us to make IPFS Repo portable (running on Node.js vs the browser) and
 accept different types of storage mechanisms for each repo (fs, levelDB, etc).
 
@@ -136,7 +136,7 @@ Creates a **reference** to an IPFS repository at the path `path`. This does
 Valid keys for `opts` include:
 
 - `stores`: either an
-  [abstract-blob-store](https://github.com/maxogden/abstract-blob-store), or a
+  [interface-pull-blob-store](https://github.com/ipfs/interface-pull-blob-store), or a
   map of the form
 
 ```js
@@ -173,12 +173,14 @@ Read/write keys inside the repo. This feature will be expanded once
 [IPRS](https://github.com/ipfs/specs/tree/master/records) and
 [KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and implemented on go-ipfs.
 
-### repo.datastore.read(key, cb(err, buffer))
-### repo.datastore.write(buffer, cb(err, buffer))
+### repo.blockstore.putStream()
+### repo.datastore.getStream(key, extension)
+### repo.datastore.has(key, extension, cb)
+### repo.datastore.delete(key, extension, cb)
 
 Read and write buffers to/from the repo's block store.
 
-### repo.datastoreLegacy
+### repo.datastore
 
 **WIP**
 

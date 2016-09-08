@@ -6,6 +6,7 @@ const expect = require('chai').expect
 const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const path = require('path')
+const Store = require('fs-pull-blob-store')
 
 const IPFSRepo = require('../src')
 
@@ -28,7 +29,6 @@ describe('IPFS Repo Tests on on Node.js', () => {
     })
   })
 
-  const fs = require('fs-blob-store')
-  const repo = new IPFSRepo(repoPath, {stores: fs})
+  const repo = new IPFSRepo(repoPath, {stores: Store})
   require('./repo-test')(repo)
 })

@@ -1,26 +1,26 @@
 'use strict'
 
+const pull = require('pull-stream')
+const series = require('run-series')
+
 exports = module.exports
 
-exports.setUp = (basePath, blobStore) => {
-  const store = blobStore(basePath)
+exports.setUp = (basePath, BlobStore) => {
+  const store = new BlobStore(basePath)
   const lockFile = 'repo.lock'
 
   return {
-    lock: function (cb) {
+    lock (callback) {
       function createLock () {
-        store
-          .createWriteStream(lockFile)
-          .once('finish', () => {
-            cb()
-          })
-          .end()
+        pull(
+          pull.values([new Buffer('LOCK')]),
+          store.write(lockFile, callback)
+        )
       }
 
       function doesExist (err, exists) {
-        if (err) {
-          return cb(err)
-        }
+        if (err) return callback(err)
+
         if (exists) {
           // default 100ms
           setTimeout(function () {
@@ -28,23 +28,26 @@ exports.setUp = (basePath, blobStore) => {
           }, 100)
           return
         }
+
         createLock()
       }
 
       store.exists(lockFile, doesExist)
     },
-    unlock: (cb) => {
-      store.remove(lockFile, (err) => {
-        if (err) { return cb(err) }
-        store.exists(lockFile, (err, exists) => {
-          if (err) { return cb(err) }
 
-          store.exists(lockFile, (err, exists) => {
-            if (err) { return cb(err) }
-            cb()
-          })
+    unlock (callback) {
+      series([
+        (cb) => store.remove(lockFile, cb),
+        (cb) => store.exists(lockFile, (err, exists) => {
+          if (err) return cb(err)
+
+          if (exists) {
+            return cb(new Error('failed to remove lock'))
+          }
+
+          cb()
         })
-      })
+      ], callback)
     }
   }
 }
