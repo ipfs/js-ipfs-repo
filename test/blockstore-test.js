@@ -109,7 +109,7 @@ module.exports = (repo) => {
 
       it('massive read', (done) => {
         parallel(_.range(20 * 100).map((i) => (cb) => {
-          const j = i % 20
+          const j = i % blockCollection.length
           pull(
             repo.blockstore.getStream(blockCollection[j].key),
             pull.collect((err, meta) => {
