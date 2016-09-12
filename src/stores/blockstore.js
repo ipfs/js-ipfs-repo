@@ -7,7 +7,7 @@ const base32 = require('base32.js')
 const path = require('path')
 const write = require('pull-write')
 const parallel = require('run-parallel')
-const through = require('pull-through')
+const defer = require('pull-defer/source')
 
 const PREFIX_LENGTH = 5
 
@@ -52,19 +52,25 @@ exports.setUp = (basePath, BlobStore, locks) => {
       }
 
       const p = multihashToPath(key, extension)
+      const deferred = defer()
 
-      const ext = extension === 'data' ? 'protobuf' : extension
-      let data = []
+      lock(p, (release) => {
+        const ext = extension === 'data' ? 'protobuf' : extension
+        pull(
+          store.read(p),
+          pull.collect(release((err, data) => {
+            if (err) {
+              return deferred.abort(err)
+            }
 
-      return pull(
-        store.read(p),
-        through(function (values) {
-          data = data.concat(values)
-        }, function () {
-          this.queue(new Block(Buffer.concat(data), ext))
-          this.queue(null)
-        })
-      )
+            deferred.resolve(pull.values([
+              new Block(Buffer.concat(data), ext)
+            ]))
+          }))
+        )
+      })
+
+      return deferred
     },
 
     putStream () {
@@ -75,7 +81,10 @@ exports.setUp = (basePath, BlobStore, locks) => {
       const sink = write((blocks, cb) => {
         parallel(blocks.map((block) => (cb) => {
           writeBlock(block, (err, meta) => {
-            if (err) return cb(err)
+            if (err) {
+              return cb(err)
+            }
+
             if (push) {
               const read = push
               push = null
@@ -94,7 +103,9 @@ exports.setUp = (basePath, BlobStore, locks) => {
 
       const source = (end, cb) => {
         if (end) ended = end
-        if (ended) return cb(ended)
+        if (ended) {
+          return cb(ended)
+        }
 
         if (written.length) {
           return cb(null, written.shift())
