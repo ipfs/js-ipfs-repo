@@ -5,15 +5,15 @@
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
-    "test": "aegir-test",
+    "test": "PHANTOM=off aegir-test",
     "test:node": "aegir-test node",
-    "test:browser": "aegir-test browser",
+    "test:browser": "PHANTOM=off aegir-test browser",
     "build": "aegir-build",
-    "coverage": "aegir-coverage",
     "lint": "aegir-lint",
-    "release": "aegir-release",
-    "release-minor": "aegir-release --type minor",
-    "release-major": "aegir-release --type major",
+    "release": "PHANTOM=off aegir-release",
+    "release-minor": "PHANTOM=off aegir-release --type minor",
+    "release-major": "PHANTOM=off aegir-release --type major",
+    "coverage": "aegir-coverage",
     "coverage-publish": "aegir-coverage publish"
   },
   "repository": {
@@ -42,6 +42,7 @@
     "rimraf": "^2.5.4"
   },
   "dependencies": {
+    "async": "^2.0.1",
     "babel-runtime": "^6.11.6",
     "base32.js": "^0.1.0",
     "ipfs-block": "^0.4.0",
@@ -50,8 +51,6 @@
     "pull-defer": "^0.2.2",
     "pull-stream": "^3.4.5",
     "pull-write": "^1.1.0",
-    "run-parallel": "^1.1.6",
-    "run-series": "^1.1.4",
     "safe-buffer": "^5.0.1"
   },
   "license": "MIT",

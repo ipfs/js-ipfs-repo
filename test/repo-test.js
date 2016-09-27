@@ -2,7 +2,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const series = require('run-series')
+const series = require('async/series')
 
 const Repo = require('../src/index')
 
