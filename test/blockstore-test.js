@@ -12,15 +12,15 @@ module.exports = (repo) => {
   describe('blockstore', () => {
     const helloKey = 'CIQLS/CIQLSTJHXGJU2PQIUUXFFV62PWV7VREE57RXUU4A52IIR55M4LX432I.data'
 
-    const helloIpldKey = 'CIQO2/CIQO2EUTF47PSTAHSL54KUTDS2AAN2DH4URM7H5KRATUGQFCM4OUIQI.data'
-
     const blockCollection = _.range(100).map((i) => new Block(new Buffer(`hello-${i}-${Math.random()}`)))
 
     describe('.putStream', () => {
       it('simple', (done) => {
         const b = new Block('hello world')
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect((err, meta) => {
             expect(err).to.not.exist
@@ -43,13 +43,17 @@ module.exports = (repo) => {
         }
 
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect(finish)
         )
 
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect(finish)
         )
@@ -59,6 +63,9 @@ module.exports = (repo) => {
         parallel(_.range(50).map(() => (cb) => {
           pull(
             pull.values(blockCollection),
+            pull.map((b) => {
+              return { data: b.data, key: b.key() }
+            }),
             repo.blockstore.putStream(),
             pull.collect((err, meta) => {
               expect(err).to.not.exist
@@ -67,19 +74,6 @@ module.exports = (repo) => {
             })
           )
         }), done)
-      })
-
-      it('custom extension', function (done) {
-        const b = new Block('hello world 2')
-        pull(
-          pull.values([b]),
-          repo.blockstore.putStream(),
-          pull.collect((err, meta) => {
-            expect(err).to.not.exist
-            expect(meta[0].key).to.be.eql(helloIpldKey)
-            done()
-          })
-        )
       })
 
       it('returns an error on invalid block', (done) => {

@@ -1,23 +1,23 @@
 'use strict'
 
 const Block = require('ipfs-block')
-const pull = require('pull-stream')
 const Lock = require('lock')
 const base32 = require('base32.js')
 const path = require('path')
-const pullWrite = require('pull-write')
 const parallel = require('run-parallel')
+const pull = require('pull-stream')
+const pullWrite = require('pull-write')
 const pullDefer = require('pull-defer/source')
 
 const PREFIX_LENGTH = 5
+const EXTENSION = 'data'
 
 exports = module.exports
 
 function multihashToPath (multihash) {
-  const extension = 'data'
   const encoder = new base32.Encoder()
   const hash = encoder.write(multihash).finalize()
-  const filename = `${hash}.${extension}`
+  const filename = `${hash}.${EXTENSION}`
   const folder = filename.slice(0, PREFIX_LENGTH)
 
   return path.join(folder, filename)
@@ -27,17 +27,19 @@ exports.setUp = (basePath, BlobStore, locks) => {
   const store = new BlobStore(basePath + '/blocks')
   const lock = new Lock()
 
-  function writeBlock (block, callback) {
-    if (!block || !block.data) {
+  // blockBlob is an object with:
+  // { data: <>, key: <> }
+  function writeBlock (blockBlob, callback) {
+    if (!blockBlob || !blockBlob.data) {
       return callback(new Error('Invalid block'))
     }
 
-    const key = multihashToPath(block.key())
+    const key = multihashToPath(blockBlob.key)
 
     lock(key, (release) => {
       pull(
         pull.values([
-          block.data
+          blockBlob.data
         ]),
         store.write(key, release(released))
       )
@@ -84,18 +86,63 @@ exports.setUp = (basePath, BlobStore, locks) => {
       return deferred
     },
 
-    // returns a pull-stream to write blocks into
-    // TODO use a more explicit name, given that getStream is just for
-    // one block, multiple blocks should have different naming
+    /*
+     * putStream - write multiple blocks
+     *
+     * returns a pull-stream that expects blockBlobs
+     *
+     * NOTE: blockBlob is a { data: <>, key: <> } and not a
+     * ipfs-block instance. This is because Block instances support
+     * several types of hashing and it is up to the BlockService
+     * to understand the right one to use (given the CID)
+     */
+    // TODO
+    // consider using a more explicit name, this can cause some confusion
+    // since the natural association is
+    //   getStream - createReadStream - read one
+    //   putStream - createWriteStream - write one
+    // where in fact it is:
+    //   getStream - createReadStream - read one (the same)
+    //   putStream - createFilesWriteStream = write several
+    //
     putStream () {
       let ended = false
       let written = []
       let push = null
 
-      const sink = pullWrite((blocks, cb) => {
-        const tasks = blocks.map((block) => {
+      const sink = pullWrite((blockBlobs, cb) => {
+        const tasks = writeTasks(blockBlobs)
+        parallel(tasks, cb)
+      }, null, 100, (err) => {
+        ended = err || true
+        if (push) {
+          push(ended)
+        }
+      })
+
+      const source = (end, cb) => {
+        if (end) {
+          ended = end
+        }
+        if (ended) {
+          return cb(ended)
+        }
+
+        if (written.length) {
+          return cb(null, written.shift())
+        }
+
+        push = cb
+      }
+
+      /*
+       * Creates individual tasks to write each block blob that can be
+       * exectured in parallel
+       */
+      function writeTasks (blockBlobs) {
+        return blockBlobs.map((blockBlob) => {
           return (cb) => {
-            writeBlock(block, (err, meta) => {
+            writeBlock(blockBlob, (err, meta) => {
               if (err) {
                 return cb(err)
               }
@@ -112,32 +159,12 @@ exports.setUp = (basePath, BlobStore, locks) => {
             })
           }
         })
-
-        parallel(tasks, cb)
-      }, null, 100, (err) => {
-        ended = err || true
-        if (push) {
-          push(ended)
-        }
-      })
-
-      // TODO ??Why does a putStream need to be a source as well??
-      const source = (end, cb) => {
-        if (end) {
-          ended = end
-        }
-        if (ended) {
-          return cb(ended)
-        }
-
-        if (written.length) {
-          return cb(null, written.shift())
-        }
-
-        push = cb
       }
 
-      return { source: source, sink: sink }
+      return {
+        source: source,
+        sink: sink
+      }
     },
 
     has (key, callback) {
