@@ -34,7 +34,7 @@
     "chai": "^3.5.0",
     "fs-pull-blob-store": "^0.3.0",
     "idb-pull-blob-store": "^0.4.0",
-    "interface-pull-blob-store": "^0.5.0",
+    "interface-pull-blob-store": "^0.6.0",
     "lodash": "^4.15.0",
     "multihashes": "^0.2.2",
     "ncp": "^2.0.0",
