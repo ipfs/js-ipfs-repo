@@ -1,23 +1,23 @@
 'use strict'
 
 const Block = require('ipfs-block')
-const pull = require('pull-stream')
 const Lock = require('lock')
 const base32 = require('base32.js')
 const path = require('path')
-const write = require('pull-write')
 const parallel = require('run-parallel')
-const defer = require('pull-defer/source')
+const pull = require('pull-stream')
+const pullWrite = require('pull-write')
+const pullDefer = require('pull-defer/source')
 
 const PREFIX_LENGTH = 5
+const EXTENSION = 'data'
 
 exports = module.exports
 
-function multihashToPath (multihash, extension) {
-  extension = extension || 'data'
+function multihashToPath (multihash) {
   const encoder = new base32.Encoder()
   const hash = encoder.write(multihash).finalize()
-  const filename = `${hash}.${extension}`
+  const filename = `${hash}.${EXTENSION}`
   const folder = filename.slice(0, PREFIX_LENGTH)
 
   return path.join(folder, filename)
@@ -27,82 +27,103 @@ exports.setUp = (basePath, BlobStore, locks) => {
   const store = new BlobStore(basePath + '/blocks')
   const lock = new Lock()
 
-  function writeBlock (block, cb) {
-    if (!block || !block.data) {
-      return cb(new Error('Invalid block'))
+  // blockBlob is an object with:
+  // { data: <>, key: <> }
+  function writeBlock (blockBlob, callback) {
+    if (!blockBlob || !blockBlob.data) {
+      return callback(new Error('Invalid block'))
     }
 
-    const key = multihashToPath(block.key, block.extension)
+    const key = multihashToPath(blockBlob.key)
 
-    lock(key, (release) => pull(
-      pull.values([block.data]),
-      store.write(key, release((err) => {
-        if (err) {
-          return cb(err)
-        }
-        cb(null, {key})
-      }))
-    ))
+    lock(key, (release) => {
+      pull(
+        pull.values([
+          blockBlob.data
+        ]),
+        store.write(key, release(released))
+      )
+    })
+
+    // called once the lock is released
+    function released (err) {
+      if (err) {
+        return callback(err)
+      }
+      callback(null, { key: key })
+    }
   }
 
   return {
-    getStream (key, extension) {
+    // returns a pull-stream of one block being read
+    getStream (key) {
       if (!key) {
         return pull.error(new Error('Invalid key'))
       }
 
-      const p = multihashToPath(key, extension)
-      const deferred = defer()
+      const blockPath = multihashToPath(key)
+      const deferred = pullDefer()
 
-      lock(p, (release) => {
-        const ext = extension === 'data' ? 'protobuf' : extension
+      lock(blockPath, (release) => {
         pull(
-          store.read(p),
-          pull.collect(release((err, data) => {
-            if (err) {
-              return deferred.abort(err)
-            }
-
-            deferred.resolve(pull.values([
-              new Block(Buffer.concat(data), ext)
-            ]))
-          }))
+          store.read(blockPath),
+          pull.collect(release(released))
         )
       })
+
+      function released (err, data) {
+        if (err) {
+          return deferred.abort(err)
+        }
+
+        deferred.resolve(
+          pull.values([
+            new Block(Buffer.concat(data))
+          ])
+        )
+      }
 
       return deferred
     },
 
+    /*
+     * putStream - write multiple blocks
+     *
+     * returns a pull-stream that expects blockBlobs
+     *
+     * NOTE: blockBlob is a { data: <>, key: <> } and not a
+     * ipfs-block instance. This is because Block instances support
+     * several types of hashing and it is up to the BlockService
+     * to understand the right one to use (given the CID)
+     */
+    // TODO
+    // consider using a more explicit name, this can cause some confusion
+    // since the natural association is
+    //   getStream - createReadStream - read one
+    //   putStream - createWriteStream - write one
+    // where in fact it is:
+    //   getStream - createReadStream - read one (the same)
+    //   putStream - createFilesWriteStream = write several
+    //
     putStream () {
       let ended = false
       let written = []
       let push = null
 
-      const sink = write((blocks, cb) => {
-        parallel(blocks.map((block) => (cb) => {
-          writeBlock(block, (err, meta) => {
-            if (err) {
-              return cb(err)
-            }
-
-            if (push) {
-              const read = push
-              push = null
-              read(null, meta)
-              return cb()
-            }
-
-            written.push(meta)
-            cb()
-          })
-        }), cb)
+      const sink = pullWrite((blockBlobs, cb) => {
+        const tasks = writeTasks(blockBlobs)
+        parallel(tasks, cb)
       }, null, 100, (err) => {
         ended = err || true
-        if (push) push(ended)
+        if (push) {
+          push(ended)
+        }
       })
 
       const source = (end, cb) => {
-        if (end) ended = end
+        if (end) {
+          ended = end
+        }
         if (ended) {
           return cb(ended)
         }
@@ -114,35 +135,54 @@ exports.setUp = (basePath, BlobStore, locks) => {
         push = cb
       }
 
-      return {source, sink}
+      /*
+       * Creates individual tasks to write each block blob that can be
+       * exectured in parallel
+       */
+      function writeTasks (blockBlobs) {
+        return blockBlobs.map((blockBlob) => {
+          return (cb) => {
+            writeBlock(blockBlob, (err, meta) => {
+              if (err) {
+                return cb(err)
+              }
+
+              if (push) {
+                const read = push
+                push = null
+                read(null, meta)
+                return cb()
+              }
+
+              written.push(meta)
+              cb()
+            })
+          }
+        })
+      }
+
+      return {
+        source: source,
+        sink: sink
+      }
     },
 
-    has (key, extension, cb) {
-      if (typeof extension === 'function') {
-        cb = extension
-        extension = undefined
-      }
-
+    has (key, callback) {
       if (!key) {
-        return cb(new Error('Invalid key'))
+        return callback(new Error('Invalid key'))
       }
 
-      const p = multihashToPath(key, extension)
-      store.exists(p, cb)
+      const blockPath = multihashToPath(key)
+      store.exists(blockPath, callback)
     },
 
-    delete (key, extension, cb) {
-      if (typeof extension === 'function') {
-        cb = extension
-        extension = undefined
-      }
-
+    delete (key, callback) {
       if (!key) {
-        return cb(new Error('Invalid key'))
+        return callback(new Error('Invalid key'))
       }
 
-      const p = multihashToPath(key, extension)
-      store.remove(p, cb)
+      const blockPath = multihashToPath(key)
+      store.remove(blockPath, callback)
     }
   }
 }

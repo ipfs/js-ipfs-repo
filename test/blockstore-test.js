@@ -11,14 +11,16 @@ const _ = require('lodash')
 module.exports = (repo) => {
   describe('blockstore', () => {
     const helloKey = 'CIQLS/CIQLSTJHXGJU2PQIUUXFFV62PWV7VREE57RXUU4A52IIR55M4LX432I.data'
-    const helloIpldKey = 'CIQO2/CIQO2EUTF47PSTAHSL54KUTDS2AAN2DH4URM7H5KRATUGQFCM4OUIQI.ipld'
+
     const blockCollection = _.range(100).map((i) => new Block(new Buffer(`hello-${i}-${Math.random()}`)))
 
     describe('.putStream', () => {
       it('simple', (done) => {
         const b = new Block('hello world')
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect((err, meta) => {
             expect(err).to.not.exist
@@ -41,13 +43,17 @@ module.exports = (repo) => {
         }
 
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect(finish)
         )
 
         pull(
-          pull.values([b]),
+          pull.values([
+            { data: b.data, key: b.key() }
+          ]),
           repo.blockstore.putStream(),
           pull.collect(finish)
         )
@@ -57,6 +63,9 @@ module.exports = (repo) => {
         parallel(_.range(50).map(() => (cb) => {
           pull(
             pull.values(blockCollection),
+            pull.map((b) => {
+              return { data: b.data, key: b.key() }
+            }),
             repo.blockstore.putStream(),
             pull.collect((err, meta) => {
               expect(err).to.not.exist
@@ -65,19 +74,6 @@ module.exports = (repo) => {
             })
           )
         }), done)
-      })
-
-      it('custom extension', function (done) {
-        const b = new Block('hello world 2', 'ipld')
-        pull(
-          pull.values([b]),
-          repo.blockstore.putStream(),
-          pull.collect((err, meta) => {
-            expect(err).to.not.exist
-            expect(meta[0].key).to.be.eql(helloIpldKey)
-            done()
-          })
-        )
       })
 
       it('returns an error on invalid block', (done) => {
@@ -97,10 +93,10 @@ module.exports = (repo) => {
         const b = new Block('hello world')
 
         pull(
-          repo.blockstore.getStream(b.key),
+          repo.blockstore.getStream(b.key()),
           pull.collect((err, data) => {
             expect(err).to.not.exist
-            expect(data[0]).to.be.eql(b)
+            expect(data[0].key()).to.be.eql(b.key())
 
             done()
           })
@@ -111,28 +107,15 @@ module.exports = (repo) => {
         parallel(_.range(20 * 100).map((i) => (cb) => {
           const j = i % blockCollection.length
           pull(
-            repo.blockstore.getStream(blockCollection[j].key),
+            repo.blockstore.getStream(blockCollection[j].key()),
             pull.collect((err, meta) => {
               expect(err).to.not.exist
-              expect(meta).to.be.eql([blockCollection[j]])
+              expect(meta[0].key())
+                .to.be.eql(blockCollection[j].key())
               cb()
             })
           )
         }), done)
-      })
-
-      it('custom extension', (done) => {
-        const b = new Block('hello world 2', 'ipld')
-
-        pull(
-          repo.blockstore.getStream(b.key, b.extension),
-          pull.collect((err, data) => {
-            expect(err).to.not.exist
-            expect(data[0]).to.be.eql(b)
-
-            done()
-          })
-        )
       })
 
       it('returns an error on invalid block', (done) => {
@@ -150,17 +133,7 @@ module.exports = (repo) => {
       it('existing block', (done) => {
         const b = new Block('hello world')
 
-        repo.blockstore.has(b.key, (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(true)
-          done()
-        })
-      })
-
-      it('with extension', (done) => {
-        const b = new Block('hello world')
-
-        repo.blockstore.has(b.key, 'data', (err, exists) => {
+        repo.blockstore.has(b.key(), (err, exists) => {
           expect(err).to.not.exist
           expect(exists).to.equal(true)
           done()
@@ -170,7 +143,7 @@ module.exports = (repo) => {
       it('non existent block', (done) => {
         const b = new Block('wooot')
 
-        repo.blockstore.has(b.key, (err, exists) => {
+        repo.blockstore.has(b.key(), (err, exists) => {
           expect(err).to.not.exist
           expect(exists).to.equal(false)
           done()
@@ -182,24 +155,10 @@ module.exports = (repo) => {
       it('simple', (done) => {
         const b = new Block('hello world')
 
-        repo.blockstore.delete(b.key, (err) => {
+        repo.blockstore.delete(b.key(), (err) => {
           expect(err).to.not.exist
 
-          repo.blockstore.has(b.key, (err, exists) => {
-            expect(err).to.not.exist
-            expect(exists).to.equal(false)
-            done()
-          })
-        })
-      })
-
-      it('custom extension', (done) => {
-        const b = new Block('hello world', 'ipld')
-
-        repo.blockstore.delete(b.key, b.extension, (err) => {
-          expect(err).to.not.exist
-
-          repo.blockstore.has(b.key, b.extension, (err, exists) => {
+          repo.blockstore.has(b.key(), (err, exists) => {
             expect(err).to.not.exist
             expect(exists).to.equal(false)
             done()

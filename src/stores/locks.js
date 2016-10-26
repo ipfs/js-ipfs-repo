@@ -13,13 +13,17 @@ exports.setUp = (basePath, BlobStore) => {
     lock (callback) {
       function createLock () {
         pull(
-          pull.values([new Buffer('LOCK')]),
+          pull.values([
+            new Buffer('LOCK')
+          ]),
           store.write(lockFile, callback)
         )
       }
 
       function doesExist (err, exists) {
-        if (err) return callback(err)
+        if (err) {
+          return callback(err)
+        }
 
         if (exists) {
           // default 100ms
@@ -37,16 +41,22 @@ exports.setUp = (basePath, BlobStore) => {
 
     unlock (callback) {
       series([
-        (cb) => store.remove(lockFile, cb),
-        (cb) => store.exists(lockFile, (err, exists) => {
-          if (err) return cb(err)
+        (cb) => {
+          store.remove(lockFile, cb)
+        },
+        (cb) => {
+          store.exists(lockFile, (err, exists) => {
+            if (err) {
+              return cb(err)
+            }
 
-          if (exists) {
-            return cb(new Error('failed to remove lock'))
-          }
+            if (exists) {
+              return cb(new Error('failed to remove lock'))
+            }
 
-          cb()
-        })
+            cb()
+          })
+        }
       ], callback)
     }
   }
