@@ -7,6 +7,11 @@
 [![Build Status](https://travis-ci.org/ipfs/js-ipfs-repo.svg)](https://travis-ci.org/ipfs/js-ipfs-repo) [![Circle CI](https://circleci.com/gh/ipfs/js-ipfs-repo.svg?style=svg)](https://circleci.com/gh/ipfs/js-ipfs-repo)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/js-ipfs-repo/badge.svg?branch=master)](https://coveralls.io/github/ipfs/js-ipfs-repo?branch=master) [![Dependency Status](https://david-dm.org/diasdavid/js-peer-id.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+![](https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square)
+![](https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/js-ipfs-repo.svg)](https://saucelabs.com/u/js-ipfs
+-repo)
 
 > Implementation of the IPFS repo spec (https://github.com/ipfs/specs/tree/master/repo) in JavaScript
 
