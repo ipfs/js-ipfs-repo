@@ -4,10 +4,10 @@ const Block = require('ipfs-block')
 const Lock = require('lock')
 const base32 = require('base32.js')
 const path = require('path')
-const parallel = require('run-parallel')
 const pull = require('pull-stream')
 const pullWrite = require('pull-write')
 const pullDefer = require('pull-defer/source')
+const parallel = require('async/parallel')
 
 const PREFIX_LENGTH = 5
 const EXTENSION = 'data'

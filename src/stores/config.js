@@ -1,7 +1,7 @@
 'use strict'
 
 const pull = require('pull-stream')
-const series = require('run-series')
+const series = require('async/series')
 
 exports = module.exports
 
