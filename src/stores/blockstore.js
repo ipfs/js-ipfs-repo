@@ -123,13 +123,15 @@ exports.setUp = (basePath, BlobStore, locks) => {
       const source = (end, cb) => {
         if (end) {
           ended = end
-        }
-        if (ended) {
-          return cb(ended)
+          return cb(end)
         }
 
         if (written.length) {
           return cb(null, written.shift())
+        }
+
+        if (ended) {
+          return cb(ended)
         }
 
         push = cb
