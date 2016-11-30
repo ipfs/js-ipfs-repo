@@ -120,9 +120,9 @@ Example:
 
 ```js
 var fsBlobStore = require('fs-blob-store')  // an in-memory blob store
-var IPFSRepo = require('js-ipfs-repo')
+var IPFSRepo = require('ipfs-repo')
 var repo = new IPFSRepo('/Users/someone/.ipfs', {
-  stores: blobStore
+  stores: fsBlobStore
 })
 ```
 
