@@ -119,10 +119,13 @@ Loading this module through a script tag will make the `Unixfs` obj available in
 Example:
 
 ```js
-var fsBlobStore = require('fs-blob-store')  // an in-memory blob store
+var inMemoryBS = require('interface-pull-blob-store')
+// inMemoryBS is an "in memory" blob store, you can find others at:
+// https://github.com/ipfs/interface-pull-blob-store#modules-that-use-this
+
 var IPFSRepo = require('ipfs-repo')
 var repo = new IPFSRepo('/Users/someone/.ipfs', {
-  stores: fsBlobStore
+  stores: inMemoryBS
 })
 ```
 
