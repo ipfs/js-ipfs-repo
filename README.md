@@ -106,7 +106,7 @@ var IPFSRepo = require('ipfs-repo')
 
 ### Use in a browser Using a script tag
 
-Loading this module through a script tag will make the `Unixfs` obj available in the global namespace.
+Loading this module through a script tag will make the `IpfsRepo` obj available in the global namespace.
 
 ```html
 <script src="https://unpkg.com/ipfs-repo/dist/index.min.js"></script>
