@@ -31,7 +31,7 @@
     "node": ">=4.0.0"
   },
   "devDependencies": {
-    "aegir": "^9.1.1",
+    "aegir": "^9.2.1",
     "buffer-loader": "^0.0.1",
     "chai": "^3.5.0",
     "fs-pull-blob-store": "^0.4.1",
