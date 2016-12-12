@@ -14,7 +14,7 @@ module.exports = (repo) => {
   describe('blockstore', () => {
     const helloKey = 'CIQLS/CIQLSTJHXGJU2PQIUUXFFV62PWV7VREE57RXUU4A52IIR55M4LX432I.data'
     const blockCollection = _.range(100).map((i) => new Block(new Buffer(`hello-${i}-${Math.random()}`)))
-    const b = new Block('hello world')
+    const b = new Block(new Buffer('hello world'))
     let bKey
 
     before((done) => {
