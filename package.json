@@ -56,14 +56,15 @@
   },
   "license": "MIT",
   "contributors": [
+    "Brian Hoffman <hoffmabc@users.noreply.github.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Greenkeeper <support@greenkeeper.io>",
     "Lars-Magnus Skog <ralphtheninja@riseup.net>",
     "Pau Ramon Revilla <masylum@gmail.com>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
-    "greenkeeperio-bot <support@greenkeeper.io>",
     "nginnever <ginneversource@gmail.com>",
     "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>"
   ]
