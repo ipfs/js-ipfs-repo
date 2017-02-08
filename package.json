@@ -68,7 +68,6 @@
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
-    "multiaddr": "^2.3.0",
     "safe-buffer": "^5.1.1"
   },
   "license": "MIT",
