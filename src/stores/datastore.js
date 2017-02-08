@@ -1,5 +1,6 @@
 'use strict'
 const Lock = require('lock')
+const pull = require('pull-stream')
 const pullWrite = require('pull-write')
 const pullDefer = require('pull-defer/source')
 const parallel = require('async/parallel')
@@ -7,12 +8,11 @@ const parallel = require('async/parallel')
 exports = module.exports
 
 exports.setUp = (basePath, BlobStore, locks) => {
-  //locks is passed in but never used.
+  // locks is passed in but never used.
   const store = new BlobStore(basePath + '/datastore')
   const lock = new Lock()
 
   function write (key, blob, callback) {
-
     lock(key, (release) => {
       pull(
         pull.values([blob]),
@@ -50,9 +50,7 @@ exports.setUp = (basePath, BlobStore, locks) => {
         }
 
         deferred.resolve(
-          pull.values([
-            new Block(Buffer.concat(data))
-          ])
+          pull.values([Buffer.concat(data)])
         )
       }
     },
@@ -130,6 +128,7 @@ exports.setUp = (basePath, BlobStore, locks) => {
       }
       store.remove(key, callback)
     }
+  }
 }
 
 // The 4 keys that need to be stored in the datastore are as follows
