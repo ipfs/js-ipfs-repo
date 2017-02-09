@@ -127,6 +127,10 @@ exports.setUp = (basePath, BlobStore, locks) => {
         return callback(new Error('Invalid key'))
       }
       store.remove(key, callback)
+    },
+
+    helloWorld() {
+      console.log('hello world')
     }
   }
 }
