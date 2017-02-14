@@ -149,8 +149,8 @@ Valid keys for `opts` include:
 ```js
 {
   keys: someBlobStore,
+  blockstore: someBlobStore,
   config: someBlobStore,
-  datastore: someBlobStore,
   logs: someBlobStore,
   locks: someBlobStore,
   version: someBlobStore

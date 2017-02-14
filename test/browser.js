@@ -3,7 +3,8 @@
 'use strict'
 
 const series = require('async/series')
-const Store = require('idb-pull-blob-store')
+const IdbStore = require('idb-pull-blob-store')
+const MemBlobStore = require('interface-pull-blob-store')
 const _ = require('lodash')
 const pull = require('pull-stream')
 
@@ -20,19 +21,20 @@ const idb = self.indexedDB ||
 idb.deleteDatabase('ipfs')
 idb.deleteDatabase('ipfs/blocks')
 
-// TODO use arrow funtions again when https://github.com/webpack/webpack/issues/1944 is fixed
-describe('IPFS Repo Tests on the Browser', function () {
-  before(function (done) {
+describe('IPFS Repo Tests on the Browser', () => {
+  const testConfig = {}
+
+  beforeEach((done) => {
     const repoData = []
-    repoContext.keys().forEach(function (key) {
+    repoContext.keys().forEach((key) => {
       repoData.push({
         key: key.replace('./', ''),
         value: repoContext(key)
       })
     })
 
-    const mainBlob = new Store('ipfs')
-    const blocksBlob = new Store('ipfs/blocks')
+    const mainBlob = new IdbStore('ipfs')
+    const blocksBlob = new IdbStore('ipfs/blocks')
 
     series(repoData.map((file) => (cb) => {
       if (_.startsWith(file.key, 'datastore/')) {
@@ -51,6 +53,28 @@ describe('IPFS Repo Tests on the Browser', function () {
     }), done)
   })
 
-  const repo = new IPFSRepo('ipfs', {stores: Store})
-  tests(repo)
+  describe('single-blockstore', () => {
+    beforeEach('instantiate ipfs-repo', () => {
+      testConfig.repo = new IPFSRepo('ipfs', {stores: IdbStore})
+    })
+
+    tests(testConfig)
+  })
+
+  describe('multi-blockstore', () => {
+    beforeEach('instantiate ipfs-repo', () => {
+      testConfig.repo = new IPFSRepo('ipfs', {
+        stores: {
+          keys: IdbStore,
+          config: IdbStore,
+          blockstore: [IdbStore, MemBlobStore],
+          logs: IdbStore,
+          locks: IdbStore,
+          version: IdbStore
+        }
+      })
+    })
+
+    tests(testConfig)
+  })
 })

@@ -6,29 +6,56 @@ const expect = require('chai').expect
 const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const path = require('path')
-const Store = require('fs-pull-blob-store')
+const FsBlobStore = require('fs-pull-blob-store')
+const MemBlobStore = require('interface-pull-blob-store')
 
 const IPFSRepo = require('../src')
 
-describe('IPFS Repo Tests on on Node.js', () => {
-  const testRepoPath = path.join(__dirname, 'test-repo')
-  const date = Date.now().toString()
-  const repoPath = testRepoPath + '-for-' + date
+describe('IPFS Repo Tests on Node.js', () => {
+  const testConfig = {}
 
-  before((done) => {
-    ncp(testRepoPath, repoPath, (err) => {
+  beforeEach('construct test repo', (done) => {
+    const testRepoPath = path.join(__dirname, 'test-repo')
+    const date = Date.now().toString()
+    testConfig.repoPath = testRepoPath + '-for-' + date
+
+    // copy testdata into our new test repo
+    ncp(testRepoPath, testConfig.repoPath, (err) => {
       expect(err).to.not.exist
       done()
     })
   })
 
-  after((done) => {
-    rimraf(repoPath, (err) => {
+  afterEach('teardown test repo', (done) => {
+    // cleanup test repo
+    rimraf(testConfig.repoPath, (err) => {
       expect(err).to.not.exist
       done()
     })
   })
 
-  const repo = new IPFSRepo(repoPath, {stores: Store})
-  require('./repo-test')(repo)
+  describe('single-blockstore', () => {
+    beforeEach('instantiate ipfs-repo', () => {
+      testConfig.repo = new IPFSRepo(testConfig.repoPath, {stores: FsBlobStore})
+    })
+
+    require('./repo-test')(testConfig)
+  })
+
+  describe('multi-blockstore', () => {
+    beforeEach('instantiate ipfs-repo', () => {
+      testConfig.repo = new IPFSRepo(testConfig.repoPath, {
+        stores: {
+          keys: FsBlobStore,
+          config: FsBlobStore,
+          blockstore: [FsBlobStore, MemBlobStore],
+          logs: FsBlobStore,
+          locks: FsBlobStore,
+          version: FsBlobStore
+        }
+      })
+    })
+
+    require('./repo-test')(testConfig)
+  })
 })
