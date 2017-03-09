@@ -6,7 +6,7 @@ const series = require('async/series')
 
 const Repo = require('../src/index')
 
-module.exports = (repo) => {
+module.exports = (testConfig) => {
   describe('IPFS Repo Tests', () => {
     describe('init', () => {
       it('bad repo init 1', () => {
@@ -23,7 +23,7 @@ module.exports = (repo) => {
     })
 
     it('check if Repo exists', (done) => {
-      repo.exists((err, exists) => {
+      testConfig.repo.exists((err, exists) => {
         expect(err).to.not.exist
         expect(exists).to.equal(true)
         done()
@@ -31,26 +31,26 @@ module.exports = (repo) => {
     })
 
     it('exposes the path', () => {
-      expect(repo.path).to.be.a('string')
+      expect(testConfig.repo.path).to.be.a('string')
     })
 
     describe('locks', () => {
       it('lock, unlock', (done) => {
         series([
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.unlock(cb)
+          (cb) => testConfig.repo.locks.lock(cb),
+          (cb) => testConfig.repo.locks.unlock(cb)
         ], done)
       })
 
       it('lock, lock', (done) => {
         series([
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.unlock(cb)
+          (cb) => testConfig.repo.locks.lock(cb),
+          (cb) => testConfig.repo.locks.lock(cb),
+          (cb) => testConfig.repo.locks.unlock(cb)
         ], done)
 
         setTimeout(() => {
-          repo.locks.unlock((err) => {
+          testConfig.repo.locks.unlock((err) => {
             expect(err).to.not.exist
           })
         }, 500)
@@ -59,7 +59,7 @@ module.exports = (repo) => {
 
     describe('keys', () => {
       it('get PrivKey', (done) => {
-        repo.keys.get((err, privKey) => {
+        testConfig.repo.keys.get((err, privKey) => {
           expect(err).to.not.exist
           expect(privKey).to.be.a('string')
           done()
@@ -69,7 +69,7 @@ module.exports = (repo) => {
 
     describe('config', () => {
       it('get config', (done) => {
-        repo.config.get((err, config) => {
+        testConfig.repo.config.get((err, config) => {
           expect(err).to.not.exist
           expect(config).to.be.a('object')
           done()
@@ -78,8 +78,8 @@ module.exports = (repo) => {
 
       it('set config', (done) => {
         series([
-          (cb) => repo.config.set({a: 'b'}, cb),
-          (cb) => repo.config.get((err, config) => {
+          (cb) => testConfig.repo.config.set({a: 'b'}, cb),
+          (cb) => testConfig.repo.config.get((err, config) => {
             if (err) return cb(err)
             expect(config).to.deep.equal({a: 'b'})
             cb()
@@ -90,7 +90,7 @@ module.exports = (repo) => {
 
     describe('version', () => {
       it('get version', (done) => {
-        repo.version.get((err, version) => {
+        testConfig.repo.version.get((err, version) => {
           expect(err).to.not.exist
           expect(version).to.be.a('string')
           expect(Number(version)).to.be.a('number')
@@ -99,9 +99,9 @@ module.exports = (repo) => {
       })
 
       it('set version', (done) => {
-        repo.version.set('9000', (err) => {
+        testConfig.repo.version.set('9000', (err) => {
           expect(err).to.not.exist
-          repo.version.get((err, version) => {
+          testConfig.repo.version.get((err, version) => {
             expect(err).to.not.exist
             expect(version).to.equal('9000')
             done()
@@ -110,7 +110,7 @@ module.exports = (repo) => {
       })
     })
 
-    require('./blockstore-test')(repo)
+    require('./blockstore-test')(testConfig)
 
     describe('datastore', () => {})
   })

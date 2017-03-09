@@ -6,8 +6,9 @@ const base32 = require('base32.js')
 const path = require('path')
 const pull = require('pull-stream')
 const pullWrite = require('pull-write')
-const pullDefer = require('pull-defer/source')
+const pullDefer = require('pull-defer')
 const parallel = require('async/parallel')
+const each = require('async/each')
 
 const PREFIX_LENGTH = 5
 const EXTENSION = 'data'
@@ -24,7 +25,10 @@ function multihashToPath (multihash) {
 }
 
 exports.setUp = (basePath, BlobStore, locks) => {
-  const store = new BlobStore(basePath + '/blocks')
+  const BlobStores = Array.isArray(BlobStore) ? BlobStore : [BlobStore]
+  const stores = BlobStores.map((BlobStoreClass) => {
+    return new BlobStoreClass(basePath + '/blocks')
+  })
   const lock = new Lock()
 
   // blockBlob is an object with:
@@ -37,12 +41,15 @@ exports.setUp = (basePath, BlobStore, locks) => {
     const key = multihashToPath(blockBlob.key)
 
     lock(key, (release) => {
-      pull(
-        pull.values([
-          blockBlob.data
-        ]),
-        store.write(key, release(released))
-      )
+      // write to each store in parallel
+      each(stores, (store, cb) => {
+        pull(
+          pull.values([
+            blockBlob.data
+          ]),
+          store.write(key, cb)
+        )
+      }, release(released))
     })
 
     // called once the lock is released
@@ -62,28 +69,50 @@ exports.setUp = (basePath, BlobStore, locks) => {
       }
 
       const blockPath = multihashToPath(key)
-      const deferred = pullDefer()
+      const deferredSource = pullDefer.source()
+      // const deferredSource = pullDefer.source()
 
+      // lock, read from all stores in parallel, take first returned result, and release
       lock(blockPath, (release) => {
-        pull(
-          store.read(blockPath),
-          pull.collect(release(released))
-        )
+        const onComplete = release(onReleased)
+        let didComplete = false
+        each(stores, (store, cb) => {
+          pull(
+            store.read(blockPath),
+            pull.collect((err, result) => {
+              // ignore errors
+              if (err) return cb()
+              // skip if already resolved
+              if (didComplete) return cb()
+              // mark as resolved
+              didComplete = true
+              // resolve result
+              onComplete(null, result)
+              // cleanup async search
+              cb()
+            })
+          )
+        }, (err) => {
+          if (err && !didComplete) return onComplete(err)
+          if (!didComplete) {
+            return onComplete(new Error('BlockStore - entry not found in any blockstore.'))
+          }
+        })
       })
 
-      function released (err, data) {
+      function onReleased (err, data) {
         if (err) {
-          return deferred.abort(err)
+          return deferredSource.abort(err)
         }
 
-        deferred.resolve(
+        deferredSource.resolve(
           pull.values([
             new Block(Buffer.concat(data))
           ])
         )
       }
 
-      return deferred
+      return deferredSource
     },
 
     /*
@@ -175,7 +204,15 @@ exports.setUp = (basePath, BlobStore, locks) => {
       }
 
       const blockPath = multihashToPath(key)
-      store.exists(blockPath, callback)
+
+      // check all stores for exists in parallel
+      parallel(stores.map((store) => {
+        return (cb) => store.exists(blockPath, cb)
+      }), (err, results) => {
+        if (err) return callback(err)
+        const exists = results.some(Boolean)
+        callback(null, exists)
+      })
     },
 
     delete (key, callback) {
@@ -184,7 +221,11 @@ exports.setUp = (basePath, BlobStore, locks) => {
       }
 
       const blockPath = multihashToPath(key)
-      store.remove(blockPath, callback)
+
+      // remove from all stores in parallel
+      each(stores, (store, cb) => {
+        store.remove(blockPath, cb)
+      }, callback)
     }
   }
 }

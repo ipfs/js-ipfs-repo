@@ -41,16 +41,12 @@ module.exports = class Repo {
 }
 
 function initializeBlobStores (store) {
-  if (store.constructor) {
-    return {
-      keys: store,
-      config: store,
-      blockstore: store,
-      logs: store,
-      locks: store,
-      version: store
-    }
+  return {
+    keys: store.keys || store,
+    config: store.config || store,
+    blockstore: store.blockstore || store,
+    logs: store.logs || store,
+    locks: store.locks || store,
+    version: store.version || store
   }
-
-  return store
 }
