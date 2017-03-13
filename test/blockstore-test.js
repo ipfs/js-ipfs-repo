@@ -2,178 +2,141 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+chai.use(require('dirty-chai'))
+const expect = chai.expect
 const Block = require('ipfs-block')
-const mh = require('multihashes')
-const pull = require('pull-stream')
+const CID = require('cids')
 const parallel = require('async/parallel')
 const waterfall = require('async/waterfall')
+const each = require('async/each')
+const map = require('async/map')
 const _ = require('lodash')
+const multihashing = require('multihashing-async')
 
 module.exports = (repo) => {
   describe('blockstore', () => {
-    const helloKey = 'CIQLS/CIQLSTJHXGJU2PQIUUXFFV62PWV7VREE57RXUU4A52IIR55M4LX432I.data'
-    const blockCollection = _.range(100).map((i) => new Block(new Buffer(`hello-${i}-${Math.random()}`)))
-    const b = new Block(new Buffer('hello world'))
-    let bKey
+    const blockData = _.range(100).map((i) => new Buffer(`hello-${i}-${Math.random()}`))
+    const bData = new Buffer('hello world')
+    let b
 
     before((done) => {
-      b.key((err, key) => {
+      multihashing(bData, 'sha2-256', (err, h) => {
         if (err) {
           return done(err)
         }
-        bKey = key
+
+        b = new Block(bData, new CID(h))
         done()
       })
     })
 
-    describe('.putStream', () => {
+    describe('.put', () => {
       it('simple', (done) => {
-        pull(
-          pull.values([
-            { data: b.data, key: bKey }
-          ]),
-          repo.blockstore.putStream(),
-          pull.collect((err, meta) => {
-            expect(err).to.not.exist
-            expect(meta[0].key).to.be.eql(helloKey)
-            done()
-          })
-        )
+        repo.blockstore.put(b, done)
       })
 
       it('multi write (locks)', (done) => {
-        let i = 0
-        const finish = (err, meta) => {
-          expect(err).to.not.exist
-          expect(meta[0].key).to.equal(helloKey)
-
-          i++
-          if (i === 2) done()
-        }
-
-        pull(
-          pull.values([
-            { data: b.data, key: bKey }
-          ]),
-          repo.blockstore.putStream(),
-          pull.collect(finish)
-        )
-
-        pull(
-          pull.values([
-            { data: b.data, key: bKey }
-          ]),
-          repo.blockstore.putStream(),
-          pull.collect(finish)
-        )
+        parallel([
+          (cb) => repo.blockstore.put(b, cb),
+          (cb) => repo.blockstore.put(b, cb)
+        ], done)
       })
 
       it('massive multiwrite', (done) => {
-        parallel(_.range(50).map(() => (cb) => {
-          pull(
-            pull.values(blockCollection),
-            pull.asyncMap((b, cb) => {
-              b.key((err, key) => {
-                if (err) {
-                  return cb(err)
-                }
-                cb(null, {data: b.data, key: key})
-              })
-            }),
-            repo.blockstore.putStream(),
-            pull.collect((err, meta) => {
-              expect(err).to.not.exist
-              expect(meta).to.have.length(100)
-              cb()
+        waterfall([
+          (cb) => map(_.range(100), (i, cb) => {
+            multihashing(blockData[i], 'sha2-256', cb)
+          }, cb),
+          (hashes, cb) => each(_.range(100), (i, cb) => {
+            const block = new Block(blockData[i], new CID(hashes[i]))
+            repo.blockstore.put(block, cb)
+          }, cb)
+        ], done)
+      })
+
+      it('.putMany', (done) => {
+        waterfall([
+          (cb) => map(_.range(50), (i, cb) => {
+            const d = new Buffer('many' + Math.random())
+            multihashing(d, 'sha2-256', (err, hash) => {
+              if (err) {
+                return cb(err)
+              }
+              cb(null, new Block(d, new CID(hash)))
             })
-          )
-        }), done)
+          }, cb),
+          (blocks, cb) => {
+            repo.blockstore.putMany(blocks, (err) => {
+              expect(err).to.not.exist()
+              map(blocks, (b, cb) => {
+                repo.blockstore.get(b.cid, cb)
+              }, (err, res) => {
+                expect(err).to.not.exist()
+                expect(res).to.be.eql(blocks)
+                cb()
+              })
+            })
+          }
+        ], done)
       })
 
       it('returns an error on invalid block', (done) => {
-        pull(
-          pull.values(['hello']),
-          repo.blockstore.putStream(),
-          pull.onEnd((err) => {
-            expect(err.message).to.be.eql('Invalid block')
-            done()
-          })
-        )
+        repo.blockstore.put('hello', (err) => {
+          expect(err).to.exist()
+          done()
+        })
       })
     })
 
-    describe('.getStream', () => {
+    describe('.get', () => {
       it('simple', (done) => {
-        pull(
-          repo.blockstore.getStream(bKey),
-          pull.collect((err, data) => {
-            expect(err).to.not.exist
-            data[0].key((err, key) => {
-              expect(err).to.not.exist
-              expect(key).to.be.eql(bKey)
-              done()
-            })
-          })
-        )
+        repo.blockstore.get(b.cid, (err, block) => {
+          expect(err).to.not.exist()
+          expect(block).to.be.eql(b)
+          done()
+        })
       })
 
       it('massive read', (done) => {
         parallel(_.range(20 * 100).map((i) => (cb) => {
-          const j = i % blockCollection.length
-          pull(
-            pull.values([blockCollection[j]]),
-            pull.asyncMap((b, cb) => b.key(cb)),
-            pull.map((key) => repo.blockstore.getStream(key)),
-            pull.flatten(),
-            pull.collect((err, meta) => {
-              expect(err).to.not.exist
-              parallel([
-                (cb) => meta[0].key(cb),
-                (cb) => blockCollection[j].key(cb)
-              ], (err, res) => {
-                expect(err).to.not.exist
-                expect(res[0]).to.be.eql(res[1])
-                cb()
-              })
-            })
-          )
+          const j = i % blockData.length
+          waterfall([
+            (cb) => multihashing(blockData[j], 'sha2-256', cb),
+            (h, cb) => {
+              const cid = new CID(h)
+              repo.blockstore.get(cid, cb)
+            },
+            (block, cb) => {
+              expect(block.data).to.be.eql(blockData[j])
+              cb()
+            }
+          ], cb)
         }), done)
       })
 
       it('returns an error on invalid block', (done) => {
-        pull(
-          repo.blockstore.getStream(),
-          pull.onEnd((err) => {
-            expect(err.message).to.be.eql('Invalid key')
-            done()
-          })
-        )
+        repo.blockstore.get('woot', (err, val) => {
+          expect(err).to.exist()
+          expect(val).to.not.exist()
+          done()
+        })
       })
     })
 
     describe('.has', () => {
       it('existing block', (done) => {
-        const b = new Block('hello world')
-        waterfall([
-          (cb) => b.key(cb),
-          (key, cb) => repo.blockstore.has(key, cb)
-        ], (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(true)
+        repo.blockstore.has(b.cid, (err, exists) => {
+          expect(err).to.not.exist()
+          expect(exists).to.eql(true)
           done()
         })
       })
 
       it('non existent block', (done) => {
-        const b = new Block('wooot')
-
-        waterfall([
-          (cb) => b.key(cb),
-          (key, cb) => repo.blockstore.has(key, cb)
-        ], (err, exists) => {
-          expect(err).to.not.exist
-          expect(exists).to.equal(false)
+        repo.blockstore.has(new CID('woot'), (err, exists) => {
+          expect(err).to.not.exist()
+          expect(exists).to.eql(false)
           done()
         })
       })
@@ -181,39 +144,14 @@ module.exports = (repo) => {
 
     describe('.delete', () => {
       it('simple', (done) => {
-        const b = new Block('hello world')
-        b.key((err, key) => {
-          expect(err).to.not.exist
-
-          waterfall([
-            (cb) => repo.blockstore.delete(key, cb),
-            (cb) => repo.blockstore.has(key, cb)
-          ], (err, exists) => {
-            expect(err).to.not.exist
-            expect(exists).to.equal(false)
-            done()
-          })
+        waterfall([
+          (cb) => repo.blockstore.delete(b.cid, cb),
+          (cb) => repo.blockstore.has(b.cid, cb)
+        ], (err, exists) => {
+          expect(err).to.not.exist()
+          expect(exists).to.equal(false)
+          done()
         })
-      })
-    })
-
-    describe('interop', () => {
-      it('reads welcome-to-ipfs', (done) => {
-        const welcomeHash = mh.fromHexString(
-          '1220120f6af601d46e10b2d2e11ed71c55d25f3042c22501e41d1246e7a1e9d3d8ec'
-        )
-        pull(
-          repo.blockstore.getStream(welcomeHash),
-          pull.collect((err, blocks) => {
-            expect(err).to.not.exist
-            expect(
-              blocks[0].data.toString()
-            ).to.match(
-                /Hello and Welcome to IPFS/
-            )
-            done()
-          })
-        )
       })
     })
   })

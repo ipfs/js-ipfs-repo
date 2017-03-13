@@ -19,7 +19,6 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 ## Table of Contents
 
 - [Background](#background)
-  - [Good to know (historical context)](#good-to-know-historical-context)
 - [Install](#install)
   - [npm](#npm)
   - [Use in Node.js](#use-in-nodejs)
@@ -27,16 +26,6 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
   - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
 - [API](#api)
-  - [var repo = new IPFSRepo(path, opts)](#var-repo--new-ipfsrepopath-opts)
-  - [repo.exists(cb)](#repoexistscb)
-  - [repo.version.get(cb(err, version))](#repoversiongetcberr-version)
-  - [repo.version.set(version, cb(err))](#repoversionsetversion-cberr)
-  - [repo.config.get(cb(err, config))](#repoconfiggetcberr-config)
-  - [repo.config.set(config, cb(err))](#repoconfigsetconfig-cberr)
-  - [repo.keys](#repokeys)
-  - [repo.blockstore.putStream()](#)
-  - [repo.blockstore.getStream(key, extension)](#)
-  - [repo.datastore](#repodatastore)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -45,62 +34,60 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 Here is the architectural reasoning for this repo:
 
 ```bash
-┌─────────────────────────────────┐
-│ interface defined by Repo Spec  │
-├─────────────────────────────────┤
-│                                 │                                  ┌──────────────────────┐
-│                                 │                                  │ interface-pull-blob-store  │
-│           IPFS REPO             │─────────────────────────────────▶│     interface        │
-│                                 │                                  ├──────────────────────┤
-│                                 │                                  │      locks           │
-└─────────────────────────────────┘                                  └──────────────────────┘
-                 │
-      ┌──────────┴────┬───────────────┬───────────────┬───────────────┬───────────────┐
-      ▼               ▼               ▼               ▼               ▼               ▼
-┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐
-│ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │   │ abstract  │
-│ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │   │ -blob     │
-│ -store    │   │ -store    │   │ -store    │   │ -store    │   │ -store    │   │ -store    │
-│ interface │   │ interface │   │ interface │   │ interface │   │ interface │   │ interface │
-├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤   ├───────────┤
-│           │   │           │   │           │   │           │   │           │   │           │
-│   keys    │   │  config   │   │ blockstore │   │ datastore │   │   logs    │   │  version  │
-│           │   │           │   │           │   │           │   │           │   │           │
-└───────────┘   └───────────┘   └───────────┘   └───────────┘   └───────────┘   └───────────┘
+                          ┌────────────────────────────────────────┐
+                          │                IPFSRepo                │
+                          └────────────────────────────────────────┘
+                                      ┌─────────────────┐
+                                      │        /        │
+                                      ├─────────────────┤
+                                      │    Datastore    │
+                                      └─────────────────┘
+                                               │
+                                   ┌───────────┴───────────┐
+                                   │                       │
+                          ┌─────────────────┐     ┌─────────────────┐
+                          │     /blocks     │     │   /datastore    │
+                          ├─────────────────┤     ├─────────────────┤
+                          │    Datastore    │     │ LevelDatastore  │
+                          └─────────────────┘     └─────────────────┘
+
+┌────────────────────────────────────────┐          ┌────────────────────────────────────────┐
+│       IPFSRepo - Default Node.js       │          │       IPFSRepo - Default Browser       │
+└────────────────────────────────────────┘          └────────────────────────────────────────┘
+            ┌─────────────────┐                                 ┌─────────────────┐
+            │        /        │                                 │        /        │
+            ├─────────────────┤                                 ├─────────────────┤
+            │   FsDatastore   │                                 │LevelJSDatastore │
+            └─────────────────┘                                 └─────────────────┘
+                     │                                                   │
+         ┌───────────┴───────────┐                           ┌───────────┴───────────┐
+         │                       │                           │                       │
+┌─────────────────┐     ┌─────────────────┐         ┌─────────────────┐     ┌─────────────────┐
+│     /blocks     │     │   /datastore    │         │     /blocks     │     │   /datastore    │
+├─────────────────┤     ├─────────────────┤         ├─────────────────┤     ├─────────────────┤
+│ FlatfsDatastore │     │LevelDBDatastore │         │LevelJSDatastore │     │LevelJSDatastore │
+└─────────────────┘     └─────────────────┘         └─────────────────┘     └─────────────────┘
 ```
 
-This provides a well defined interface for creating and interacting with an IPFS
-Repo backed by a group of abstract backends for keys, configuration, logs, and
-more. Each of the individual repos has an interface defined by
-[interface-pull-blob-store](https://github.com/ipfs/interface-pull-blob-store): this
-enables us to make IPFS Repo portable (running on Node.js vs the browser) and
-accept different types of storage mechanisms for each repo (fs, levelDB, etc).
-
-### Good to know (historical context)
-
-- The datastore folder holds the legacy version of datastore, still built in levelDB, there is a current endeavour of pushing it to fs completely.
-- The blocks folder is the current version of datastore.
-- The keys repo doesn't exist yet, as the private key is simply stored inside config
+This provides a well defined interface for creating and interacting with an IPFS repo.
 
 ## Install
 
 ### npm
 
 ```sh
-> npm i ipfs-repo
+> npm install ipfs-repo
 ```
 
 ### Use in Node.js
 
-```JavaScript
+```js
 var IPFSRepo = require('ipfs-repo')
 ```
 
 ### Use in a browser with browserify, webpack or any other bundler
 
-The code published to npm that gets loaded on require is in fact a ES5 transpiled version with the right shims added. This means that you can require it and use with your favourite bundler without having to adjust asset management process.
-
-```JavaScript
+```js
 var IPFSRepo = require('ipfs-repo')
 ```
 
@@ -119,77 +106,42 @@ Loading this module through a script tag will make the `IpfsRepo` obj available 
 Example:
 
 ```js
-var inMemoryBS = require('interface-pull-blob-store')
-// inMemoryBS is an "in memory" blob store, you can find others at:
-// https://github.com/ipfs/interface-pull-blob-store#modules-that-use-this
+const Repo = require('ipfs-repo')
+const repo = new Repo('/tmp/ipfs-repo')
 
-var IPFSRepo = require('ipfs-repo')
-var repo = new IPFSRepo('/Users/someone/.ipfs', {
-  stores: inMemoryBS
+repo.init({ cool: 'config' }, (err) => {
+  if (err) {
+    throw err
+  }
+
+  repo.open((err) => {
+    if (err) {
+      throw err
+    }
+
+    console.log('repo is ready')
+  })
 })
+```
+
+This now has created the following structure, either on disk or as an in memory representation:
+
+```
+├── blocks
+│   ├── SHARDING
+│   └── _README
+├── config
+├── datastore
+└── version
 ```
 
 ## API
 
-```js
-var IPFSRepo = require('ipfs-repo')
-```
+See https://ipfs.github.io/js-ipfs-repo
 
-### var repo = new IPFSRepo(path, opts)
+## Notes
 
-Creates a **reference** to an IPFS repository at the path `path`. This does
-*not* create the repo, but is an object that refers to the repo at such a path.
-
-Valid keys for `opts` include:
-
-- `stores`: either an
-  [interface-pull-blob-store](https://github.com/ipfs/interface-pull-blob-store), or a
-  map of the form
-
-```js
-{
-  keys: someBlobStore,
-  config: someBlobStore,
-  datastore: someBlobStore,
-  logs: someBlobStore,
-  locks: someBlobStore,
-  version: someBlobStore
-}
-```
-
-If you use the former form, all of the sub-blob-stores will use the same store.
-
-### repo.exists(cb)
-
-Check if the repo you are going to access already exists. Calls the callback
-`cb(err, exists)`, where `exists` is true or false.
-
-### repo.version.get(cb(err, version))
-### repo.version.set(version, cb(err))
-
-Read/write the version number of the repository. The version number is the repo version number.
-
-### repo.config.get(cb(err, config))
-### repo.config.set(config, cb(err))
-
-Read/write the configuration object of the repository.
-
-### repo.keys
-
-Read/write keys inside the repo. This feature will be expanded once
-[IPRS](https://github.com/ipfs/specs/tree/master/records) and
-[KeyChain](https://github.com/ipfs/specs/tree/master/keychain) are finalized and implemented on go-ipfs.
-
-### repo.blockstore.putStream()
-### repo.datastore.getStream(key, extension)
-### repo.datastore.has(key, extension, cb)
-### repo.datastore.delete(key, extension, cb)
-
-Read and write buffers to/from the repo's block store.
-
-### repo.datastore
-
-**WIP**
+- [Explanation of how repo is structured](https://github.com/ipfs/js-ipfs-repo/pull/111#issuecomment-279948247)
 
 ## Contribute
 
