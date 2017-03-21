@@ -1,30 +1,26 @@
 /* eslint-env mocha */
 'use strict'
 
-const expect = require('chai').expect
+const chai = require('chai')
+chai.use(require('dirty-chai'))
+const expect = chai.expect
 const series = require('async/series')
 
-const Repo = require('../src/index')
+const Repo = require('../src')
 
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
-    describe('init', () => {
-      it('bad repo init 1', () => {
+    describe('new', () => {
+      it('missing arguments', () => {
         expect(
           () => new Repo()
-        ).to.throw(Error)
-      })
-
-      it('bad repo init 2', () => {
-        expect(
-          () => new Repo('', {})
         ).to.throw(Error)
       })
     })
 
     it('check if Repo exists', (done) => {
       repo.exists((err, exists) => {
-        expect(err).to.not.exist
+        expect(err).to.not.exist()
         expect(exists).to.equal(true)
         done()
       })
@@ -34,43 +30,10 @@ module.exports = (repo) => {
       expect(repo.path).to.be.a('string')
     })
 
-    describe('locks', () => {
-      it('lock, unlock', (done) => {
-        series([
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.unlock(cb)
-        ], done)
-      })
-
-      it('lock, lock', (done) => {
-        series([
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.lock(cb),
-          (cb) => repo.locks.unlock(cb)
-        ], done)
-
-        setTimeout(() => {
-          repo.locks.unlock((err) => {
-            expect(err).to.not.exist
-          })
-        }, 500)
-      })
-    })
-
-    describe('keys', () => {
-      it('get PrivKey', (done) => {
-        repo.keys.get((err, privKey) => {
-          expect(err).to.not.exist
-          expect(privKey).to.be.a('string')
-          done()
-        })
-      })
-    })
-
     describe('config', () => {
       it('get config', (done) => {
         repo.config.get((err, config) => {
-          expect(err).to.not.exist
+          expect(err).to.not.exist()
           expect(config).to.be.a('object')
           done()
         })
@@ -91,27 +54,22 @@ module.exports = (repo) => {
     describe('version', () => {
       it('get version', (done) => {
         repo.version.get((err, version) => {
-          expect(err).to.not.exist
-          expect(version).to.be.a('string')
-          expect(Number(version)).to.be.a('number')
+          expect(err).to.not.exist()
+          expect(version).to.be.eql(5)
           done()
         })
       })
 
       it('set version', (done) => {
-        repo.version.set('9000', (err) => {
-          expect(err).to.not.exist
+        repo.version.set(9000, (err) => {
+          expect(err).to.not.exist()
           repo.version.get((err, version) => {
-            expect(err).to.not.exist
-            expect(version).to.equal('9000')
+            expect(err).to.not.exist()
+            expect(version).to.equal(9000)
             done()
           })
         })
       })
     })
-
-    require('./blockstore-test')(repo)
-
-    describe('datastore', () => {})
   })
 }

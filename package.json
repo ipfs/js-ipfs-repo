@@ -3,24 +3,31 @@
   "version": "0.11.3",
   "description": "IPFS Repo implementation",
   "main": "src/index.js",
+  "browser": {
+    "./src/lock.js": "./src/lock-memory.js",
+    "./src/default-options.js": "./src/default-options-browser.js"
+  },
   "scripts": {
     "test": "aegir-test",
     "test:node": "aegir-test node",
     "test:browser": "aegir-test browser",
     "build": "aegir-build",
     "lint": "aegir-lint",
-    "release": "aegir-release",
-    "release-minor": "aegir-release --type minor",
-    "release-major": "aegir-release --type major",
+    "release": "aegir-release --docs",
+    "release-minor": "aegir-release --type minor --docs",
+    "release-major": "aegir-release --type major --docs",
     "coverage": "aegir-coverage",
-    "coverage-publish": "aegir-coverage publish"
+    "coverage-publish": "aegir-coverage publish",
+    "docs": "aegir-docs"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/js-ipfs-repo.git"
   },
   "keywords": [
-    "IPFS"
+    "IPFS",
+    "libp2p",
+    "datastore"
   ],
   "pre-commit": [
     "lint",
@@ -28,30 +35,34 @@
   ],
   "homepage": "https://github.com/ipfs/js-ipfs-repo",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=4.0.0",
+    "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^10.0.0",
-    "buffer-loader": "^0.0.1",
+    "aegir": "^11.0.0",
     "chai": "^3.5.0",
-    "fs-pull-blob-store": "~0.4.1",
-    "idb-pull-blob-store": "~0.5.1",
-    "interface-pull-blob-store": "~0.6.0",
+    "dirty-chai": "^1.2.2",
     "lodash": "^4.17.4",
-    "multihashes": "~0.4.0",
+    "memdown": "^1.2.4",
+    "multihashes": "~0.4.4",
     "ncp": "^2.0.0",
     "pre-commit": "^1.2.2",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.6.1"
   },
   "dependencies": {
-    "async": "^2.1.4",
+    "async": "^2.1.5",
     "base32.js": "^0.1.0",
-    "ipfs-block": "~0.5.5",
-    "lock": "^0.1.3",
-    "multihashes": "~0.3.3",
-    "pull-defer": "^0.2.2",
-    "pull-stream": "^3.5.0",
-    "pull-write": "^1.1.1",
+    "cids": "^0.4.2",
+    "datastore-core": "^0.1.0",
+    "datastore-fs": "^0.1.1",
+    "datastore-level": "^0.1.0",
+    "debug": "^2.6.3",
+    "interface-datastore": "^0.1.1",
+    "ipfs-block": "~0.6.0",
+    "level-js": "^2.2.4",
+    "leveldown": "^1.6.0",
+    "lock-me": "^1.0.2",
+    "multiaddr": "^2.2.2",
     "safe-buffer": "^5.0.1"
   },
   "license": "MIT",
