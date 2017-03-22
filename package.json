@@ -59,7 +59,7 @@
     "debug": "^2.6.3",
     "interface-datastore": "^0.1.1",
     "ipfs-block": "~0.6.0",
-    "level-js": "^2.2.4",
+    "level-js": "timkuijsten/level.js#idbunwrapper",
     "leveldown": "^1.6.0",
     "lock-me": "^1.0.2",
     "multiaddr": "^2.2.2",

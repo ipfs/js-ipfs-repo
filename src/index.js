@@ -54,7 +54,6 @@ class IpfsRepo {
       lock: 'fs'
     }, options)
     this._fsOptions = Object.assign({}, options.fsOptions)
-
     const FsStore = this.options.fs
     this._fsStore = new FsStore(this.path, Object.assign({}, this._fsOptions, {
       extension: ''
@@ -81,7 +80,14 @@ class IpfsRepo {
    */
   init (config, callback) {
     log('initializing at: %s', this.path)
+
     series([
+      (cb) => this._fsStore.open((err) => {
+        if (err && err.message === 'Already open') {
+          return cb()
+        }
+        cb(err)
+      }),
       (cb) => this.config.set(config, cb),
       (cb) => this.version.set(repoVersion, cb)
     ], callback)
@@ -102,6 +108,12 @@ class IpfsRepo {
 
     // check if the repo is already initialized
     waterfall([
+      (cb) => this._fsStore.open((err) => {
+        if (err && err.message === 'Already open') {
+          return cb()
+        }
+        cb(err)
+      }),
       (cb) => this._isInitialized(cb),
       (cb) => this._locker.lock(this.path, cb),
       (lck, cb) => {
@@ -155,10 +167,12 @@ class IpfsRepo {
    * @returns {void}
    */
   _isInitialized (callback) {
+    log('init check')
     parallel([
       (cb) => this.config.exists(cb),
       (cb) => this.version.check(repoVersion, cb)
     ], (err, res) => {
+      log('init', err, res)
       if (err) {
         return callback(err)
       }
@@ -192,10 +206,15 @@ class IpfsRepo {
       (cb) => this.store.close(cb),
       (cb) => this._fsStore.close(cb),
       (cb) => {
+        log('unlocking')
         this.closed = true
         this.lockfile.close(cb)
+      },
+      (cb) => {
+        this.lockfile = null
+        cb()
       }
-    ], callback)
+    ], (err) => callback(err))
   }
 
   /**

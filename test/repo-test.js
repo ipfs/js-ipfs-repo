@@ -5,6 +5,7 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const series = require('async/series')
+const waterfall = require('async/waterfall')
 
 const Repo = require('../src')
 
@@ -61,14 +62,32 @@ module.exports = (repo) => {
       })
 
       it('set version', (done) => {
-        repo.version.set(9000, (err) => {
-          expect(err).to.not.exist()
-          repo.version.get((err, version) => {
-            expect(err).to.not.exist()
+        waterfall([
+          (cb) => repo.version.set(9000, cb),
+          (cb) => repo.version.get(cb),
+          (version, cb) => {
             expect(version).to.equal(9000)
-            done()
-          })
-        })
+            cb()
+          },
+          (cb) => repo.version.set(5, cb)
+        ], done)
+      })
+    })
+
+    describe('lifecycle', () => {
+      it('close and open', (done) => {
+        waterfall([
+          (cb) => repo.close(cb),
+          (cb) => repo.open(cb),
+          (cb) => repo.close(cb),
+          (cb) => repo.open(cb),
+          (cb) => repo.version.get(cb),
+          (version, cb) => {
+            console.log(version)
+            expect(version).to.exist()
+            cb()
+          }
+        ], done)
       })
     })
   })
