@@ -214,7 +214,7 @@ class IpfsRepo {
         this.lockfile = null
         cb()
       }
-    ], (err) => callback(err))
+    ], callback)
   }
 
   /**
