@@ -57,7 +57,7 @@
     "datastore-fs": "^0.1.1",
     "datastore-level": "^0.1.0",
     "debug": "^2.6.3",
-    "interface-datastore": "^0.1.1",
+    "interface-datastore": "^0.2.0",
     "ipfs-block": "~0.6.0",
     "level-js": "^2.2.4",
     "leveldown": "^1.6.0",
