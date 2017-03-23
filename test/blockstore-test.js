@@ -43,6 +43,15 @@ module.exports = (repo) => {
         ], done)
       })
 
+      it('empty value', (done) => {
+        const d = new Buffer(0)
+        multihashing(d, 'sha2-256', (err, multihash) => {
+          expect(err).to.not.exist()
+          const empty = new Block(d, new CID(multihash))
+          repo.blockstore.put(empty, done)
+        })
+      })
+
       it('massive multiwrite', (done) => {
         waterfall([
           (cb) => map(_.range(100), (i, cb) => {
