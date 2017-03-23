@@ -55,7 +55,7 @@
     "cids": "^0.4.2",
     "datastore-core": "^0.1.0",
     "datastore-fs": "^0.1.1",
-    "datastore-level": "^0.1.0",
+    "datastore-level": "^0.3.0",
     "debug": "^2.6.3",
     "interface-datastore": "^0.1.1",
     "ipfs-block": "~0.6.0",
