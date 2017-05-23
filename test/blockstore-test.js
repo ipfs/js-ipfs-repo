@@ -13,11 +13,12 @@ const each = require('async/each')
 const map = require('async/map')
 const _ = require('lodash')
 const multihashing = require('multihashing-async')
+const Buffer = require('safe-buffer').Buffer
 
 module.exports = (repo) => {
   describe('blockstore', () => {
-    const blockData = _.range(100).map((i) => new Buffer(`hello-${i}-${Math.random()}`))
-    const bData = new Buffer('hello world')
+    const blockData = _.range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
+    const bData = Buffer.from('hello world')
     let b
 
     before((done) => {
@@ -143,7 +144,7 @@ module.exports = (repo) => {
       })
 
       it('non existent block', (done) => {
-        repo.blockstore.has(new CID('woot'), (err, exists) => {
+        repo.blockstore.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'), (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(false)
           done()
