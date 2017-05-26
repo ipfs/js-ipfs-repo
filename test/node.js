@@ -20,9 +20,9 @@ describe('IPFS Repo Tests on on Node.js', () => {
   }, {
     name: 'memory',
     opts: {
-      fs: require('interface-datastore').MemoryDatastore,
-      level: require('memdown'),
-      lock: 'memory'
+      blockStore: require('interface-datastore').MemoryDatastore,
+      dataStore: require('interface-datastore').MemoryDatastore
+      // dataStore: require('memdown')
     },
     init: true
   }]
