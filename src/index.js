@@ -5,7 +5,6 @@ const MountStore = core.MountDatastore
 const ShardingStore = core.ShardingDatastore
 
 const Key = require('interface-datastore').Key
-const LevelStore = require('datastore-level')
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const parallel = require('async/parallel')
@@ -22,8 +21,8 @@ const blockstore = require('./blockstore')
 const log = debug('repo')
 
 const apiFile = new Key('api')
-const flatfsDirectory = 'blocks'
-const levelDirectory = 'datastore'
+const blockStoreDirectory = 'blocks'
+const dataStoreDirectory = 'datastore'
 const repoVersion = 5
 
 /**
@@ -34,33 +33,25 @@ class IpfsRepo {
   /**
    * @param {string} repoPath - path where the repo is stored
    * @param {object} options - Configuration
-   * @param {Datastore} options.fs
-   * @param {Leveldown} options.level
-   * @param {object} [options.fsOptions={}]
+   * @param {datastore} options.blockStore
+   * @param {datastore} options.dataStore
+   * @param {object} [options.blockStoreOptions={}]
+   * @param {object} [options.dataStoreOptions={}]
    * @param {bool} [options.sharding=true] - Enable sharding (flatfs on disk), not needed in the browser.
    * @param {string} [options.lock='fs'] - Either `fs` or `memory`.
    */
   constructor (repoPath, options) {
     assert.equal(typeof repoPath, 'string', 'missing repoPath')
 
-    if (options == null) {
-      options = require('./default-options')
-    }
-
+    const defaultOptions = require('./default-options')
     this.closed = true
     this.path = repoPath
-    this.options = Object.assign({
-      sharding: true,
-      lock: 'fs'
-    }, options)
-    this._fsOptions = Object.assign({}, options.fsOptions)
-    const FsStore = this.options.fs
-    this._fsStore = new FsStore(this.path, Object.assign({}, this._fsOptions, {
-      extension: ''
-    }))
+    this.options = Object.assign({ lock: 'memory', sharding: true }, options || defaultOptions)
+    const BlockStore = this.options.blockStore
+    this._blockStore = new BlockStore(this.path, this.options.blockStoreOptions)
 
-    this.version = version(this._fsStore)
-    this.config = config(this._fsStore)
+    this.version = version(this._blockStore)
+    this.config = config(this._blockStore)
 
     if (this.options.lock === 'memory') {
       this._locker = require('./lock-memory')
@@ -82,7 +73,7 @@ class IpfsRepo {
     log('initializing at: %s', this.path)
 
     series([
-      (cb) => this._fsStore.open((err) => {
+      (cb) => this._blockStore.open((err) => {
         if (err && err.message === 'Already open') {
           return cb()
         }
@@ -108,7 +99,7 @@ class IpfsRepo {
 
     // check if the repo is already initialized
     waterfall([
-      (cb) => this._fsStore.open((err) => {
+      (cb) => this._blockStore.open((err) => {
         if (err && err.message === 'Already open') {
           return cb()
         }
@@ -121,8 +112,8 @@ class IpfsRepo {
         this.lockfile = lck
 
         log('creating flatfs')
-        const FsStore = this.options.fs
-        const s = new FsStore(path.join(this.path, flatfsDirectory), this._fsOptions)
+        const BlockStore = this.options.blockStore
+        const s = new BlockStore(path.join(this.path, blockStoreDirectory), this.options.blockStoreOptions)
 
         if (this.options.sharding) {
           const shard = new core.shard.NextToLast(2)
@@ -131,17 +122,21 @@ class IpfsRepo {
           cb(null, s)
         }
       },
-      (flatfs, cb) => {
+      (blockStore, cb) => {
         log('Flatfs store opened')
-        this.store = new MountStore([{
-          prefix: new Key(flatfsDirectory),
-          datastore: flatfs
-        }, {
-          prefix: new Key('/'),
-          datastore: new LevelStore(path.join(this.path, levelDirectory), {
-            db: this.options.level
-          })
-        }])
+        const DataStore = this.options.dataStore
+        const dataStore = new DataStore(path.join(this.path, dataStoreDirectory), this.options.dataStoreOptions)
+        log(dataStore)
+        this.store = new MountStore([
+          {
+            prefix: new Key(blockStoreDirectory),
+            datastore: blockStore
+          },
+          {
+            prefix: new Key('/'),
+            datastore: dataStore
+          }
+        ])
 
         this.blockstore = blockstore(this)
         this.closed = false
@@ -197,14 +192,14 @@ class IpfsRepo {
 
     log('closing at: %s', this.path)
     series([
-      (cb) => this._fsStore.delete(apiFile, (err) => {
+      (cb) => this._blockStore.delete(apiFile, (err) => {
         if (err && err.message.startsWith('ENOENT')) {
           return cb()
         }
         cb(err)
       }),
       (cb) => this.store.close(cb),
-      (cb) => this._fsStore.close(cb),
+      (cb) => this._blockStore.close(cb),
       (cb) => {
         log('unlocking')
         this.closed = true
@@ -235,7 +230,7 @@ class IpfsRepo {
    * @returns {void}
    */
   setApiAddress (addr, callback) {
-    this._fsStore.put(apiFile, Buffer.from(addr.toString()), callback)
+    this._blockStore.put(apiFile, Buffer.from(addr.toString()), callback)
   }
 
   /**
@@ -245,7 +240,7 @@ class IpfsRepo {
    * @returns {void}
    */
   apiAddress (callback) {
-    this._fsStore.get(apiFile, (err, rawAddr) => {
+    this._blockStore.get(apiFile, (err, rawAddr) => {
       if (err) {
         return callback(err)
       }
