@@ -43,12 +43,14 @@ class IpfsRepo {
   constructor (repoPath, options) {
     assert.equal(typeof repoPath, 'string', 'missing repoPath')
 
-    const defaultOptions = require('./default-options')
     this.closed = true
     this.path = repoPath
-    this.options = Object.assign({ lock: 'memory', sharding: true }, options || defaultOptions)
+    this.options = Object.assign({ lock: 'memory', sharding: true },
+                                 options, require('./default-options'))
+
     const BlockStore = this.options.blockStore
-    this._blockStore = new BlockStore(this.path, this.options.blockStoreOptions)
+    this._blockStore = new BlockStore(this.path,
+      Object.assign(this.options.blockStoreOptions || {}, { extension: '' }))
 
     this.version = version(this._blockStore)
     this.config = config(this._blockStore)
