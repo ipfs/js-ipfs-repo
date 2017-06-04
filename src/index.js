@@ -127,13 +127,16 @@ class IpfsRepo {
         const DataStore = this.options.dataStore
         const dataStore = new DataStore(path.join(this.path, dataStoreDirectory), this.options.dataStoreOptions)
         log(dataStore)
-        this.store = new MountStore([{
-          prefix: new Key(blockStoreDirectory),
-          datastore: blockStore
-        }, {
-          prefix: new Key('/'),
-          datastore: dataStore
-        }])
+        this.store = new MountStore([
+          {
+            prefix: new Key(blockStoreDirectory),
+            datastore: blockStore
+          },
+          {
+            prefix: new Key('/'),
+            datastore: dataStore
+          }
+        ])
 
         this.blockstore = blockstore(this)
         this.closed = false
@@ -196,8 +199,9 @@ class IpfsRepo {
         cb(err)
       }),
       (cb) => this.store.close(cb),
-      (cb) => this._blockStore.close(cb),
+      (cb) => console.log('closing block...') || this._blockStore.close(cb),
       (cb) => {
+        console.log('lock:', this.lockfile)
         log('unlocking')
         this.closed = true
         this.lockfile.close(cb)

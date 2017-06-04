@@ -4,6 +4,7 @@
 module.exports = {
   blockStore: require('datastore-level'),
   blockStoreOptions: { db: require('level-js') },
-  dataStore: require('level-js'),
+  dataStore: require('datastore-level'),
+  dataStoreOptions: { db: require('level-js') },
   sharding: false
 }
