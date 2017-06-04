@@ -199,9 +199,8 @@ class IpfsRepo {
         cb(err)
       }),
       (cb) => this.store.close(cb),
-      (cb) => console.log('closing block...') || this._blockStore.close(cb),
+      (cb) => this._blockStore.close(cb),
       (cb) => {
-        console.log('lock:', this.lockfile)
         log('unlocking')
         this.closed = true
         this.lockfile.close(cb)
