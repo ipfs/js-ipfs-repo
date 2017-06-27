@@ -43,8 +43,8 @@
   },
   "devDependencies": {
     "aegir": "^11.0.2",
-    "chai": "^3.5.0",
-    "dirty-chai": "^1.2.2",
+    "chai": "^4.0.2",
+    "dirty-chai": "^2.0.0",
     "lodash": "^4.17.4",
     "memdown": "^1.2.4",
     "multihashes": "~0.4.5",
@@ -53,20 +53,20 @@
     "rimraf": "^2.6.1"
   },
   "dependencies": {
-    "async": "^2.4.1",
+    "async": "^2.5.0",
     "base32.js": "^0.1.0",
     "cids": "^0.5.0",
     "datastore-core": "^0.2.0",
     "datastore-fs": "^0.2.0",
-    "datastore-level": "^0.4.0",
+    "datastore-level": "^0.4.2",
     "debug": "^2.6.8",
-    "interface-datastore": "^0.2.1",
+    "interface-datastore": "^0.2.2",
     "ipfs-block": "~0.6.0",
     "level-js": "timkuijsten/level.js#idbunwrapper",
-    "leveldown": "^1.7.0",
+    "leveldown": "^1.7.2",
     "lock-me": "^1.0.2",
     "multiaddr": "^2.3.0",
-    "safe-buffer": "^5.0.1"
+    "safe-buffer": "^5.1.1"
   },
   "license": "MIT",
   "contributors": [
