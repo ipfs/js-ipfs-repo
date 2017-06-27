@@ -13,6 +13,8 @@ const expect = chai.expect
 const IPFSRepo = require('../src')
 
 describe('IPFS Repo Tests on on Node.js', () => {
+  require('./options-test')
+
   const repos = [{
     name: 'default',
     opts: undefined,

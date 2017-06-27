@@ -4,6 +4,9 @@
   "description": "IPFS Repo implementation",
   "main": "src/index.js",
   "browser": {
+    "rimraf": false,
+    "datastore-fs": "datastore-level",
+    "leveldown": "level-js",
     "./src/lock.js": "./src/lock-memory.js",
     "./src/default-options.js": "./src/default-options-browser.js"
   },
