@@ -7,6 +7,7 @@ const series = require('async/series')
 const IPFSRepo = require('../src')
 
 describe('IPFS Repo Tests on the Browser', () => {
+  require('./options-test')
   const repo = new IPFSRepo('myrepo')
 
   before((done) => {

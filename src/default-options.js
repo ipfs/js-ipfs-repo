@@ -2,7 +2,8 @@
 
 // Default configuration for a repo in node.js
 module.exports = {
-  blockStore: require('datastore-fs'),
-  dataStore: require('datastore-level'),
-  dataStoreOptions: { db: require('leveldown') }
+  sharding: true,
+  lock: 'fs',
+  fs: require('datastore-fs'),
+  level: require('leveldown')
 }

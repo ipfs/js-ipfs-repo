@@ -7,18 +7,8 @@ const expect = chai.expect
 const series = require('async/series')
 const waterfall = require('async/waterfall')
 
-const Repo = require('../src')
-
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
-    describe('new', () => {
-      it('missing arguments', () => {
-        expect(
-          () => new Repo()
-        ).to.throw(Error)
-      })
-    })
-
     it('check if Repo exists', (done) => {
       repo.exists((err, exists) => {
         expect(err).to.not.exist()
@@ -83,7 +73,6 @@ module.exports = (repo) => {
           (cb) => repo.open(cb),
           (cb) => repo.version.get(cb),
           (version, cb) => {
-            console.log(version)
             expect(version).to.exist()
             cb()
           }

@@ -13,28 +13,37 @@ const expect = chai.expect
 const IPFSRepo = require('../src')
 
 describe('IPFS Repo Tests on on Node.js', () => {
-  const repos = [
-    {
-      name: 'default',
-      opts: undefined
+  require('./options-test')
+
+  const repos = [{
+    name: 'default',
+    opts: undefined,
+    init: false
+  }, {
+    name: 'memory',
+    opts: {
+      fs: require('interface-datastore').MemoryDatastore,
+      level: require('memdown'),
+      lock: 'memory'
     },
-    {
-      name: 'memory',
-      opts: {
-        blockStore: require('interface-datastore').MemoryDatastore,
-        dataStore: require('interface-datastore').MemoryDatastore
-      }
-    }
-  ]
+    init: true
+  }]
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()
     const repoPath = testRepoPath + '-for-' + date
+
     const repo = new IPFSRepo(repoPath, r.opts)
+
     before((done) => {
       series([
-        (cb) => ncp(testRepoPath, repoPath, cb),
-        (cb) => repo.init({}, cb),
+        (cb) => {
+          if (r.init) {
+            repo.init({}, cb)
+          } else {
+            ncp(testRepoPath, repoPath, cb)
+          }
+        },
         (cb) => repo.open(cb)
       ], done)
     })
@@ -66,7 +75,7 @@ describe('IPFS Repo Tests on on Node.js', () => {
     require('./repo-test')(repo)
     require('./blockstore-test')(repo)
     require('./datastore-test')(repo)
-    if (r.name === 'default') {
+    if (!r.init) {
       require('./interop-test')(repo)
     }
   }))
