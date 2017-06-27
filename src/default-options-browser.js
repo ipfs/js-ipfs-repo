@@ -4,6 +4,7 @@
 module.exports = {
   fs: require('datastore-level'),
   sharding: false,
+  lock: 'memory',
   fsOptions: {
     db: require('level-js')
   },

@@ -18,6 +18,7 @@ const debug = require('debug')
 const version = require('./version')
 const config = require('./config')
 const blockstore = require('./blockstore')
+const defaultOptions = require('./default-options')
 
 const log = debug('repo')
 
@@ -43,21 +44,15 @@ class IpfsRepo {
   constructor (repoPath, options) {
     assert.equal(typeof repoPath, 'string', 'missing repoPath')
 
-    if (options == null) {
-      options = require('./default-options')
-    }
+    this.options = Object.assign({}, defaultOptions, options)
 
     this.closed = true
     this.path = repoPath
-    this.options = Object.assign({
-      sharding: true,
-      lock: 'fs'
-    }, options)
-    this._fsOptions = Object.assign({}, options.fsOptions)
     const FsStore = this.options.fs
-    this._fsStore = new FsStore(this.path, Object.assign({}, this._fsOptions, {
+    const fsOptions = Object.assign({}, this.options.fsOptions, {
       extension: ''
-    }))
+    })
+    this._fsStore = new FsStore(this.path, fsOptions)
 
     this.version = version(this._fsStore)
     this.config = config(this._fsStore)
@@ -122,7 +117,7 @@ class IpfsRepo {
 
         log('creating flatfs')
         const FsStore = this.options.fs
-        const s = new FsStore(path.join(this.path, flatfsDirectory), this._fsOptions)
+        const s = new FsStore(path.join(this.path, flatfsDirectory), Object.assign({}, this.options.fsOptions))
 
         if (this.options.sharding) {
           const shard = new core.shard.NextToLast(2)
