@@ -137,7 +137,75 @@ This now has created the following structure, either on disk or as an in memory 
 
 ## API
 
-See https://ipfs.github.io/js-ipfs-repo
+### new Repo(path[, options])
+
+Creates an IPFS Repo.
+
+Arguments:
+
+* `path` (string, mandatory): the path for this repo
+* `options` (object, optional): may contain the following values
+  * `sharding` (boolean, defaults to `true` in Node.js, `false` in the browser): if `true`, use sharding for the block store.
+  * `lock` (string, defaults to `"fs"` in Node.js, `"memory"` in the browser): what type of lock to use. Lock has to be acquired when opening.
+  * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
+    * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser)
+    * `blocks` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser)
+    * `datastore` (defaults to `datastore-level`)
+
+```js
+const repo = new Repo('path/to/repo')
+```
+
+### repo.init (callback)
+
+Creates the necesary folder structure inside the repo.
+
+### repo.open (callback)
+
+Locks the repo.
+
+### repo.close (callback)
+
+Unlocks the repo.
+
+### repo.put (key, value:Buffer, callback)
+
+Put a value at the root of the repo.
+
+* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+
+### repo.get (key, callback)
+
+Get a value at the root of the repo.
+
+* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `callback` is a callback function `function (err, result:Buffer)`
+
+### repo.blocks.put (key, value, callback)
+
+Put block.
+
+* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `value` should be a buffer.
+
+### repo.blocks.get (key, callback)
+
+Get block.
+
+* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `callback` is a callback function `function (err, result:Buffer)`
+
+### repo.datastore
+
+This is contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
+
+### repo.config.put(key:string, value, callback)
+
+Set a config value. `value` can be any object that is serializable to JSON.
+
+### repo.config.get(key:string, callback)
+
+Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `value` is of the same type that was set before.
 
 ## Notes
 
