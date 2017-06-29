@@ -13,7 +13,8 @@ module.exports = {
       extension: ''
     },
     blocks: {
-      sharding: true
+      sharding: true,
+      extension: '.data'
     }
   }
 }

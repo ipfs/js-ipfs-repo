@@ -13,13 +13,7 @@ module.exports = (store) => {
      * @returns {void}
      */
     get (callback) {
-      store.get(apiFile, (err, value) => {
-        if (err) {
-          return callback(err)
-        }
-
-        callback(err, value && value.toString())
-      })
+      store.get(apiFile, (err, value) => callback(err, value && value.toString()))
     },
     /**
      * Set the current configuration for this repo.

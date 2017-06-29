@@ -75,7 +75,7 @@ class IpfsRepo {
    */
   open (callback) {
     if (!this.closed) {
-      callback(new Error('repo is already open'))
+      setImmediate(() => callback(new Error('repo is already open')))
       return // early
     }
     log('opening at: %s', this.path)
