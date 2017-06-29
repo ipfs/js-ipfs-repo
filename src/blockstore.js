@@ -30,8 +30,8 @@ const cidToDsKey = (cid) => {
   return keyFromBuffer(cid.buffer)
 }
 
-module.exports = (filestore, datastore, options, callback) => {
-  maybeWithSharding(filestore, datastore, options, (err, store) => {
+module.exports = (filestore, options, callback) => {
+  maybeWithSharding(filestore, options, (err, store) => {
     if (err) {
       callback(err)
       return // early
@@ -41,7 +41,7 @@ module.exports = (filestore, datastore, options, callback) => {
   })
 }
 
-function maybeWithSharding (filestore, datastore, options, callback) {
+function maybeWithSharding (filestore, options, callback) {
   if (options.sharding) {
     const shard = new core.shard.NextToLast(2)
     ShardingStore.createOrOpen(filestore, shard, callback)

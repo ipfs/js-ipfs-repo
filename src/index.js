@@ -97,7 +97,6 @@ class IpfsRepo {
         const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
         blockstore(
           blocksBaseStore,
-          this.datastore,
           this.options.storageBackendOptions.blocks,
           cb)
       },
