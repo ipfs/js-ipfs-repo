@@ -1,44 +1,62 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
+const queue = require('async/queue')
+const waterfall = require('async/waterfall')
 
 const configKey = new Key('config')
 
 module.exports = (store) => {
-  return {
+  const setQueue = queue(_set, 1)
+
+  const configStore = {
     /**
      * Get the current configuration from the repo.
      *
+     * @param {String} key - the config key to get
      * @param {function(Error, Object)} callback
      * @returns {void}
      */
-    get (callback) {
-      store.get(configKey, (err, value) => {
+    get (key, callback) {
+      if (typeof key === 'function') {
+        callback = key
+        key = undefined
+      }
+      store.get(configKey, (err, encodedValue) => {
         if (err) {
           return callback(err)
         }
 
         let config
         try {
-          config = JSON.parse(value.toString())
+          config = JSON.parse(encodedValue.toString())
         } catch (err) {
           return callback(err)
         }
-        callback(null, config)
+        let value = key ? config[key] : config
+        callback(null, value)
       })
     },
     /**
      * Set the current configuration for this repo.
      *
-     * @param {Object} config - the config object to be written
+     * @param {String} key - the config key to be written
+     * @param {Object} value - the config value to be written
      * @param {function(Error)} callback
      * @returns {void}
      */
-    set (config, callback) {
-      const buf = new Buffer(JSON.stringify(config, null, 2))
-
-      store.put(configKey, buf, callback)
+    set (key, value, callback) {
+      if (typeof value === 'function') {
+        callback = value
+        value = key
+        key = undefined
+      }
+      setQueue.push({
+        key: key,
+        value: value
+      }, callback)
     },
+
     /**
      * Check if a config file exists.
      *
@@ -48,5 +66,31 @@ module.exports = (store) => {
     exists (callback) {
       store.has(configKey, callback)
     }
+  }
+
+  return configStore
+
+  function _set (m, callback) {
+    const key = m.key
+    const value = m.value
+    if (key) {
+      waterfall(
+        [
+          (cb) => configStore.get(cb),
+          (config, cb) => {
+            config[key] = value
+            cb(null, config)
+          },
+          (newConfig, cb) => _saveAll(newConfig, cb)
+        ],
+        callback)
+    } else {
+      _saveAll(value, callback)
+    }
+  }
+
+  function _saveAll (config, callback) {
+    const buf = new Buffer(JSON.stringify(config, null, 2))
+    store.put(configKey, buf, callback)
   }
 }

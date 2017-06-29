@@ -202,9 +202,19 @@ This is contains a full implementation of [the `interface-datastore` API](https:
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
+
+### repo.config.put(value, callback)
+
+Set the whole config value. `value` can be any object that is serializable to JSON.
+
 ### repo.config.get(key:string, callback)
 
-Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `value` is of the same type that was set before.
+Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `
+value` is of the same type that was set before.
+
+### repo.config.get(callback)
+
+Get the entire config value. `callback` is a function with the signature: `function (err, configValue:Object)`.
 
 ## Notes
 
