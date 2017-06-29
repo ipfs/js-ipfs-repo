@@ -15,7 +15,7 @@ module.exports = (repo) => {
         '1220120f6af601d46e10b2d2e11ed71c55d25f3042c22501e41d1246e7a1e9d3d8ec'
       )
 
-      repo.blockstore.get(new CID(welcomeHash), (err, val) => {
+      repo.blocks.get(new CID(welcomeHash), (err, val) => {
         expect(err).to.not.exist()
         expect(
           val.data.toString()
@@ -27,7 +27,7 @@ module.exports = (repo) => {
     })
 
     it('reads pin set from the datastore', (done) => {
-      repo.store.get(new Key('/local/pins'), (err, val) => {
+      repo.datastore.get(new Key('/local/pins'), (err, val) => {
         expect(err).to.not.exist()
         expect(val).to.have.length(34)
         done()

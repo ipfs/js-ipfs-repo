@@ -145,7 +145,6 @@ Arguments:
 
 * `path` (string, mandatory): the path for this repo
 * `options` (object, optional): may contain the following values
-  * `sharding` (boolean, defaults to `true` in Node.js, `false` in the browser): if `true`, use sharding for the block store.
   * `lock` (string, defaults to `"fs"` in Node.js, `"memory"` in the browser): what type of lock to use. Lock has to be acquired when opening.
   * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
     * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser)

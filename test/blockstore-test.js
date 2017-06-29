@@ -34,13 +34,13 @@ module.exports = (repo) => {
 
     describe('.put', () => {
       it('simple', (done) => {
-        repo.blockstore.put(b, done)
+        repo.blocks.put(b, done)
       })
 
       it('multi write (locks)', (done) => {
         parallel([
-          (cb) => repo.blockstore.put(b, cb),
-          (cb) => repo.blockstore.put(b, cb)
+          (cb) => repo.blocks.put(b, cb),
+          (cb) => repo.blocks.put(b, cb)
         ], done)
       })
 
@@ -49,7 +49,7 @@ module.exports = (repo) => {
         multihashing(d, 'sha2-256', (err, multihash) => {
           expect(err).to.not.exist()
           const empty = new Block(d, new CID(multihash))
-          repo.blockstore.put(empty, done)
+          repo.blocks.put(empty, done)
         })
       })
 
@@ -60,7 +60,7 @@ module.exports = (repo) => {
           }, cb),
           (hashes, cb) => each(_.range(100), (i, cb) => {
             const block = new Block(blockData[i], new CID(hashes[i]))
-            repo.blockstore.put(block, cb)
+            repo.blocks.put(block, cb)
           }, cb)
         ], done)
       })
@@ -77,10 +77,10 @@ module.exports = (repo) => {
             })
           }, cb),
           (blocks, cb) => {
-            repo.blockstore.putMany(blocks, (err) => {
+            repo.blocks.putMany(blocks, (err) => {
               expect(err).to.not.exist()
               map(blocks, (b, cb) => {
-                repo.blockstore.get(b.cid, cb)
+                repo.blocks.get(b.cid, cb)
               }, (err, res) => {
                 expect(err).to.not.exist()
                 expect(res).to.be.eql(blocks)
@@ -92,7 +92,7 @@ module.exports = (repo) => {
       })
 
       it('returns an error on invalid block', (done) => {
-        repo.blockstore.put('hello', (err) => {
+        repo.blocks.put('hello', (err) => {
           expect(err).to.exist()
           done()
         })
@@ -101,7 +101,7 @@ module.exports = (repo) => {
 
     describe('.get', () => {
       it('simple', (done) => {
-        repo.blockstore.get(b.cid, (err, block) => {
+        repo.blocks.get(b.cid, (err, block) => {
           expect(err).to.not.exist()
           expect(block).to.be.eql(b)
           done()
@@ -115,7 +115,7 @@ module.exports = (repo) => {
             (cb) => multihashing(blockData[j], 'sha2-256', cb),
             (h, cb) => {
               const cid = new CID(h)
-              repo.blockstore.get(cid, cb)
+              repo.blocks.get(cid, cb)
             },
             (block, cb) => {
               expect(block.data).to.be.eql(blockData[j])
@@ -126,7 +126,7 @@ module.exports = (repo) => {
       })
 
       it('returns an error on invalid block', (done) => {
-        repo.blockstore.get('woot', (err, val) => {
+        repo.blocks.get('woot', (err, val) => {
           expect(err).to.exist()
           expect(val).to.not.exist()
           done()
@@ -136,7 +136,7 @@ module.exports = (repo) => {
 
     describe('.has', () => {
       it('existing block', (done) => {
-        repo.blockstore.has(b.cid, (err, exists) => {
+        repo.blocks.has(b.cid, (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(true)
           done()
@@ -144,7 +144,7 @@ module.exports = (repo) => {
       })
 
       it('non existent block', (done) => {
-        repo.blockstore.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'), (err, exists) => {
+        repo.blocks.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'), (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(false)
           done()
@@ -155,8 +155,8 @@ module.exports = (repo) => {
     describe('.delete', () => {
       it('simple', (done) => {
         waterfall([
-          (cb) => repo.blockstore.delete(b.cid, cb),
-          (cb) => repo.blockstore.has(b.cid, cb)
+          (cb) => repo.blocks.delete(b.cid, cb),
+          (cb) => repo.blocks.has(b.cid, cb)
         ], (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.equal(false)

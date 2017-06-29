@@ -19,26 +19,26 @@ module.exports = (repo) => {
 
     describe('.put', () => {
       it('simple', (done) => {
-        repo.store.put(b, data, done)
+        repo.datastore.put(b, data, done)
       })
 
       it('multi write (locks)', (done) => {
         parallel([
-          (cb) => repo.store.put(b, data, cb),
-          (cb) => repo.store.put(b, data, cb)
+          (cb) => repo.datastore.put(b, data, cb),
+          (cb) => repo.datastore.put(b, data, cb)
         ], done)
       })
 
       it('massive multiwrite', (done) => {
         each(_.range(100), (i, cb) => {
-          repo.store.put(new Key('hello' + i), dataList[i], cb)
+          repo.datastore.put(new Key('hello' + i), dataList[i], cb)
         }, done)
       })
     })
 
     describe('.get', () => {
       it('simple', (done) => {
-        repo.store.get(b, (err, val) => {
+        repo.datastore.get(b, (err, val) => {
           expect(err).to.not.exist()
           expect(val).to.be.eql(data)
           done()
@@ -48,7 +48,7 @@ module.exports = (repo) => {
       it('massive read', (done) => {
         parallel(_.range(20 * 100).map((i) => (cb) => {
           const j = i % dataList.length
-          repo.store.get(new Key('hello' + j), (err, val) => {
+          repo.datastore.get(new Key('hello' + j), (err, val) => {
             expect(err).to.not.exist()
             expect(val).to.be.eql(dataList[j])
             cb()
@@ -59,7 +59,7 @@ module.exports = (repo) => {
 
     describe('.has', () => {
       it('existing entry', (done) => {
-        repo.store.has(b, (err, exists) => {
+        repo.datastore.has(b, (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(true)
           done()
@@ -67,7 +67,7 @@ module.exports = (repo) => {
       })
 
       it('non existent block', (done) => {
-        repo.store.has(new Key('world'), (err, exists) => {
+        repo.datastore.has(new Key('world'), (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(false)
           done()
@@ -78,8 +78,8 @@ module.exports = (repo) => {
     describe('.delete', () => {
       it('simple', (done) => {
         waterfall([
-          (cb) => repo.store.delete(b, cb),
-          (cb) => repo.store.has(b, cb)
+          (cb) => repo.datastore.delete(b, cb),
+          (cb) => repo.datastore.has(b, cb)
         ], (err, exists) => {
           expect(err).to.not.exist()
           expect(exists).to.equal(false)

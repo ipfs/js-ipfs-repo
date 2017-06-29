@@ -34,19 +34,31 @@ function noop () {}
 
 function expectedRepoOptions () {
   const options = {
-    // packages are exchanged to browser-compatible
-    // equivalents via package.browser.
-    fs: require('datastore-fs'),
-    level: require('leveldown'),
     lock: process.browser ? 'memory' : 'fs',
-    sharding: !process.browser
-  }
-
-  if (process.browser) {
-    options.fsOptions = {
-      db: require('leveldown')
+    storageBackends: {
+      // packages are exchanged to browser-compatible
+      // equivalents via package.browser
+      root: require('datastore-fs'),
+      blocks: require('datastore-fs'),
+      datastore: require('datastore-level')
+    },
+    storageBackendOptions: {
+      root: {
+        extension: ''
+      },
+      blocks: {
+        sharding: true
+      }
     }
   }
 
+  if (process.browser) {
+    options.storageBackendOptions.root.db = require('leveldown')
+    options.storageBackendOptions.blocks.db = require('leveldown')
+    options.storageBackendOptions.blocks.sharding = false
+    options.storageBackendOptions.datastore = {
+      db: require('leveldown')
+    }
+  }
   return options
 }
