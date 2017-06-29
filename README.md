@@ -169,6 +169,10 @@ Locks the repo.
 
 Unlocks the repo.
 
+#### repo.exists (callback)
+
+Tells whether this repo exists or not. Callsback with `(err, bool)`.
+
 ### Repos
 
 #### repo.put (key, value:Buffer, callback)
