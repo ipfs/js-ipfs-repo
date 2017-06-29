@@ -137,7 +137,9 @@ This now has created the following structure, either on disk or as an in memory 
 
 ## API
 
-### new Repo(path[, options])
+### Setup
+
+#### new Repo(path[, options])
 
 Creates an IPFS Repo.
 
@@ -155,66 +157,94 @@ Arguments:
 const repo = new Repo('path/to/repo')
 ```
 
-### repo.init (callback)
+#### repo.init (callback)
 
 Creates the necesary folder structure inside the repo.
 
-### repo.open (callback)
+#### repo.open (callback)
 
 Locks the repo.
 
-### repo.close (callback)
+#### repo.close (callback)
 
 Unlocks the repo.
 
-### repo.put (key, value:Buffer, callback)
+### Repos
+
+#### repo.put (key, value:Buffer, callback)
 
 Put a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 
-### repo.get (key, callback)
+#### repo.get (key, callback)
 
 Get a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
 
-### repo.blocks.put (key, value, callback)
+#### repo.blocks.put (key, value, callback)
 
 Put block.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `value` should be a buffer.
 
-### repo.blocks.get (key, callback)
+#### repo.blocks.get (key, callback)
 
 Get block.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
 
-### repo.datastore
+#### repo.datastore
 
 This is contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
 
-### repo.config.put(key:string, value, callback)
+
+### Convenience
+
+#### repo.config
+
+##### repo.config.put(key:string, value, callback)
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
 
-### repo.config.put(value, callback)
+##### repo.config.put(value, callback)
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-### repo.config.get(key:string, callback)
+##### repo.config.get(key:string, callback)
 
 Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `
 value` is of the same type that was set before.
 
-### repo.config.get(callback)
+##### repo.config.get(callback)
 
 Get the entire config value. `callback` is a function with the signature: `function (err, configValue:Object)`.
+
+#### repo.version
+
+##### repo.version.get (callback)
+
+Gets the repo version.
+
+##### repo.version.set (version:number, callback)
+
+Sets the repo version
+
+#### repo.apiAddr
+
+#### repo.apiAddr.get (callback)
+
+Gets the API address.
+
+#### repo.apiAddr.set (value:string, callback)
+
+Sets the API address.
+
 
 ## Notes
 
