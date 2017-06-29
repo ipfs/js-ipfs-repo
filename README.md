@@ -184,18 +184,21 @@ Get a value at the root of the repo.
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
 
-#### repo.blocks.put (key, value, callback)
+#### repo.blocks.put (block:Block, callback)
 
-Put block.
+* `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
-* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
-* `value` should be a buffer.
+#### repo.blocks.putMany (blocks, callback)
 
-#### repo.blocks.get (key, callback)
+Put many blocks block.
+
+* `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+
+#### repo.blocks.get (cid, callback)
 
 Get block.
 
-* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `cid` is the content id of [type CID](https://github.com/ipld/js-cid#readme).
 * `callback` is a callback function `function (err, result:Buffer)`
 
 #### repo.datastore
