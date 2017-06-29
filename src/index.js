@@ -41,7 +41,7 @@ class IpfsRepo {
     this.path = repoPath
 
     this._locker = lockers[this.options.lock]
-    assert(this._locker, 'Unkown lock type: ' + this.options.lock)
+    assert(this._locker, 'Unknown lock type: ' + this.options.lock)
 
     this.root = backends.create('root', this.path, this.options)
     this.version = version(this.root)
