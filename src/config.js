@@ -5,6 +5,7 @@ const queue = require('async/queue')
 const waterfall = require('async/waterfall')
 const _get = require('lodash.get')
 const _set = require('lodash.set')
+const _has = require('lodash.has')
 
 const configKey = new Key('config')
 
@@ -34,6 +35,10 @@ module.exports = (store) => {
           config = JSON.parse(encodedValue.toString())
         } catch (err) {
           return callback(err)
+        }
+        if (key !== undefined && !_has(config, key)) {
+          callback(new Error('Key does not exist in config'))
+          return // early
         }
         let value = key !== undefined ? _get(config, key) : config
         callback(null, value)
