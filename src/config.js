@@ -3,11 +3,13 @@
 const Key = require('interface-datastore').Key
 const queue = require('async/queue')
 const waterfall = require('async/waterfall')
+const _get = require('lodash.get')
+const _set = require('lodash.set')
 
 const configKey = new Key('config')
 
 module.exports = (store) => {
-  const setQueue = queue(_set, 1)
+  const setQueue = queue(_doSet, 1)
 
   const configStore = {
     /**
@@ -33,7 +35,7 @@ module.exports = (store) => {
         } catch (err) {
           return callback(err)
         }
-        let value = key ? config[key] : config
+        let value = key !== undefined ? _get(config, key) : config
         callback(null, value)
       })
     },
@@ -70,18 +72,15 @@ module.exports = (store) => {
 
   return configStore
 
-  function _set (m, callback) {
+  function _doSet (m, callback) {
     const key = m.key
     const value = m.value
     if (key) {
       waterfall(
         [
           (cb) => configStore.get(cb),
-          (config, cb) => {
-            config[key] = value
-            cb(null, config)
-          },
-          (newConfig, cb) => _saveAll(newConfig, cb)
+          (config, cb) => cb(null, _set(config, key, value)),
+          _saveAll
         ],
         callback)
     } else {

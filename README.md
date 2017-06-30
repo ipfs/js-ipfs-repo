@@ -214,9 +214,21 @@ This is contains a full implementation of [the `interface-datastore` API](https:
 
 #### repo.config
 
-##### repo.config.put(key:string, value, callback)
+##### repo.config.set(key:string, value, callback)
 
 Set a config value. `value` can be any object that is serializable to JSON.
+
+* `key` is a string specifying the object path. Example:
+
+```js
+repo.config.set('a.b.c', 'c value', (err) => {
+  if (err) throw err
+  repo.config.get((err, config) => {
+    if (err) throw err
+    assert.equal(config.a.b.c, 'c value')
+  })
+})
+```
 
 
 ##### repo.config.put(value, callback)

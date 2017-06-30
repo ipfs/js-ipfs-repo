@@ -51,10 +51,10 @@ module.exports = (repo) => {
 
       it('set config key', (done) => {
         series([
-          (cb) => repo.config.set('c', 'd', cb),
+          (cb) => repo.config.set('c.x', 'd', cb),
           (cb) => repo.config.get((err, config) => {
             if (err) return cb(err)
-            expect(config).to.deep.equal({a: 'b', c: 'd'})
+            expect(config).to.deep.equal({a: 'b', c: { x: 'd' }})
             cb()
           })
         ], done)
