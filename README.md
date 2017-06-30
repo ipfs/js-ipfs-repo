@@ -228,10 +228,10 @@ repo.config.set('a.b.c', 'c value', (err) => {
     assert.equal(config.a.b.c, 'c value')
   })
 })
-```
+``
 
 
-##### repo.config.put(value, callback)
+##### repo.config.set(value, callback)
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
@@ -239,6 +239,15 @@ Set the whole config value. `value` can be any object that is serializable to JS
 
 Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `
 value` is of the same type that was set before.
+
+* `key` is a string specifying the object path. Example:
+
+```js
+repo.config.set('a.b.c', (err, value) => {
+  if (err) throw err
+  console.log('config.a.b.c = ', value)
+})
+```
 
 ##### repo.config.get(callback)
 
