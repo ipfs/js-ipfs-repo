@@ -190,7 +190,7 @@ Get a value at the root of the repo.
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
 
-Blocks:
+[Blocks](https://github.com/ipfs/js-ipfs-block#readme):
 
 #### repo.blocks.put (block:Block, callback)
 
