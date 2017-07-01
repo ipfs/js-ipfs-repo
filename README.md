@@ -175,6 +175,8 @@ Tells whether this repo exists or not. Callsback with `(err, bool)`.
 
 ### Repos
 
+Root repo:
+
 #### repo.put (key, value:Buffer, callback)
 
 Put a value at the root of the repo.
@@ -187,6 +189,8 @@ Get a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
+
+Blocks:
 
 #### repo.blocks.put (block:Block, callback)
 
@@ -204,6 +208,8 @@ Get block.
 
 * `cid` is the content id of [type CID](https://github.com/ipld/js-cid#readme).
 * `callback` is a callback function `function (err, result:Buffer)`
+
+Datastore:
 
 #### repo.datastore
 
