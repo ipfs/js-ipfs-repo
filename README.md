@@ -159,7 +159,7 @@ const repo = new Repo('path/to/repo')
 
 #### repo.init (callback)
 
-Creates the necesary folder structure inside the repo.
+Creates the necessary folder structure inside the repo.
 
 #### repo.open (callback)
 
@@ -198,7 +198,7 @@ Get a value at the root of the repo.
 
 #### repo.blocks.putMany (blocks, callback)
 
-Put many blocks block.
+Put many blocks.
 
 * `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
