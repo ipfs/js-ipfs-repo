@@ -210,9 +210,11 @@ Get block.
 This is contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
 
 
-### Convenience
+### Utils
 
 #### repo.config
+
+Instead of using `repo.set('config')` this exposes an API that allows you to set and get a decoded config object, as well as, in a safe manner, change any of the config values individually.
 
 ##### repo.config.set(key:string, value, callback)
 
@@ -228,7 +230,7 @@ repo.config.set('a.b.c', 'c value', (err) => {
     assert.equal(config.a.b.c, 'c value')
   })
 })
-``
+```
 
 
 ##### repo.config.set(value, callback)
@@ -269,9 +271,11 @@ Sets the repo version
 
 Gets the API address.
 
-#### repo.apiAddr.set (value:string, callback)
+#### repo.apiAddr.set (value, callback)
 
 Sets the API address.
+
+* `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
 
 
 ## Notes
