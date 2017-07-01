@@ -239,7 +239,7 @@ repo.config.set('a.b.c', 'c value', (err) => {
 ```
 
 
-##### repo.config.set(value, callback)
+##### repo.config.get(value, callback)
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
@@ -251,7 +251,7 @@ value` is of the same type that was set before.
 * `key` is a string specifying the object path. Example:
 
 ```js
-repo.config.set('a.b.c', (err, value) => {
+repo.config.get('a.b.c', (err, value) => {
   if (err) throw err
   console.log('config.a.b.c = ', value)
 })
