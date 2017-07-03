@@ -32,10 +32,7 @@ const cidToDsKey = (cid) => {
 
 module.exports = (filestore, options, callback) => {
   maybeWithSharding(filestore, options, (err, store) => {
-    if (err) {
-      callback(err)
-      return // early
-    }
+    if (err) { return callback(err) }
 
     callback(null, createBaseStore(store))
   })
@@ -68,9 +65,7 @@ function createBaseStore (store) {
 
       const k = cidToDsKey(cid)
       store.get(k, (err, blockData) => {
-        if (err) {
-          return callback(err)
-        }
+        if (err) { return callback(err) }
 
         callback(null, new Block(blockData, cid))
       })
@@ -85,12 +80,8 @@ function createBaseStore (store) {
       const k = cidToDsKey(block.cid)
 
       store.has(k, (err, exists) => {
-        if (err) {
-          return callback(err)
-        }
-        if (exists) {
-          return callback()
-        }
+        if (err) { return callback(err) }
+        if (exists) { return callback() }
 
         store.put(k, block.data, callback)
       })

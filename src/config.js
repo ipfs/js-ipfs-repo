@@ -27,9 +27,7 @@ module.exports = (store) => {
         key = undefined
       }
       store.get(configKey, (err, encodedValue) => {
-        if (err) {
-          return callback(err)
-        }
+        if (err) { return callback(err) }
 
         let config
         try {

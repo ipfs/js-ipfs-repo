@@ -161,8 +161,7 @@ class IpfsRepo {
    */
   close (callback) {
     if (this.closed) {
-      callback(new Error('repo is already closed'))
-      return // early
+      return callback(new Error('repo is already closed'))
     }
 
     log('closing at: %s', this.path)
