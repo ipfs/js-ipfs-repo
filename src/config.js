@@ -36,8 +36,7 @@ module.exports = (store) => {
           return callback(err)
         }
         if (key !== undefined && !_has(config, key)) {
-          callback(new Error('Key does not exist in config'))
-          return // early
+          return callback(new Error('Key ' + key + ' does not exist in config'))
         }
         let value = key !== undefined ? _get(config, key) : config
         callback(null, value)

@@ -198,24 +198,17 @@ class IpfsRepo {
 
 module.exports = IpfsRepo
 
-function ignoringAlreadyOpened (cb) {
-  return (_err) => {
-    let err = _err
-    if (err && err.message === 'Already open') {
-      err = null
-    }
-    cb(err)
+function ignoringIf (cond, cb) {
+  return (err) => {
+    cb(err && !cond(err) ? err : null)
   }
+}
+function ignoringAlreadyOpened (cb) {
+  return ignoringIf((err) => err.message === 'Already open', cb)
 }
 
 function ignoringNotFound (cb) {
-  return (_err) => {
-    let err = _err
-    if (err && err.message.startsWith('ENOENT')) {
-      err = null
-    }
-    cb(err)
-  }
+  return ignoringIf((err) => err.message.startsWith('ENOENT'), cb)
 }
 
 function buildOptions (_options) {
