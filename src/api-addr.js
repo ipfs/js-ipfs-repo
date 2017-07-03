@@ -1,6 +1,7 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
+const Buffer = require('safe-buffer').Buffer
 
 const apiFile = new Key('api')
 

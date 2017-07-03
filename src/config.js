@@ -6,6 +6,7 @@ const waterfall = require('async/waterfall')
 const _get = require('lodash.get')
 const _set = require('lodash.set')
 const _has = require('lodash.has')
+const Buffer = require('safe-buffer').Buffer
 
 const configKey = new Key('config')
 
@@ -94,7 +95,7 @@ module.exports = (store) => {
   }
 
   function _saveAll (config, callback) {
-    const buf = new Buffer(JSON.stringify(config, null, 2))
+    const buf = Buffer.from(JSON.stringify(config, null, 2))
     store.put(configKey, buf, callback)
   }
 }
