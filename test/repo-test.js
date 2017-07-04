@@ -40,6 +40,25 @@ module.exports = (repo) => {
           })
         ], done)
       })
+
+      it('get config key', (done) => {
+        repo.config.get('a', (err, value) => {
+          expect(err).to.not.exist()
+          expect(value).to.equal('b')
+          done()
+        })
+      })
+
+      it('set config key', (done) => {
+        series([
+          (cb) => repo.config.set('c.x', 'd', cb),
+          (cb) => repo.config.get((err, config) => {
+            if (err) return cb(err)
+            expect(config).to.deep.equal({a: 'b', c: { x: 'd' }})
+            cb()
+          })
+        ], done)
+      })
     })
 
     describe('version', () => {

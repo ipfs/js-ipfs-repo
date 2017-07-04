@@ -1,30 +1,27 @@
 'use strict'
 
-const core = require('datastore-core')
-const MountStore = core.MountDatastore
-const ShardingStore = core.ShardingDatastore
-
-const Key = require('interface-datastore').Key
-const LevelStore = require('datastore-level')
 const waterfall = require('async/waterfall')
 const series = require('async/series')
 const parallel = require('async/parallel')
-const Multiaddr = require('multiaddr')
-const Buffer = require('safe-buffer').Buffer
+const each = require('async/each')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
 
+const backends = require('./backends')
 const version = require('./version')
 const config = require('./config')
+const apiAddr = require('./api-addr')
 const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
 
 const log = debug('repo')
 
-const apiFile = new Key('api')
-const flatfsDirectory = 'blocks'
-const levelDirectory = 'datastore'
+const lockers = {
+  memory: require('./lock-memory'),
+  fs: require('./lock')
+}
+
 const repoVersion = 5
 
 /**
@@ -35,35 +32,21 @@ class IpfsRepo {
   /**
    * @param {string} repoPath - path where the repo is stored
    * @param {object} options - Configuration
-   * @param {Datastore} options.fs
-   * @param {Leveldown} options.level
-   * @param {object} [options.fsOptions={}]
-   * @param {bool} [options.sharding=true] - Enable sharding (flatfs on disk), not needed in the browser.
-   * @param {string} [options.lock='fs'] - Either `fs` or `memory`.
    */
   constructor (repoPath, options) {
     assert.equal(typeof repoPath, 'string', 'missing repoPath')
 
-    this.options = Object.assign({}, defaultOptions, options)
-
+    this.options = buildOptions(options)
     this.closed = true
     this.path = repoPath
-    const FsStore = this.options.fs
-    const fsOptions = Object.assign({}, this.options.fsOptions, {
-      extension: ''
-    })
-    this._fsStore = new FsStore(this.path, fsOptions)
 
-    this.version = version(this._fsStore)
-    this.config = config(this._fsStore)
+    this._locker = lockers[this.options.lock]
+    assert(this._locker, 'Unknown lock type: ' + this.options.lock)
 
-    if (this.options.lock === 'memory') {
-      this._locker = require('./lock-memory')
-    } else if (this.options.lock === 'fs') {
-      this._locker = require('./lock')
-    } else {
-      throw new Error('Unkown lock options: ' + this.options.lock)
-    }
+    this.root = backends.create('root', this.path, this.options)
+    this.version = version(this.root)
+    this.config = config(this.root)
+    this.apiAddr = apiAddr(this.root)
   }
 
   /**
@@ -77,12 +60,7 @@ class IpfsRepo {
     log('initializing at: %s', this.path)
 
     series([
-      (cb) => this._fsStore.open((err) => {
-        if (err && err.message === 'Already open') {
-          return cb()
-        }
-        cb(err)
-      }),
+      (cb) => this.root.open(ignoringAlreadyOpened(cb)),
       (cb) => this.config.set(config, cb),
       (cb) => this.version.set(repoVersion, cb)
     ], callback)
@@ -97,60 +75,53 @@ class IpfsRepo {
    */
   open (callback) {
     if (!this.closed) {
-      return callback(new Error('repo is already open'))
+      setImmediate(() => callback(new Error('repo is already open')))
+      return // early
     }
     log('opening at: %s', this.path)
 
     // check if the repo is already initialized
     waterfall([
-      (cb) => this._fsStore.open((err) => {
-        if (err && err.message === 'Already open') {
-          return cb()
-        }
-        cb(err)
-      }),
+      (cb) => this.root.open(ignoringAlreadyOpened(cb)),
       (cb) => this._isInitialized(cb),
       (cb) => this._locker.lock(this.path, cb),
       (lck, cb) => {
         log('aquired repo.lock')
         this.lockfile = lck
-
-        log('creating flatfs')
-        const FsStore = this.options.fs
-        const s = new FsStore(path.join(this.path, flatfsDirectory), Object.assign({}, this.options.fsOptions))
-
-        if (this.options.sharding) {
-          const shard = new core.shard.NextToLast(2)
-          ShardingStore.createOrOpen(s, shard, cb)
-        } else {
-          cb(null, s)
-        }
+        cb()
       },
-      (flatfs, cb) => {
-        log('Flatfs store opened')
-        this.store = new MountStore([{
-          prefix: new Key(flatfsDirectory),
-          datastore: flatfs
-        }, {
-          prefix: new Key('/'),
-          datastore: new LevelStore(path.join(this.path, levelDirectory), {
-            db: this.options.level
-          })
-        }])
-
-        this.blockstore = blockstore(this)
+      (cb) => {
+        log('creating datastore')
+        this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
+        log('creating blocks')
+        const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
+        blockstore(
+          blocksBaseStore,
+          this.options.storageBackendOptions.blocks,
+          cb)
+      },
+      (blocks, cb) => {
+        this.blocks = blocks
+        cb()
+      },
+      (cb) => {
         this.closed = false
+        log('all opened')
         cb()
       }
     ], (err) => {
       if (err && this.lockfile) {
-        return this.lockfile.close((err2) => {
-          log('error removing lock', err2)
+        this.lockfile.close((err2) => {
+          if (!err2) {
+            this.lockfile = null
+          } else {
+            log('error removing lock', err2)
+          }
           callback(err)
         })
+      } else {
+        callback(err)
       }
-
-      callback(err)
     })
   }
 
@@ -163,20 +134,23 @@ class IpfsRepo {
    */
   _isInitialized (callback) {
     log('init check')
-    parallel([
-      (cb) => this.config.exists(cb),
-      (cb) => this.version.check(repoVersion, cb)
-    ], (err, res) => {
-      log('init', err, res)
-      if (err) {
-        return callback(err)
-      }
+    parallel(
+      {
+        config: (cb) => this.config.exists(cb),
+        version: (cb) => this.version.check(repoVersion, cb)
+      },
+      (err, res) => {
+        log('init', err, res)
+        if (err) {
+          return callback(err)
+        }
 
-      if (!res[0]) {
-        return callback(new Error('repo is not initialized yet'))
+        if (!res.config) {
+          return callback(new Error('repo is not initialized yet'))
+        }
+        callback()
       }
-      callback()
-    })
+    )
   }
 
   /**
@@ -192,14 +166,13 @@ class IpfsRepo {
 
     log('closing at: %s', this.path)
     series([
-      (cb) => this._fsStore.delete(apiFile, (err) => {
-        if (err && err.message.startsWith('ENOENT')) {
-          return cb()
-        }
-        cb(err)
-      }),
-      (cb) => this.store.close(cb),
-      (cb) => this._fsStore.close(cb),
+      (cb) => this.apiAddr.delete(ignoringNotFound(cb)),
+      (cb) => {
+        each(
+          [this.blocks, this.datastore],
+          (store, callback) => store.close(callback),
+          cb)
+      },
       (cb) => {
         log('unlocking')
         this.closed = true
@@ -221,33 +194,35 @@ class IpfsRepo {
   exists (callback) {
     this.version.exists(callback)
   }
-
-  /**
-   * Set the api address, by writing it to the `/api` file.
-   *
-   * @param {Multiaddr} addr
-   * @param {function(Error)} callback
-   * @returns {void}
-   */
-  setApiAddress (addr, callback) {
-    this._fsStore.put(apiFile, Buffer.from(addr.toString()), callback)
-  }
-
-  /**
-   * Returns the registered API address, according to the `/api` file in this respo.
-   *
-   * @param {function(Error, Mulitaddr)} callback
-   * @returns {void}
-   */
-  apiAddress (callback) {
-    this._fsStore.get(apiFile, (err, rawAddr) => {
-      if (err) {
-        return callback(err)
-      }
-
-      callback(null, new Multiaddr(rawAddr.toString()))
-    })
-  }
 }
 
 module.exports = IpfsRepo
+
+function ignoringIf (cond, cb) {
+  return (err) => {
+    cb(err && !cond(err) ? err : null)
+  }
+}
+function ignoringAlreadyOpened (cb) {
+  return ignoringIf((err) => err.message === 'Already open', cb)
+}
+
+function ignoringNotFound (cb) {
+  return ignoringIf((err) => err.message.startsWith('ENOENT'), cb)
+}
+
+function buildOptions (_options) {
+  const options = Object.assign({}, defaultOptions, _options)
+
+  options.storageBackends = Object.assign(
+    {},
+    defaultOptions.storageBackends,
+    options.storageBackends)
+
+  options.storageBackendOptions = Object.assign(
+    {},
+    defaultOptions.storageBackendOptions,
+    options.storageBackendOptions)
+
+  return options
+}

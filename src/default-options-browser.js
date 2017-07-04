@@ -2,11 +2,23 @@
 
 // Default configuration for a repo in the browser
 module.exports = {
-  fs: require('datastore-level'),
-  sharding: false,
   lock: 'memory',
-  fsOptions: {
-    db: require('level-js')
+  storageBackends: {
+    root: require('datastore-level'),
+    blocks: require('datastore-level'),
+    datastore: require('datastore-level')
   },
-  level: require('level-js')
+  storageBackendOptions: {
+    root: {
+      db: require('level-js'),
+      extension: ''
+    },
+    blocks: {
+      sharding: false,
+      db: require('level-js')
+    },
+    datastore: {
+      db: require('level-js')
+    }
+  }
 }

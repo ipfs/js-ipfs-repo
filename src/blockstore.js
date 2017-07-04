@@ -1,14 +1,13 @@
 'use strict'
 
-const NamespaceStore = require('datastore-core').NamespaceDatastore
+const core = require('datastore-core')
+const ShardingStore = core.ShardingDatastore
 const Key = require('interface-datastore').Key
 const base32 = require('base32.js')
 const Block = require('ipfs-block')
 const setImmediate = require('async/setImmediate')
 const reject = require('async/reject')
 const CID = require('cids')
-
-const blockPrefix = new Key('blocks')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -31,8 +30,24 @@ const cidToDsKey = (cid) => {
   return keyFromBuffer(cid.buffer)
 }
 
-module.exports = (repo) => {
-  const store = new NamespaceStore(repo.store, blockPrefix)
+module.exports = (filestore, options, callback) => {
+  maybeWithSharding(filestore, options, (err, store) => {
+    if (err) { return callback(err) }
+
+    callback(null, createBaseStore(store))
+  })
+}
+
+function maybeWithSharding (filestore, options, callback) {
+  if (options.sharding) {
+    const shard = new core.shard.NextToLast(2)
+    ShardingStore.createOrOpen(filestore, shard, callback)
+  } else {
+    setImmediate(() => callback(null, filestore))
+  }
+}
+
+function createBaseStore (store) {
   return {
     /**
      * Get a single block by CID.
@@ -50,9 +65,7 @@ module.exports = (repo) => {
 
       const k = cidToDsKey(cid)
       store.get(k, (err, blockData) => {
-        if (err) {
-          return callback(err)
-        }
+        if (err) { return callback(err) }
 
         callback(null, new Block(blockData, cid))
       })
@@ -67,12 +80,8 @@ module.exports = (repo) => {
       const k = cidToDsKey(block.cid)
 
       store.has(k, (err, exists) => {
-        if (err) {
-          return callback(err)
-        }
-        if (exists) {
-          return callback()
-        }
+        if (err) { return callback(err) }
+        if (exists) { return callback() }
 
         store.put(k, block.data, callback)
       })
@@ -134,6 +143,10 @@ module.exports = (repo) => {
       }
 
       store.delete(cidToDsKey(cid), callback)
+    },
+
+    close (callback) {
+      store.close(callback)
     }
   }
 }
