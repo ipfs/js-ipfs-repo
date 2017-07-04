@@ -139,7 +139,7 @@ This now has created the following structure, either on disk or as an in memory 
 
 ### Setup
 
-#### new Repo(path[, options])
+#### `new Repo(path[, options])`
 
 Creates an IPFS Repo.
 
@@ -157,33 +157,33 @@ Arguments:
 const repo = new Repo('path/to/repo')
 ```
 
-#### repo.init (callback)
+#### `repo.init (callback)`
 
 Creates the necessary folder structure inside the repo.
 
-#### repo.open (callback)
+#### `repo.open (callback)`
 
 Locks the repo.
 
-#### repo.close (callback)
+#### `repo.close (callback)`
 
 Unlocks the repo.
 
-#### repo.exists (callback)
+#### `repo.exists (callback)`
 
-Tells whether this repo exists or not. Callsback with `(err, bool)`.
+Tells whether this repo exists or not. Calls back with `(err, bool)`.
 
 ### Repos
 
 Root repo:
 
-#### repo.put (key, value:Buffer, callback)
+#### `repo.put (key, value:Buffer, callback)`
 
 Put a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 
-#### repo.get (key, callback)
+#### `repo.get (key, callback)`
 
 Get a value at the root of the repo.
 
@@ -192,17 +192,17 @@ Get a value at the root of the repo.
 
 [Blocks](https://github.com/ipfs/js-ipfs-block#readme):
 
-#### repo.blocks.put (block:Block, callback)
+#### `repo.blocks.put (block:Block, callback)`
 
 * `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
-#### repo.blocks.putMany (blocks, callback)
+#### `repo.blocks.putMany (blocks, callback)`
 
 Put many blocks.
 
 * `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
-#### repo.blocks.get (cid, callback)
+#### `repo.blocks.get (cid, callback)`
 
 Get block.
 
@@ -211,18 +211,18 @@ Get block.
 
 Datastore:
 
-#### repo.datastore
+#### `repo.datastore`
 
 This is contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
 
 
 ### Utils
 
-#### repo.config
+#### `repo.config`
 
 Instead of using `repo.set('config')` this exposes an API that allows you to set and get a decoded config object, as well as, in a safe manner, change any of the config values individually.
 
-##### repo.config.set(key:string, value, callback)
+##### `repo.config.set(key:string, value, callback)`
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
@@ -230,20 +230,19 @@ Set a config value. `value` can be any object that is serializable to JSON.
 
 ```js
 repo.config.set('a.b.c', 'c value', (err) => {
-  if (err) throw err
+  if (err) { throw err }
   repo.config.get((err, config) => {
-    if (err) throw err
+    if (err) { throw err }
     assert.equal(config.a.b.c, 'c value')
   })
 })
 ```
 
-
-##### repo.config.get(value, callback)
+##### `repo.config.get(value, callback)`
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-##### repo.config.get(key:string, callback)
+##### `repo.config.get(key:string, callback)`
 
 Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `
 value` is of the same type that was set before.
@@ -252,32 +251,32 @@ value` is of the same type that was set before.
 
 ```js
 repo.config.get('a.b.c', (err, value) => {
-  if (err) throw err
+  if (err) { throw err }
   console.log('config.a.b.c = ', value)
 })
 ```
 
-##### repo.config.get(callback)
+##### `repo.config.get(callback)`
 
 Get the entire config value. `callback` is a function with the signature: `function (err, configValue:Object)`.
 
-#### repo.version
+#### `repo.version`
 
-##### repo.version.get (callback)
+##### `repo.version.get (callback)`
 
 Gets the repo version.
 
-##### repo.version.set (version:number, callback)
+##### `repo.version.set (version:number, callback)`
 
 Sets the repo version
 
-#### repo.apiAddr
+#### `repo.apiAddr`
 
-#### repo.apiAddr.get (callback)
+#### `repo.apiAddr.get (callback)`
 
 Gets the API address.
 
-#### repo.apiAddr.set (value, callback)
+#### `repo.apiAddr.set (value, callback)`
 
 Sets the API address.
 
