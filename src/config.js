@@ -26,6 +26,9 @@ module.exports = (store) => {
         callback = key
         key = undefined
       }
+      if (!key) {
+        key = undefined
+      }
       store.get(configKey, (err, encodedValue) => {
         if (err) { return callback(err) }
 
@@ -55,7 +58,14 @@ module.exports = (store) => {
         callback = value
         value = key
         key = undefined
+      } else if (!key || typeof key !== 'string') {
+        return callback(new Error('Invalid key type'))
       }
+
+      if (value === undefined || Buffer.isBuffer(value)) {
+        return callback(new Error('Invalid value type'))
+      }
+
       setQueue.push({
         key: key,
         value: value
