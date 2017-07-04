@@ -10,8 +10,6 @@
 ![](https://img.shields.io/badge/npm-%3E%3D3.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D4.0.0-orange.svg?style=flat-square)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/ipfs-js-repo.svg)](https://saucelabs.com/u/ipfs-js-repo)
-
 > Implementation of the IPFS repo spec (https://github.com/ipfs/specs/tree/master/repo) in JavaScript
 
 This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/tree/master/repo) in JavaScript.
@@ -42,9 +40,7 @@ Here is the architectural reasoning for this repo:
                                       ├─────────────────┤
                                       │    Datastore    │
                                       └─────────────────┘
-                                               │
                                    ┌───────────┴───────────┐
-                                   │                       │
                           ┌─────────────────┐     ┌─────────────────┐
                           │     /blocks     │     │   /datastore    │
                           ├─────────────────┤     ├─────────────────┤
@@ -59,9 +55,7 @@ Here is the architectural reasoning for this repo:
             ├─────────────────┤                                 ├─────────────────┤
             │   FsDatastore   │                                 │LevelJSDatastore │
             └─────────────────┘                                 └─────────────────┘
-                     │                                                   │
          ┌───────────┴───────────┐                           ┌───────────┴───────────┐
-         │                       │                           │                       │
 ┌─────────────────┐     ┌─────────────────┐         ┌─────────────────┐     ┌─────────────────┐
 │     /blocks     │     │   /datastore    │         │     /blocks     │     │   /datastore    │
 ├─────────────────┤     ├─────────────────┤         ├─────────────────┤     ├─────────────────┤
