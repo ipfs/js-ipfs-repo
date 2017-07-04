@@ -260,6 +260,10 @@ repo.config.get('a.b.c', (err, value) => {
 
 Get the entire config value. `callback` is a function with the signature: `function (err, configValue:Object)`.
 
+#### `repo.config.exists(callback)`
+
+Whether the config sub-repo exists. Calls back with `(err, bool)`.
+
 #### `repo.version`
 
 ##### `repo.version.get (callback)`
@@ -281,7 +285,6 @@ Gets the API address.
 Sets the API address.
 
 * `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
-
 
 ## Notes
 
