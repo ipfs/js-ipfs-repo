@@ -43,11 +43,11 @@
   },
   "devDependencies": {
     "aegir": "^11.0.2",
-    "chai": "^4.1.0",
+    "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "lodash": "^4.17.4",
-    "memdown": "^1.2.4",
-    "multihashes": "~0.4.5",
+    "memdown": "^1.2.7",
+    "multihashes": "~0.4.9",
     "ncp": "^2.0.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.1"
@@ -60,7 +60,7 @@
     "datastore-core": "^0.3.0",
     "datastore-fs": "^0.3.0",
     "datastore-level": "^0.6.0",
-    "debug": "^2.6.8",
+    "debug": "^3.0.1",
     "ipfs-block": "~0.6.0",
     "level-js": "timkuijsten/level.js#idbunwrapper",
     "leveldown": "^1.7.2",
@@ -68,7 +68,7 @@
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
-    "multiaddr": "^2.3.0",
+    "multiaddr": "^3.0.1",
     "safe-buffer": "^5.1.1"
   },
   "license": "MIT",
