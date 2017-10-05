@@ -8,6 +8,7 @@ const Block = require('ipfs-block')
 const setImmediate = require('async/setImmediate')
 const reject = require('async/reject')
 const CID = require('cids')
+const path = require('path')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -17,7 +18,7 @@ const CID = require('cids')
  */
 const keyFromBuffer = (rawKey) => {
   const enc = new base32.Encoder()
-  return new Key('/' + enc.write(rawKey).finalize(), false)
+  return new Key(path.sep + enc.write(rawKey).finalize(), false)
 }
 
 /**
