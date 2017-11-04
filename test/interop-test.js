@@ -18,11 +18,7 @@ module.exports = (repo) => {
 
       repo.blocks.get(new CID(welcomeHash), (err, val) => {
         expect(err).to.not.exist()
-        expect(
-          val.data.toString()
-        ).to.match(
-            /Hello and Welcome to IPFS/
-        )
+        expect(val.data.toString()).to.match(/Hello and Welcome to IPFS/)
         done()
       })
     })
@@ -36,7 +32,7 @@ module.exports = (repo) => {
       map(cids, repo.blocks.get, (err, values) => {
         expect(err).to.not.exist()
         expect(values.length).to.equal(2)
-        expect(values.map(value => value.data.length)).to.deep.equal([2659, 12783])
+        expect(values.map((value) => value.data.length)).to.eql([2659, 12783])
         done()
       })
     })
@@ -44,7 +40,7 @@ module.exports = (repo) => {
     it('reads pin set from the datastore', (done) => {
       repo.datastore.get(new Key('/local/pins'), (err, val) => {
         expect(err).to.not.exist()
-        expect(mh.toB58String(val)).to.be.equal('QmYAuyf2LzMba65NnhxLtGJxixKNUev9qYSu4MYM88hdwK')
+        expect(mh.toB58String(val)).to.equal('QmYAuyf2LzMba65NnhxLtGJxixKNUev9qYSu4MYM88hdwK')
         done()
       })
     })
@@ -52,7 +48,7 @@ module.exports = (repo) => {
     it('reads DHT records from the datastore', (done) => {
       repo.datastore.get(new Key('/AHE5I5B7TY'), (err, val) => {
         expect(err).to.not.exist()
-        expect(val.toString('hex')).to.deep.equal('0a0601c9d4743f9e12097465737476616c75651a2212201d22e2a5e140e5cd20d88fc59cd560f4887c7d9acf938ddb24d7207eac40fd2f')
+        expect(val.toString('hex')).to.eql('0a0601c9d4743f9e12097465737476616c75651a2212201d22e2a5e140e5cd20d88fc59cd560f4887c7d9acf938ddb24d7207eac40fd2f')
         done()
       })
     })
