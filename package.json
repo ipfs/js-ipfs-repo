@@ -63,7 +63,7 @@
     "debug": "^3.1.0",
     "ipfs-block": "~0.6.0",
     "level-js": "timkuijsten/level.js#idbunwrapper",
-    "leveldown": "^2.0.0",
+    "leveldown": "^1.7.2",
     "lock-me": "^1.0.3",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
