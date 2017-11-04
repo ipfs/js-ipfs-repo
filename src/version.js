@@ -39,7 +39,7 @@ module.exports = (store) => {
      * @returns {void}
      */
     set (version, callback) {
-      store.put(versionKey, new Buffer(String(version)), callback)
+      store.put(versionKey, Buffer.from(String(version)), callback)
     },
     /**
      * Check the current version, and return an error on missmatch

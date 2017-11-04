@@ -13,8 +13,8 @@ const Key = require('interface-datastore').Key
 
 module.exports = (repo) => {
   describe('datastore', () => {
-    const dataList = _.range(100).map((i) => new Buffer(`hello-${i}-${Math.random()}`))
-    const data = new Buffer('hello world')
+    const dataList = _.range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
+    const data = Buffer.from('hello world')
     const b = new Key('hello')
 
     describe('.put', () => {
