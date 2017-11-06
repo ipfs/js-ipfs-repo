@@ -1,3 +1,8 @@
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.0...v0.18.1) (2017-11-06)
+
+
+
 <a name="0.18.0"></a>
 # [0.18.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.17.0...v0.18.0) (2017-11-04)
 
