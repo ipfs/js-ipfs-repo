@@ -11,8 +11,8 @@
     "./src/default-options.js": "./src/default-options-browser.js"
   },
   "scripts": {
-    "test": "aegir test",
-    "test:node": "aegir test --target node",
+    "test": "aegir test --timeout 10000",
+    "test:node": "aegir test --target node  --timeout 10000",
     "test:browser": "aegir test --target browser --timeout 10000",
     "build": "aegir build",
     "lint": "aegir lint",
