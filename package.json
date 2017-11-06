@@ -13,7 +13,7 @@
   "scripts": {
     "test": "aegir test",
     "test:node": "aegir test --target node",
-    "test:browser": "aegir test --target browser",
+    "test:browser": "aegir test --target browser --timeout 10000",
     "build": "aegir build",
     "lint": "aegir lint",
     "release": "aegir release --docs",
