@@ -48,6 +48,7 @@
     "lodash": "^4.17.4",
     "memdown": "^1.4.1",
     "multihashes": "~0.4.12",
+    "multihashing-async": "^0.4.7",
     "ncp": "^2.0.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2"
