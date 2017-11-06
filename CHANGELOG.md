@@ -1,3 +1,13 @@
+<a name="0.18.2"></a>
+## [0.18.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.1...v0.18.2) (2017-11-06)
+
+
+### Bug Fixes
+
+* more windows interop ([#147](https://github.com/ipfs/js-ipfs-repo/issues/147)) ([22590cb](https://github.com/ipfs/js-ipfs-repo/commit/22590cb))
+
+
+
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.0...v0.18.1) (2017-11-06)
 
