@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "IPFS Repo implementation",
   "main": "src/index.js",
   "browser": {
@@ -57,12 +57,12 @@
     "async": "^2.5.0",
     "base32.js": "~0.1.0",
     "cids": "~0.5.2",
+    "interface-datastore": "~0.4.1",
     "datastore-core": "~0.4.0",
     "datastore-fs": "~0.4.0",
-    "datastore-level": "github:ipfs/js-datastore-level#windows-interop",
+    "datastore-level": "~0.7.0",
     "debug": "^3.1.0",
-    "interface-datastore": "~0.4.0",
-    "ipfs-block": "~0.6.0",
+    "ipfs-block": "~0.6.1",
     "level-js": "timkuijsten/level.js#idbunwrapper",
     "leveldown": "^1.7.2",
     "lock-me": "^1.0.3",
