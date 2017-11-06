@@ -5,10 +5,8 @@ const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const path = require('path')
 const series = require('async/series')
-const os = require('os')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
-const expect = chai.expect
 
 const IPFSRepo = require('../src')
 
@@ -16,9 +14,9 @@ describe('IPFS Repo Tests on on Node.js', () => {
   require('./options-test')
 
   const repos = [{
-    name: 'default',
+    name: 'default inited',
     opts: undefined,
-    init: false
+    init: true
   }, {
     name: 'memory',
     opts: {
@@ -27,6 +25,10 @@ describe('IPFS Repo Tests on on Node.js', () => {
       lock: 'memory'
     },
     init: true
+  }, {
+    name: 'default existing',
+    opts: undefined,
+    init: false
   }]
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
@@ -52,23 +54,6 @@ describe('IPFS Repo Tests on on Node.js', () => {
       series([
         (cb) => repo.close(cb),
         (cb) => rimraf(repoPath, cb)
-      ], done)
-    })
-
-    it('init', (done) => {
-      const dir = path.join(os.tmpdir(), String(Math.random()).slice(2))
-      const r = new IPFSRepo(dir)
-
-      series([
-        (cb) => r.init({hello: 'world'}, cb),
-        (cb) => r.open(cb),
-        (cb) => r.config.get((err, val) => {
-          expect(err).to.not.exist()
-          expect(val).to.be.eql({hello: 'world'})
-          cb()
-        }),
-        (cb) => r.close(cb),
-        (cb) => rimraf(dir, cb)
       ], done)
     })
 
