@@ -12,7 +12,7 @@ if (!rimraf.sync) {
 }
 const Repo = require('../')
 
-describe('IPFS Repo options Tests', () => {
+describe('custom options tests', () => {
   const repoPath = path.join(__dirname, 'slash', 'path')
   after(() => {
     rimraf.sync(repoPath)

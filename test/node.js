@@ -10,7 +10,7 @@ chai.use(require('dirty-chai'))
 
 const IPFSRepo = require('../src')
 
-describe('IPFS Repo Tests on on Node.js', () => {
+describe('IPFS Repo Tests onNode.js', () => {
   require('./options-test')
 
   const repos = [{
