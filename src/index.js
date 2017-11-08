@@ -22,7 +22,7 @@ const lockers = {
   fs: require('./lock')
 }
 
-const repoVersion = 5
+const repoVersion = require('./constants').repoVersion
 
 /**
  * IpfsRepo implements all required functionality to read and write to an ipfs repo.

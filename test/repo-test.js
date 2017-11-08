@@ -65,7 +65,7 @@ module.exports = (repo) => {
       it('get version', (done) => {
         repo.version.get((err, version) => {
           expect(err).to.not.exist()
-          expect(version).to.be.eql(5)
+          expect(version).to.equal(6)
           done()
         })
       })
@@ -78,7 +78,7 @@ module.exports = (repo) => {
             expect(version).to.equal(9000)
             cb()
           },
-          (cb) => repo.version.set(5, cb)
+          (cb) => repo.version.set(6, cb)
         ], done)
       })
     })
