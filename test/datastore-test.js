@@ -54,7 +54,7 @@ module.exports = (repo) => {
             cb()
           })
         }), done)
-      }).timeout(10 * 1000)
+      }).timeout(20 * 1000)
     })
 
     describe('.has', () => {
