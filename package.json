@@ -64,7 +64,7 @@
     "interface-datastore": "~0.4.1",
     "ipfs-block": "~0.6.1",
     "level-js": "timkuijsten/level.js#idbunwrapper",
-    "leveldown": "^1.7.2",
+    "leveldown": "^1.9.0",
     "lock-me": "^1.0.3",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
