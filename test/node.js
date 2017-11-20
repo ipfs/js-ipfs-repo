@@ -4,6 +4,7 @@
 const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const path = require('path')
+const mkdirp = require('mkdirp')
 const series = require('async/series')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
@@ -44,6 +45,7 @@ describe('IPFS Repo Tests onNode.js', () => {
           if (r.init) {
             repo.init({}, cb)
           } else {
+            mkdirp.sync(repoPath),
             ncp(testRepoPath, repoPath, cb)
           }
         },
