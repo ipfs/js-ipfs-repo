@@ -36,9 +36,26 @@ describe('IPFS Repo Tests onNode.js', () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()
     const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
+      .split(path.sep)
+      .join('/')
 
     const repo = new IPFSRepo(repoPath, r.opts)
 
+    const walkSync = function(dir, filelist) {
+      var fs = require('fs'),
+      files = fs.readdirSync(dir);
+      filelist = filelist || [];
+      files.forEach(function(file) {
+      if (fs.statSync(dir + file).isDirectory()) {
+        filelist = walkSync(dir + file + '/', filelist);
+      }
+      else {
+        filelist.push(dir + file);
+      }
+    });
+    return filelist;
+    }
+    
     before((done) => {
       series([
         (cb) => {
@@ -49,6 +66,7 @@ describe('IPFS Repo Tests onNode.js', () => {
             ncp(testRepoPath, repoPath, cb)
           }
         },
+        (cb) => { console.log(walkSync(repoPath + '/')); cb() },
         (cb) => repo.open(cb)
       ], done)
     })
