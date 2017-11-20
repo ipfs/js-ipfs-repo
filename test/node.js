@@ -7,6 +7,7 @@ const path = require('path')
 const series = require('async/series')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
+const os = require('os')
 
 const IPFSRepo = require('../src')
 
@@ -33,7 +34,7 @@ describe('IPFS Repo Tests onNode.js', () => {
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()
-    const repoPath = testRepoPath + '-for-' + date
+    const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
 
     const repo = new IPFSRepo(repoPath, r.opts)
 
