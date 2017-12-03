@@ -40,12 +40,14 @@ function expectedRepoOptions () {
       // equivalents via package.browser
       root: require('datastore-fs'),
       blocks: require('datastore-fs'),
+      keys: require('datastore-fs'),
       datastore: require('datastore-level')
     },
     storageBackendOptions: {
       root: {
         extension: ''
       },
+      keys: {},
       blocks: {
         sharding: true,
         extension: '.data'
@@ -55,6 +57,8 @@ function expectedRepoOptions () {
 
   if (process.browser) {
     options.storageBackendOptions.root.db = require('leveldown')
+    options.storageBackendOptions.keys.db = require('leveldown')
+    options.storageBackendOptions.keys.sharding = false
     options.storageBackendOptions.blocks.db = require('leveldown')
     delete options.storageBackendOptions.blocks.extension
     options.storageBackendOptions.blocks.sharding = false

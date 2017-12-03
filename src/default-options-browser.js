@@ -6,6 +6,7 @@ module.exports = {
   storageBackends: {
     root: require('datastore-level'),
     blocks: require('datastore-level'),
+    keys: require('datastore-level'),
     datastore: require('datastore-level')
   },
   storageBackendOptions: {
@@ -14,6 +15,10 @@ module.exports = {
       extension: ''
     },
     blocks: {
+      sharding: false,
+      db: require('level-js')
+    },
+    keys: {
       sharding: false,
       db: require('level-js')
     },
