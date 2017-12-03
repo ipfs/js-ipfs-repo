@@ -60,6 +60,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     require('./repo-test')(repo)
     require('./blockstore-test')(repo)
     require('./datastore-test')(repo)
+    require('./keystore-test')(repo)
     if (!r.init) {
       require('./interop-test')(repo)
     }

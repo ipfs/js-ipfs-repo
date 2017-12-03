@@ -105,6 +105,19 @@ class IpfsRepo {
         cb()
       },
       (cb) => {
+        log('creating keystore')
+        const keysBaseStore = backends.create('keys', path.join(this.path, 'keys'), this.options)
+        blockstore(
+          keysBaseStore,
+          this.options.storageBackendOptions.keys,
+          cb)
+      },
+      (keys, cb) => {
+        this.keys = keys
+        cb()
+      },
+
+      (cb) => {
         this.closed = false
         log('all opened')
         cb()
@@ -169,7 +182,7 @@ class IpfsRepo {
       (cb) => this.apiAddr.delete(ignoringNotFound(cb)),
       (cb) => {
         each(
-          [this.blocks, this.datastore],
+          [this.blocks, this.keys, this.datastore],
           (store, callback) => store.close(callback),
           cb)
       },
