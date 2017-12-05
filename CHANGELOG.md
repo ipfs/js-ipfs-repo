@@ -1,3 +1,13 @@
+<a name="0.18.4"></a>
+## [0.18.4](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.3...v0.18.4) (2017-12-05)
+
+
+### Features
+
+* keystore ([#155](https://github.com/ipfs/js-ipfs-repo/issues/155)) ([27df24d](https://github.com/ipfs/js-ipfs-repo/commit/27df24d))
+
+
+
 <a name="0.18.3"></a>
 ## [0.18.3](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.2...v0.18.3) (2017-11-08)
 
