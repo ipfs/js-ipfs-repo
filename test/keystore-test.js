@@ -11,5 +11,10 @@ module.exports = (repo) => {
     it('exists', () => {
       expect(repo).to.have.property('keys')
     })
+    it('implements interface-datastore', () => {
+      const keys = repo.keys
+      expect(keys.batch).to.exist()
+      expect(keys.query).to.exist()
+    })
   })
 }
