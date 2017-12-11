@@ -1,3 +1,13 @@
+<a name="0.18.5"></a>
+## [0.18.5](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.4...v0.18.5) (2017-12-11)
+
+
+### Bug Fixes
+
+* keys is a standard interface-datastore ([#156](https://github.com/ipfs/js-ipfs-repo/issues/156)) ([d99f3c4](https://github.com/ipfs/js-ipfs-repo/commit/d99f3c4))
+
+
+
 <a name="0.18.4"></a>
 ## [0.18.4](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.3...v0.18.4) (2017-12-05)
 
