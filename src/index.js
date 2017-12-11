@@ -106,14 +106,7 @@ class IpfsRepo {
       },
       (cb) => {
         log('creating keystore')
-        const keysBaseStore = backends.create('keys', path.join(this.path, 'keys'), this.options)
-        blockstore(
-          keysBaseStore,
-          this.options.storageBackendOptions.keys,
-          cb)
-      },
-      (keys, cb) => {
-        this.keys = keys
+        this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
         cb()
       },
 
