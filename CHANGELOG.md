@@ -1,3 +1,13 @@
+<a name="0.18.6"></a>
+## [0.18.6](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.5...v0.18.6) (2018-01-27)
+
+
+### Features
+
+* export the current repo version. ([#158](https://github.com/ipfs/js-ipfs-repo/issues/158)) ([106b651](https://github.com/ipfs/js-ipfs-repo/commit/106b651))
+
+
+
 <a name="0.18.5"></a>
 ## [0.18.5](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.4...v0.18.5) (2017-12-11)
 
