@@ -203,6 +203,7 @@ class IpfsRepo {
 }
 
 module.exports = IpfsRepo
+module.exports.repoVersion = repoVersion
 
 function ignoringIf (cond, cb) {
   return (err) => {
