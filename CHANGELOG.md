@@ -1,3 +1,13 @@
+<a name="0.18.7"></a>
+## [0.18.7](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.6...v0.18.7) (2018-01-30)
+
+
+### Features
+
+* implement .stat function ([#159](https://github.com/ipfs/js-ipfs-repo/issues/159)) ([bd522ee](https://github.com/ipfs/js-ipfs-repo/commit/bd522ee))
+
+
+
 <a name="0.18.6"></a>
 ## [0.18.6](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.5...v0.18.6) (2018-01-27)
 
