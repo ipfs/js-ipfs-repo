@@ -282,6 +282,20 @@ Sets the API address.
 
 * `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
 
+### `repo.stat ([options], callback)`
+
+Gets the repo status. 
+
+`options` is an object which might contain the key `human`, which is a boolean indicating whether or not the `repoSize` should be displayed in MiB or not.
+
+`callback` is a function with the signature `function (err, stats)`, where `stats` is an Object with the following keys:
+
+- `numObjects`
+- `repoPath`
+- `repoSize`
+- `version`
+- `storageMax`
+
 ## Notes
 
 - [Explanation of how repo is structured](https://github.com/ipfs/js-ipfs-repo/pull/111#issuecomment-279948247)

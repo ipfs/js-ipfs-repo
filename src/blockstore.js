@@ -8,6 +8,7 @@ const Block = require('ipfs-block')
 const setImmediate = require('async/setImmediate')
 const reject = require('async/reject')
 const CID = require('cids')
+const pull = require('pull-stream')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -49,6 +50,19 @@ function maybeWithSharding (filestore, options, callback) {
 
 function createBaseStore (store) {
   return {
+    /**
+     * Query the store.
+     *
+     * @param {object} query
+     * @param {function(Error, Array)} callback
+     * @return {void}
+     */
+    query (query, callback) {
+      pull(
+        store.query(query),
+        pull.collect(callback)
+      )
+    },
     /**
      * Get a single block by CID.
      *
