@@ -7,6 +7,8 @@ const each = require('async/each')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
+const Big = require('big.js')
+const pull = require('pull-stream')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -16,6 +18,8 @@ const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
 
 const log = debug('repo')
+
+const noLimit = Number.MAX_SAFE_INTEGER
 
 const lockers = {
   memory: require('./lock-memory'),
@@ -200,6 +204,81 @@ class IpfsRepo {
   exists (callback) {
     this.version.exists(callback)
   }
+
+  /**
+   * Get repo status.
+   *
+   * @param {Object}  options
+   * @param {Boolean} options.human
+   * @param {function(Error, Object)} callback
+   * @return {void}
+   */
+  stat (options, callback) {
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    options = Object.assign({}, {human: false}, options)
+
+    parallel({
+      storageMax: (cb) => this.config.get('Datastore.StorageMax', (err, max) => {
+        if (err) {
+          cb(null, new Big(noLimit))
+        } else {
+          cb(null, new Big(max))
+        }
+      }),
+      version: (cb) => this.version.get(cb),
+      blocks: (cb) => this.blocks.query({}, (err, list) => {
+        list = list || []
+
+        const count = new Big(list.length)
+        let size = new Big(0)
+
+        list.forEach(block => {
+          size = size
+            .plus(block.value.byteLength)
+            .plus(block.key._buf.byteLength)
+        })
+
+        cb(err, {
+          count: count,
+          size: size
+        })
+      }),
+      datastore: (cb) => getSize(this.datastore, cb),
+      keys: (cb) => getSize(this.keys, cb)
+    }, (err, results) => {
+      if (err) return callback(err)
+
+      let size = results.blocks.size
+        .plus(results.datastore)
+        .plus(results.keys)
+
+      if (options.human) {
+        size = size.div(1048576)
+      }
+
+      callback(null, {
+        repoPath: this.path,
+        storageMax: results.storageMax,
+        version: results.version,
+        numObjects: results.blocks.count,
+        repoSize: size
+      })
+    })
+  }
+}
+
+function getSize (queryFn, callback) {
+  pull(
+    queryFn.query({}),
+    pull.reduce((sum, block) => {
+      return sum
+        .plus(block.value.byteLength)
+        .plus(block.key._buf.byteLength)
+    }, new Big(0), callback))
 }
 
 module.exports = IpfsRepo
