@@ -159,7 +159,7 @@ Creates the necessary folder structure inside the repo.
 
 #### `repo.open (callback)`
 
-Locks the repo.
+[Locks](https://en.wikipedia.org/wiki/Record_locking) the repo to prevent conflicts arising from simultaneous access.
 
 #### `repo.close (callback)`
 
