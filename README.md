@@ -142,7 +142,7 @@ Arguments:
 
 * `path` (string, mandatory): the path for this repo
 * `options` (object, optional): may contain the following values
-  * `lock` (string, defaults to `"fs"` in Node.js, `"memory"` in the browser): what type of lock to use. Lock has to be acquired when opening.
+  * `lock` (string *Deprecated* or [Lock](#lock)), string can be `"fs"` or `"memory"`: what type of lock to use. Lock has to be acquired when opening.
   * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
     * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at the root (`repo.set()`, `repo.get()`)
     * `blocks` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at `repo.blocks`.
@@ -284,7 +284,7 @@ Sets the API address.
 
 ### `repo.stat ([options], callback)`
 
-Gets the repo status. 
+Gets the repo status.
 
 `options` is an object which might contain the key `human`, which is a boolean indicating whether or not the `repoSize` should be displayed in MiB or not.
 
@@ -295,6 +295,37 @@ Gets the repo status.
 - `repoSize`
 - `version`
 - `storageMax`
+
+### Lock
+
+IPFS Repo comes with two built in locks: memory and fs. These can be imported via the following:
+
+```js
+const fsLock = require('ipfs-repo/lock')  // Default in Node.js
+const memLock = require('ipfs-repo/lock-memory')  // Default in browser
+```
+
+#### `lock.open (dir, callback)`
+
+Sets the lock if one does not already exist.
+
+`dir` is a string to the directory the lock should be created at. The repo typically creates the lock at its root.
+
+`callback` is a function with the signature `function (err, closer)`, where `closer` has a `close` method for removing the lock.
+
+##### `closer.close (callback)`
+
+Closes the lock created by `lock.open`
+
+`callback` is a function with the signature `function (err)`. If no error was returned, the lock was successfully removed.
+
+#### `lock.locked (dir, callback)`
+
+Checks the existence of the lock.
+
+`dir` is a string to the directory to check for the lock. The repo typically checks for the lock at its root.
+
+`callback` is a function with the signature `function (err, boolean)`, where `boolean` indicates the existence of the lock.
 
 ## Notes
 

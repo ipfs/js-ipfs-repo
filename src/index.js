@@ -44,8 +44,7 @@ class IpfsRepo {
     this.closed = true
     this.path = repoPath
 
-    this._locker = lockers[this.options.lock]
-    assert(this._locker, 'Unknown lock type: ' + this.options.lock)
+    this._locker = this._getLocker()
 
     this.root = backends.create('root', this.path, this.options)
     this.version = version(this.root)
@@ -88,7 +87,7 @@ class IpfsRepo {
     waterfall([
       (cb) => this.root.open(ignoringAlreadyOpened(cb)),
       (cb) => this._isInitialized(cb),
-      (cb) => this._locker.lock(this.path, cb),
+      (cb) => this._openLock(this.path, cb),
       (lck, cb) => {
         log('aquired repo.lock')
         this.lockfile = lck
@@ -121,7 +120,7 @@ class IpfsRepo {
       }
     ], (err) => {
       if (err && this.lockfile) {
-        this.lockfile.close((err2) => {
+        this._closeLock((err2) => {
           if (!err2) {
             this.lockfile = null
           } else {
@@ -133,6 +132,61 @@ class IpfsRepo {
         callback(err)
       }
     })
+  }
+
+  /**
+   * Returns the repo locker to be used. Null will be returned if no locker is requested
+   *
+   * @private
+   * @returns {Locker}
+   */
+  _getLocker () {
+    if (typeof this.options.lock === 'string') {
+      assert(lockers[this.options.lock], 'Unknown lock type: ' + this.options.lock)
+      return lockers[this.options.lock]
+    }
+
+    assert(this.options.lock, 'No lock provided')
+    return this.options.lock
+  }
+
+  /**
+   * Creates a lock on the repo if a locker is specified. The lockfile object will
+   * be returned in the callback if one has been created.
+   *
+   * @param {string} path
+   * @param {function(Error, lockfile)} callback
+   * @returns {void}
+   */
+  _openLock (path, callback) {
+    this._locker.lock(path, callback)
+  }
+
+  /**
+   * Closes the lock on the repo
+   *
+   * @param {function(Error)} callback
+   * @returns {void}
+   */
+  _closeLock (callback) {
+    if (this.lockfile) {
+      return this.lockfile.close(callback)
+    }
+    callback()
+  }
+
+  /**
+   * Gets the status of the lock on the repo
+   *
+   * @param {string} path
+   * @param {function(Error, boolean)} callback
+   * @returns {void}
+   */
+  _isLocked (path, callback) {
+    if (this._locker) {
+      return this._locker.locked(path, callback)
+    }
+    callback(null, false)
   }
 
   /**
@@ -186,7 +240,7 @@ class IpfsRepo {
       (cb) => {
         log('unlocking')
         this.closed = true
-        this.lockfile.close(cb)
+        this._closeLock(cb)
       },
       (cb) => {
         this.lockfile = null
