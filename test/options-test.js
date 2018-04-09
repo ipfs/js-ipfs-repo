@@ -28,6 +28,19 @@ describe('custom options tests', () => {
     const repo = new Repo(repoPath)
     expect(repo.options).to.deep.equal(expectedRepoOptions())
   })
+
+  it('allows for a custom locker', () => {
+    const lock = {
+      lock: (path, callback) => { },
+      locked: (path, callback) => { }
+    }
+
+    const repo = new Repo(repoPath, {
+      lock
+    })
+
+    expect(repo._getLocker()).to.deep.equal(lock)
+  })
 })
 
 function noop () {}
