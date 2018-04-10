@@ -42,13 +42,13 @@
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^12.4.0",
+    "aegir": "^13.0.6",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "memdown": "^1.4.1",
-    "multihashes": "~0.4.12",
-    "multihashing-async": "^0.4.7",
+    "multihashes": "~0.4.13",
+    "multihashing-async": "^0.4.8",
     "ncp": "^2.0.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2"
@@ -57,21 +57,21 @@
     "async": "^2.6.0",
     "base32.js": "~0.1.0",
     "big.js": "^5.0.3",
-    "cids": "~0.5.2",
+    "cids": "~0.5.3",
     "datastore-core": "~0.4.0",
     "datastore-fs": "~0.4.2",
     "datastore-level": "~0.7.0",
     "debug": "^3.1.0",
     "interface-datastore": "~0.4.2",
-    "ipfs-block": "~0.6.1",
+    "ipfs-block": "~0.7.1",
     "level-js": "timkuijsten/level.js#idbunwrapper",
     "leveldown": "^1.7.2",
     "lock-me": "^1.0.3",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
-    "multiaddr": "^3.0.1",
-    "pull-stream": "^3.6.1"
+    "multiaddr": "^4.0.0",
+    "pull-stream": "^3.6.7"
   },
   "license": "MIT",
   "contributors": [
