@@ -301,8 +301,8 @@ Gets the repo status.
 IPFS Repo comes with two built in locks: memory and fs. These can be imported via the following:
 
 ```js
-const fsLock = require('ipfs-repo/lock')  // Default in Node.js
-const memLock = require('ipfs-repo/lock-memory')  // Default in browser
+const fsLock = require('ipfs-repo/src/lock')  // Default in Node.js
+const memLock = require('ipfs-repo/src/lock-memory')  // Default in browser
 ```
 
 #### `lock.open (dir, callback)`
