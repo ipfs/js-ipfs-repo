@@ -32,7 +32,7 @@ module.exports = (repo) => {
       const mochaExceptionHandler = process.listeners('uncaughtException').pop()
       process.removeListener('uncaughtException', mochaExceptionHandler)
       process.once('uncaughtException', function (err) {
-        expect(err.message).to.match(/already held/)
+        expect(err.message).to.match(/already held|IO error/)
       })
 
       series([
