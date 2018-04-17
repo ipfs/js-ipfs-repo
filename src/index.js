@@ -159,7 +159,14 @@ class IpfsRepo {
    * @returns {void}
    */
   _openLock (path, callback) {
-    this._locker.lock(path, callback)
+    this._locker.lock(path, (err, lockfile) => {
+      if (err) {
+        return callback(err, null)
+      }
+
+      assert.equal(typeof lockfile.close, 'function', 'Locks must have a close method')
+      callback(null, lockfile)
+    })
   }
 
   /**

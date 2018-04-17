@@ -142,7 +142,7 @@ Arguments:
 
 * `path` (string, mandatory): the path for this repo
 * `options` (object, optional): may contain the following values
-  * `lock` (string *Deprecated* or [Lock](#lock)), string can be `"fs"` or `"memory"`: what type of lock to use. Lock has to be acquired when opening.
+  * `lock` ([Lock](#lock) or string *Deprecated*): what type of lock to use. Lock has to be acquired when opening. string can be `"fs"` or `"memory"`.
   * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
     * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at the root (`repo.set()`, `repo.get()`)
     * `blocks` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at `repo.blocks`.
@@ -302,12 +302,14 @@ IPFS Repo comes with two built in locks: memory and fs. These can be imported vi
 
 ```js
 const fsLock = require('ipfs-repo/src/lock')  // Default in Node.js
-const memLock = require('ipfs-repo/src/lock-memory')  // Default in browser
+const memoryLock = require('ipfs-repo/src/lock-memory')  // Default in browser
 ```
 
-#### `lock.open (dir, callback)`
+You can also provide your own custom Lock. It must be an object with the following interface:
 
-Sets the lock if one does not already exist.
+#### `lock.lock (dir, callback)`
+
+Sets the lock if one does not already exist. If a lock already exists, `callback` should be called with an error.
 
 `dir` is a string to the directory the lock should be created at. The repo typically creates the lock at its root.
 
