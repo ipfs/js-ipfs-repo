@@ -29,7 +29,7 @@ describe('custom options tests', () => {
     expect(repo.options).to.deep.equal(expectedRepoOptions())
   })
 
-  it('allows for a custom locker', () => {
+  it('allows for a custom lock', () => {
     const lock = {
       lock: (path, callback) => { },
       locked: (path, callback) => { }
@@ -40,6 +40,23 @@ describe('custom options tests', () => {
     })
 
     expect(repo._getLocker()).to.deep.equal(lock)
+  })
+
+  it('ensures a custom lock has a .close method', (done) => {
+    const lock = {
+      lock: (path, callback) => {
+        callback(null, {})
+      }
+    }
+
+    const repo = new Repo(repoPath, {
+      lock
+    })
+
+    expect(
+      () => repo._openLock(repo.path)
+    ).to.throw('Locks must have a close method')
+    done()
   })
 })
 
