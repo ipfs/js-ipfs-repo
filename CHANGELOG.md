@@ -1,3 +1,18 @@
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.19.0...v0.20.0) (2018-04-23)
+
+
+### Bug Fixes
+
+* fix tests for ci ([d1457cd](https://github.com/ipfs/js-ipfs-repo/commit/d1457cd))
+
+
+### Features
+
+* **lock:** allow for custom lock ([c97db6c](https://github.com/ipfs/js-ipfs-repo/commit/c97db6c))
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.18.7...v0.19.0) (2018-04-10)
 
