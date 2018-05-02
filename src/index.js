@@ -213,11 +213,11 @@ class IpfsRepo {
       (err, res) => {
         log('init', err, res)
         if (err) {
-          return callback(err)
-        }
-
-        if (!res.config) {
-          return callback(new Error('repo is not initialized yet'))
+          return callback(Object.assign(new Error('repo is not initialized yet'),
+            {
+              code: 'ERR_REPO_NOT_INITIALIZED',
+              path: this.path
+            }))
         }
         callback()
       }
