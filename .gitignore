@@ -3,7 +3,8 @@ yarn.lock
 package-lock.json
 
 test/test-repo-for*
-
+.vscode
+.eslintrc
 # Logs
 logs
 *.log
