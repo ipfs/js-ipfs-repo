@@ -1,3 +1,13 @@
+<a name="0.20.1"></a>
+## [0.20.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.20.0...v0.20.1) (2018-05-05)
+
+
+### Features
+
+* add uniform error to isInitialized ([755b5c6](https://github.com/ipfs/js-ipfs-repo/commit/755b5c6))
+
+
+
 <a name="0.20.0"></a>
 # [0.20.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.19.0...v0.20.0) (2018-04-23)
 
