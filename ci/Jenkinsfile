@@ -1,1 +1,1 @@
-javascript()
+javascript(['nodejs_versions': ['10.0.0']])
