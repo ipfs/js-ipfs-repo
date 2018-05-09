@@ -11,19 +11,13 @@ module.exports = {
   },
   storageBackendOptions: {
     root: {
-      db: require('level-js'),
       extension: ''
     },
     blocks: {
-      sharding: false,
-      db: require('level-js')
+      sharding: false
     },
     keys: {
-      sharding: false,
-      db: require('level-js')
-    },
-    datastore: {
-      db: require('level-js')
+      sharding: false
     }
   }
 }

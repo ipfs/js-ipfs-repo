@@ -86,15 +86,9 @@ function expectedRepoOptions () {
   }
 
   if (process.browser) {
-    options.storageBackendOptions.root.db = require('leveldown')
-    options.storageBackendOptions.keys.db = require('leveldown')
     options.storageBackendOptions.keys.sharding = false
-    options.storageBackendOptions.blocks.db = require('leveldown')
     delete options.storageBackendOptions.blocks.extension
     options.storageBackendOptions.blocks.sharding = false
-    options.storageBackendOptions.datastore = {
-      db: require('leveldown')
-    }
   }
   return options
 }
