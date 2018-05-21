@@ -63,7 +63,7 @@
     "debug": "^3.1.0",
     "interface-datastore": "~0.4.2",
     "ipfs-block": "~0.7.1",
-    "lock-me": "^1.0.3",
+    "lock-me": "github:jacobheun/lock-me#fix/windows",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
