@@ -1,3 +1,13 @@
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.21.0...v0.22.0) (2018-05-29)
+
+
+### Bug Fixes
+
+* upgrade datastores for node 10 ([#168](https://github.com/ipfs/js-ipfs-repo/issues/168)) ([bd8a930](https://github.com/ipfs/js-ipfs-repo/commit/bd8a930))
+
+
+
 <a name="0.21.0"></a>
 # [0.21.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.20.1...v0.21.0) (2018-05-06)
 
