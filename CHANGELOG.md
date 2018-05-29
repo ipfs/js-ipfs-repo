@@ -1,3 +1,13 @@
+<a name="0.22.1"></a>
+## [0.22.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.22.0...v0.22.1) (2018-05-29)
+
+
+### Bug Fixes
+
+* expose errors to resolve need for antipattern require ([bf1fb9c](https://github.com/ipfs/js-ipfs-repo/commit/bf1fb9c))
+
+
+
 <a name="0.22.0"></a>
 # [0.22.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.21.0...v0.22.0) (2018-05-29)
 
