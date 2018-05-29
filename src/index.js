@@ -345,6 +345,7 @@ function getSize (queryFn, callback) {
 
 module.exports = IpfsRepo
 module.exports.repoVersion = repoVersion
+module.exports.errors = ERRORS
 
 function ignoringIf (cond, cb) {
   return (err) => {
