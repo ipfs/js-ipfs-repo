@@ -16,6 +16,7 @@ const config = require('./config')
 const apiAddr = require('./api-addr')
 const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
+const ERRORS = require('./errors')
 
 const log = debug('repo')
 
@@ -212,14 +213,14 @@ class IpfsRepo {
       },
       (err, res) => {
         log('init', err, res)
-        if (err) {
+        if (err && !res.config) {
           return callback(Object.assign(new Error('repo is not initialized yet'),
             {
-              code: 'ERR_REPO_NOT_INITIALIZED',
+              code: ERRORS.ERR_REPO_NOT_INITIALIZED,
               path: this.path
             }))
         }
-        callback()
+        callback(err)
       }
     )
   }
@@ -355,7 +356,9 @@ function ignoringAlreadyOpened (cb) {
 }
 
 function ignoringNotFound (cb) {
-  return ignoringIf((err) => err.message.startsWith('ENOENT'), cb)
+  return ignoringIf((err) => {
+    return err && (err.code === ERRORS.ERR_REPO_NOT_INITIALIZED || err.message.startsWith('ENOENT'))
+  }, cb)
 }
 
 function buildOptions (_options) {
