@@ -10,6 +10,7 @@ const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const pull = require('pull-stream')
+const Key = require('interface-datastore').Key
 
 const backends = require('./backends')
 const version = require('./version')
@@ -321,6 +322,22 @@ class IpfsRepo {
         numObjects: results.blocks.count,
         repoSize: size
       })
+    })
+  }
+
+  /**
+   * Gets the swarm.key buffer, if it exists
+   *
+   * @param {function(Error, Buffer)} callback
+   * @returns {void}
+   */
+  swarmKey (callback) {
+    const swarmKeyKey = new Key('swarm.key')
+    this.root.get(swarmKeyKey, (err, swarmKeyBuffer) => {
+      if (err) {
+        return callback(new Error(ERRORS.SWARM_KEY_NOT_FOUND))
+      }
+      callback(null, swarmKeyBuffer)
     })
   }
 }

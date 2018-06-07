@@ -13,6 +13,7 @@ const IPFSRepo = require('../src')
 
 describe('IPFS Repo Tests onNode.js', () => {
   require('./options-test')
+  require('./pnet-test')
 
   const customLock = {
     lockName: 'test.lock',
@@ -88,7 +89,9 @@ describe('IPFS Repo Tests onNode.js', () => {
           }
         },
         (cb) => repo.open(cb)
-      ], done)
+      ], (err) => {
+        done(err)
+      })
     })
 
     after((done) => {
