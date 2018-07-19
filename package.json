@@ -32,25 +32,20 @@
     "libp2p",
     "datastore"
   ],
-  "pre-commit": [
-    "lint",
-    "test"
-  ],
   "homepage": "https://github.com/ipfs/js-ipfs-repo",
   "engines": {
     "node": ">=6.0.0",
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^13.1.0",
+    "aegir": "^15.0.1",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "lodash": "^4.17.5",
     "memdown": "^1.4.1",
     "multihashes": "~0.4.13",
-    "multihashing-async": "^0.4.8",
+    "multihashing-async": "~0.4.8",
     "ncp": "^2.0.0",
-    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2"
   },
   "dependencies": {

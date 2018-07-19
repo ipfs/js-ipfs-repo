@@ -29,7 +29,8 @@ module.exports = (repo) => {
         ], done)
       })
 
-      it('massive multiwrite', (done) => {
+      it('massive multiwrite', function (done) {
+        this.timeout(15000) // add time for ci
         each(_.range(100), (i, cb) => {
           repo.datastore.put(new Key('hello' + i), dataList[i], cb)
         }, done)
@@ -45,7 +46,8 @@ module.exports = (repo) => {
         })
       })
 
-      it('massive read', (done) => {
+      it('massive read', function (done) {
+        this.timeout(15000) // add time for ci
         parallel(_.range(20 * 100).map((i) => (cb) => {
           const j = i % dataList.length
           repo.datastore.get(new Key('hello' + j), (err, val) => {

@@ -53,7 +53,8 @@ module.exports = (repo) => {
         })
       })
 
-      it('massive multiwrite', (done) => {
+      it('massive multiwrite', function (done) {
+        this.timeout(15000) // add time for ci
         waterfall([
           (cb) => map(_.range(100), (i, cb) => {
             multihashing(blockData[i], 'sha2-256', cb)
@@ -65,7 +66,8 @@ module.exports = (repo) => {
         ], done)
       })
 
-      it('.putMany', (done) => {
+      it('.putMany', function (done) {
+        this.timeout(15000) // add time for ci
         waterfall([
           (cb) => map(_.range(50), (i, cb) => {
             const d = new Buffer('many' + Math.random())
@@ -108,7 +110,8 @@ module.exports = (repo) => {
         })
       })
 
-      it('massive read', (done) => {
+      it('massive read', function (done) {
+        this.timeout(15000) // add time for ci
         parallel(_.range(20 * 100).map((i) => (cb) => {
           const j = i % blockData.length
           waterfall([
