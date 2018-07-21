@@ -4,6 +4,7 @@ const waterfall = require('async/waterfall')
 const series = require('async/series')
 const parallel = require('async/parallel')
 const each = require('async/each')
+const _get = require('lodash.get')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
@@ -13,9 +14,11 @@ const pull = require('pull-stream')
 const backends = require('./backends')
 const version = require('./version')
 const config = require('./config')
+const spec = require('./spec')
 const apiAddr = require('./api-addr')
 const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
+const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 
 const log = debug('repo')
@@ -50,6 +53,7 @@ class IpfsRepo {
     this.root = backends.create('root', this.path, this.options)
     this.version = version(this.root)
     this.config = config(this.root)
+    this.spec = spec(this.root)
     this.apiAddr = apiAddr(this.root)
   }
 
@@ -65,7 +69,8 @@ class IpfsRepo {
 
     series([
       (cb) => this.root.open(ignoringAlreadyOpened(cb)),
-      (cb) => this.config.set(config, cb),
+      (cb) => this.config.set(buildConfig(config), cb),
+      (cb) => this.spec.set(buildDatastoreSpec(config), cb),
       (cb) => this.version.set(repoVersion, cb)
     ], callback)
   }
@@ -209,6 +214,7 @@ class IpfsRepo {
     parallel(
       {
         config: (cb) => this.config.exists(cb),
+        spec: (cb) => this.spec.exists(cb),
         version: (cb) => this.version.check(repoVersion, cb)
       },
       (err, res) => {
@@ -376,4 +382,24 @@ function buildOptions (_options) {
     options.storageBackendOptions)
 
   return options
+}
+
+function buildConfig (_config) {
+  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore', {}))
+
+  return _config
+}
+
+function buildDatastoreSpec (_config) {
+  const spec = Object.assign({}, defaultDatastore.Spec, _get(_config, 'datastore.Spec', {}))
+
+  return {
+    type: spec.type,
+    mounts: spec.mounts.map((mounting) => ({
+      mountpoint: mounting.mountpoint,
+      type: mounting.child.type,
+      path: mounting.child.path,
+      shardFunc: mounting.child.shardFunc
+    }))
+  }
 }
