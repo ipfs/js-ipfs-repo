@@ -1,5 +1,5 @@
 'use strict'
 
 module.exports = {
-  repoVersion: 6
+  repoVersion: 7
 }

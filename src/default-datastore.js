@@ -2,7 +2,6 @@
 
 // Default configuration for the datastore spec in node.js
 module.exports = {
-  StorageMax: '10GB',
   StorageGCWatermark: 90,
   GCPeriod: '1h',
   BloomFilterSize: 0,
