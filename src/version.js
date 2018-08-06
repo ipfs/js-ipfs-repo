@@ -53,6 +53,10 @@ module.exports = (store) => {
           return callback(err)
         }
         log('comparing version: %s and %s', version, expected)
+
+        // Version 6 and 7 are the same
+        expected = expected === 6 ? expected = 7 : expected
+
         if (version !== expected) {
           return callback(new Error(`version mismatch: expected v${expected}, found v${version}`))
         }

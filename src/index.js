@@ -384,6 +384,7 @@ function buildOptions (_options) {
   return options
 }
 
+// TODO this should come from js-ipfs instead
 function buildConfig (_config) {
   _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore', {}))
 
