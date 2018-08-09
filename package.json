@@ -64,7 +64,8 @@
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
     "multiaddr": "^4.0.0",
-    "pull-stream": "^3.6.7"
+    "pull-stream": "^3.6.7",
+    "sort-keys": "^2.0.0"
   },
   "license": "MIT",
   "contributors": [

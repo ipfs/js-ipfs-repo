@@ -61,11 +61,31 @@ module.exports = (repo) => {
       })
     })
 
+    describe('spec', () => {
+      it('get spec', (done) => {
+        repo.spec.get((err) => {
+          expect(err).to.not.exist()
+          done()
+        })
+      })
+
+      it('set spec', (done) => {
+        series([
+          (cb) => repo.spec.set({ a: 'b' }, cb),
+          (cb) => repo.spec.get((err, spec) => {
+            if (err) return cb(err)
+            expect(spec).to.deep.equal({ a: 'b' })
+            cb()
+          })
+        ], done)
+      })
+    })
+
     describe('version', () => {
       it('get version', (done) => {
         repo.version.get((err, version) => {
           expect(err).to.not.exist()
-          expect(version).to.equal(6)
+          expect(version).to.equal(7)
           done()
         })
       })
@@ -78,7 +98,7 @@ module.exports = (repo) => {
             expect(version).to.equal(9000)
             cb()
           },
-          (cb) => repo.version.set(6, cb)
+          (cb) => repo.version.set(7, cb)
         ], done)
       })
     })
