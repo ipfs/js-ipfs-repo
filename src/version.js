@@ -55,9 +55,10 @@ module.exports = (store) => {
         log('comparing version: %s and %s', version, expected)
 
         // Version 6 and 7 are the same
-        expected = expected === 6 ? expected = 7 : expected
+        // TODO: Clean up the compatibility logic. Repo feature detection would be ideal, or a better version schema
+        const compatibleVersion = (version === 6 && expected === 7) || (expected === 6 && version === 7)
 
-        if (version !== expected) {
+        if (version !== expected && !compatibleVersion) {
           return callback(new Error(`version mismatch: expected v${expected}, found v${version}`))
         }
         callback()
