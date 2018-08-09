@@ -1,3 +1,13 @@
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.23.0...v0.23.1) (2018-08-09)
+
+
+### Bug Fixes
+
+* repo should not break-from-v6-to-v7 ([33eab19](https://github.com/ipfs/js-ipfs-repo/commit/33eab19))
+
+
+
 <a name="0.23.0"></a>
 # [0.23.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.22.1...v0.23.0) (2018-08-09)
 
