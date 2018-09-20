@@ -38,7 +38,7 @@
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^15.0.1",
+    "aegir": "^15.2.0",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "lodash": "^4.17.5",
