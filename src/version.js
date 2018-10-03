@@ -59,7 +59,7 @@ module.exports = (store) => {
         const compatibleVersion = (version === 6 && expected === 7) || (expected === 6 && version === 7)
 
         if (version !== expected && !compatibleVersion) {
-          return callback(new Error(`version mismatch: expected v${expected}, found v${version}`))
+          return callback(new Error(`repository version mismatch: expected v${expected}, found v${version}`))
         }
         callback()
       })
