@@ -22,7 +22,7 @@ describe('IPFS Repo Tests onNode.js', () => {
           return callback(new Error('already locked'))
         }
 
-        let lockPath = path.join(dir, customLock.lockName)
+        const lockPath = path.join(dir, customLock.lockName)
         fs.writeFileSync(lockPath, '')
 
         callback(null, {
