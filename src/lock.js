@@ -3,7 +3,7 @@
 const path = require('path')
 const debug = require('debug')
 const fs = require('fs')
-const { lock, check } = require('proper-lockfile')
+const { lock } = require('proper-lockfile')
 
 const log = debug('repo:lock')
 
@@ -27,31 +27,6 @@ exports.lock = (dir, callback) => {
           .then(() => cb())
           .catch(err => cb(err))
       }})
-    })
-    .catch(err => callback(err))
-}
-
-/**
- * Check if the repo in the given directory is locked.
- *
- * @param {string} dir
- * @param {function(Error, bool)} callback
- * @returns {void}
- */
-exports.locked = (dir, callback) => {
-  const file = path.join(dir, lockFile)
-  log('checking lock: %s')
-
-  if (!fs.existsSync(file)) {
-    log('file does not exist: %s', file)
-  }
-
-  check(dir, { lockfilePath: file })
-    .then(islocked => {
-      if (islocked) {
-        return callback(null, true)
-      }
-      callback(null, false)
     })
     .catch(err => callback(err))
 }

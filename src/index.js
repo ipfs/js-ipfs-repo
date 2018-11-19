@@ -189,20 +189,6 @@ class IpfsRepo {
   }
 
   /**
-   * Gets the status of the lock on the repo
-   *
-   * @param {string} path
-   * @param {function(Error, boolean)} callback
-   * @returns {void}
-   */
-  _isLocked (path, callback) {
-    if (this._locker) {
-      return this._locker.locked(path, callback)
-    }
-    callback(null, false)
-  }
-
-  /**
    * Check if the repo is already initialized.
    *
    * @private
