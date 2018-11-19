@@ -2,7 +2,6 @@
 
 const path = require('path')
 const debug = require('debug')
-const fs = require('fs')
 const { lock } = require('proper-lockfile')
 
 const log = debug('repo:lock')
