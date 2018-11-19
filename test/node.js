@@ -43,29 +43,34 @@ describe('IPFS Repo Tests onNode.js', () => {
     }
   }
 
-  const repos = [{
-    name: 'default inited',
-    opts: undefined,
-    init: true
-  }, {
-    name: 'memory',
-    opts: {
-      fs: require('interface-datastore').MemoryDatastore,
-      level: require('memdown'),
-      lock: 'memory'
+  const repos = [
+    {
+      name: 'default inited',
+      opts: undefined,
+      init: true
     },
-    init: true
-  }, {
-    name: 'custom locker',
-    opts: {
-      lock: customLock
+    {
+      name: 'memory',
+      opts: {
+        fs: require('interface-datastore').MemoryDatastore,
+        level: require('memdown'),
+        lock: 'memory'
+      },
+      init: true
     },
-    init: true
-  }, {
-    name: 'default existing',
-    opts: undefined,
-    init: false
-  }]
+    {
+      name: 'custom locker',
+      opts: {
+        lock: customLock
+      },
+      init: true
+    },
+    {
+      name: 'default existing',
+      opts: undefined,
+      init: false
+    }
+  ]
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()

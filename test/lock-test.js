@@ -32,7 +32,7 @@ module.exports = (repo) => {
       const mochaExceptionHandler = process.listeners('uncaughtException').pop()
       process.removeListener('uncaughtException', mochaExceptionHandler)
       process.once('uncaughtException', function (err) {
-        expect(err.message).to.match(/already held|IO error/)
+        expect(err.message).to.match(/already held|IO error|already being hold/)
       })
 
       series([
@@ -49,7 +49,7 @@ module.exports = (repo) => {
       ], function (err) {
         // There will be no listeners if the uncaughtException was triggered
         if (process.listeners('uncaughtException').length > 0) {
-          expect(err.message).to.match(/already locked|already held|ENOENT/)
+          expect(err.message).to.match(/already locked|already held|already being hold|ELOCKED/)
         }
 
         // Reset listeners to maintain test integrity
