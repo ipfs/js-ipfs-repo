@@ -19,7 +19,7 @@ exports.lock = (dir, callback) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
 
-  lock(dir, {lockfilePath: file})
+  lock(dir, {lockfilePath: file, stale: 20000})
     .then(release => {
       callback(null, {close: (cb) => {
         release()
