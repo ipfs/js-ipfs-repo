@@ -1,3 +1,13 @@
+<a name="0.25.2"></a>
+## [0.25.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.25.1...v0.25.2) (2018-11-28)
+
+
+### Bug Fixes
+
+* fix staleness check ([#182](https://github.com/ipfs/js-ipfs-repo/issues/182)) ([ede5dd6](https://github.com/ipfs/js-ipfs-repo/commit/ede5dd6))
+
+
+
 <a name="0.25.1"></a>
 ## [0.25.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.25.0...v0.25.1) (2018-11-19)
 
