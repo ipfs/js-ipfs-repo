@@ -52,7 +52,7 @@
     "async": "^2.6.1",
     "base32.js": "~0.1.0",
     "big.js": "^5.2.2",
-    "cids": "~0.5.5",
+    "cids": "~0.5.7",
     "datastore-core": "~0.6.0",
     "datastore-fs": "~0.7.0",
     "datastore-level": "~0.10.0",

@@ -88,14 +88,12 @@ function createBaseStore (store) {
             if (!otherCid) return callback(err)
 
             const otherKey = cidToDsKey(otherCid)
-            store.get(otherKey, (err, blockData) => {
+            return store.get(otherKey, (err, blockData) => {
               if (err) return callback(err)
 
-              const block = new Block(blockData, otherCid)
-
-              store.put(block, (err) => {
+              store.put(key, blockData, (err) => {
                 if (err) return callback(err)
-                callback(null, block)
+                callback(null, new Block(blockData, cid))
               })
             })
           }
@@ -166,6 +164,7 @@ function createBaseStore (store) {
         if (err) return callback(err)
         if (exists) return callback(null, true)
 
+        // If not found, we try with the other CID version.
         const otherCid = cidToOtherVersion(cid)
         if (!otherCid) return callback(null, false)
 
