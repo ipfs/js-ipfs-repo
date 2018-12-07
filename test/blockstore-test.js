@@ -193,6 +193,46 @@ module.exports = (repo) => {
           done()
         })
       })
+
+      it('should have block stored under v0 CID with a v1 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.has(cid.toV1(), (err, exists) => {
+              expect(err).to.not.exist()
+              expect(exists).to.eql(true)
+              done()
+            })
+          })
+        })
+      })
+
+      it('should have block stored under v1 CID with a v0 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(1, 'dag-pb', hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.has(cid.toV0(), (err, exists) => {
+              expect(err).to.not.exist()
+              expect(exists).to.eql(true)
+              done()
+            })
+          })
+        })
+      })
     })
 
     describe('.delete', () => {
