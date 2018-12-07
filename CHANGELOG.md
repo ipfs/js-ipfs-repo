@@ -1,3 +1,13 @@
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.25.2...v0.26.0) (2018-12-07)
+
+
+### Features
+
+* cid agnostic blockstore .get and .has ([#184](https://github.com/ipfs/js-ipfs-repo/issues/184)) ([18cca08](https://github.com/ipfs/js-ipfs-repo/commit/18cca08))
+
+
+
 <a name="0.25.2"></a>
 ## [0.25.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.25.1...v0.25.2) (2018-11-28)
 
