@@ -32,10 +32,10 @@ module.exports = (repo) => {
 
       it('set config', (done) => {
         series([
-          (cb) => repo.config.set({a: 'b'}, cb),
+          (cb) => repo.config.set({ a: 'b' }, cb),
           (cb) => repo.config.get((err, config) => {
             if (err) return cb(err)
-            expect(config).to.deep.equal({a: 'b'})
+            expect(config).to.deep.equal({ a: 'b' })
             cb()
           })
         ], done)
@@ -54,7 +54,7 @@ module.exports = (repo) => {
           (cb) => repo.config.set('c.x', 'd', cb),
           (cb) => repo.config.get((err, config) => {
             if (err) return cb(err)
-            expect(config).to.deep.equal({a: 'b', c: { x: 'd' }})
+            expect(config).to.deep.equal({ a: 'b', c: { x: 'd' } })
             cb()
           })
         ], done)

@@ -3,7 +3,7 @@
 const Repo = require('ipfs-repo')
 const repo = new Repo('/Users/awesome/.jsipfs')
 
-repo.init({my: 'config'}, (err) => {
+repo.init({ my: 'config' }, (err) => {
   if (err) {
     throw err
   }

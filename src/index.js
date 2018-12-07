@@ -42,7 +42,7 @@ class IpfsRepo {
    * @param {object} options - Configuration
    */
   constructor (repoPath, options) {
-    assert.equal(typeof repoPath, 'string', 'missing repoPath')
+    assert.strictEqual(typeof repoPath, 'string', 'missing repoPath')
 
     this.options = buildOptions(options)
     this.closed = true
@@ -170,7 +170,7 @@ class IpfsRepo {
         return callback(err, null)
       }
 
-      assert.equal(typeof lockfile.close, 'function', 'Locks must have a close method')
+      assert.strictEqual(typeof lockfile.close, 'function', 'Locks must have a close method')
       callback(null, lockfile)
     })
   }
@@ -273,7 +273,7 @@ class IpfsRepo {
       options = {}
     }
 
-    options = Object.assign({}, {human: false}, options)
+    options = Object.assign({}, { human: false }, options)
 
     parallel({
       storageMax: (cb) => this.config.get('Datastore.StorageMax', (err, max) => {

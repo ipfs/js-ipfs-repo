@@ -45,7 +45,7 @@ module.exports = (repo) => {
       })
 
       it('empty value', (done) => {
-        const d = new Buffer(0)
+        const d = Buffer.alloc(0)
         multihashing(d, 'sha2-256', (err, multihash) => {
           expect(err).to.not.exist()
           const empty = new Block(d, new CID(multihash))
@@ -70,7 +70,7 @@ module.exports = (repo) => {
         this.timeout(15000) // add time for ci
         waterfall([
           (cb) => map(_.range(50), (i, cb) => {
-            const d = new Buffer('many' + Math.random())
+            const d = Buffer.from('many' + Math.random())
             multihashing(d, 'sha2-256', (err, hash) => {
               if (err) {
                 return cb(err)
@@ -135,6 +135,46 @@ module.exports = (repo) => {
           done()
         })
       })
+
+      it('should get block stored under v0 CID with a v1 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.get(cid.toV1(), (err, block) => {
+              expect(err).to.not.exist()
+              expect(block.data).to.eql(data)
+              done()
+            })
+          })
+        })
+      })
+
+      it('should get block stored under v1 CID with a v0 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(1, 'dag-pb', hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.get(cid.toV0(), (err, block) => {
+              expect(err).to.not.exist()
+              expect(block.data).to.eql(data)
+              done()
+            })
+          })
+        })
+      })
     })
 
     describe('.has', () => {
@@ -151,6 +191,46 @@ module.exports = (repo) => {
           expect(err).to.not.exist()
           expect(exists).to.eql(false)
           done()
+        })
+      })
+
+      it('should have block stored under v0 CID with a v1 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.has(cid.toV1(), (err, exists) => {
+              expect(err).to.not.exist()
+              expect(exists).to.eql(true)
+              done()
+            })
+          })
+        })
+      })
+
+      it('should have block stored under v1 CID with a v0 CID', done => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        multihashing(data, 'sha2-256', (err, hash) => {
+          if (err) return done(err)
+
+          const cid = new CID(1, 'dag-pb', hash)
+
+          repo.blocks.put(new Block(data, cid), err => {
+            if (err) return done(err)
+
+            repo.blocks.has(cid.toV0(), (err, exists) => {
+              expect(err).to.not.exist()
+              expect(exists).to.eql(true)
+              done()
+            })
+          })
         })
       })
     })

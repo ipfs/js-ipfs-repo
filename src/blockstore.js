@@ -77,9 +77,29 @@ function createBaseStore (store) {
         })
       }
 
-      const k = cidToDsKey(cid)
-      store.get(k, (err, blockData) => {
-        if (err) { return callback(err) }
+      const key = cidToDsKey(cid)
+      store.get(key, (err, blockData) => {
+        if (err) {
+          // If not found, we try with the other CID version.
+          // If exists, then store that block under the CID that was requested.
+          // Some duplication occurs.
+          if (err.code === 'ERR_NOT_FOUND') {
+            const otherCid = cidToOtherVersion(cid)
+            if (!otherCid) return callback(err)
+
+            const otherKey = cidToDsKey(otherCid)
+            return store.get(otherKey, (err, blockData) => {
+              if (err) return callback(err)
+
+              store.put(key, blockData, (err) => {
+                if (err) return callback(err)
+                callback(null, new Block(blockData, cid))
+              })
+            })
+          }
+
+          return callback(err)
+        }
 
         callback(null, new Block(blockData, cid))
       })
@@ -140,7 +160,16 @@ function createBaseStore (store) {
         })
       }
 
-      store.has(cidToDsKey(cid), callback)
+      store.has(cidToDsKey(cid), (err, exists) => {
+        if (err) return callback(err)
+        if (exists) return callback(null, true)
+
+        // If not found, we try with the other CID version.
+        const otherCid = cidToOtherVersion(cid)
+        if (!otherCid) return callback(null, false)
+
+        store.has(cidToDsKey(otherCid), callback)
+      })
     },
     /**
      * Delete a block from the store
@@ -162,5 +191,13 @@ function createBaseStore (store) {
     close (callback) {
       store.close(callback)
     }
+  }
+}
+
+function cidToOtherVersion (cid) {
+  try {
+    return cid.version === 0 ? cid.toV1() : cid.toV0()
+  } catch (err) {
+    return null
   }
 }
