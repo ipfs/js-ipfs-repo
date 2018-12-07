@@ -29,13 +29,15 @@ exports.lock = (dir, callback) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
 
-  lock(dir, {lockfilePath: file, stale: STALE_TIME})
+  lock(dir, { lockfilePath: file, stale: STALE_TIME })
     .then(release => {
-      callback(null, {close: (cb) => {
-        release()
-          .then(() => cb())
-          .catch(err => cb(err))
-      }})
+      callback(null, {
+        close: (cb) => {
+          release()
+            .then(() => cb())
+            .catch(err => cb(err))
+        }
+      })
     })
     .catch(err => callback(err))
 }

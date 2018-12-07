@@ -26,7 +26,7 @@ module.exports = (repo) => {
     })
 
     it('get human stats', (done) => {
-      repo.stat({human: true}, (err, stats) => {
+      repo.stat({ human: true }, (err, stats) => {
         expect(err).to.not.exist()
         expect(stats).to.exist()
         expect(stats).to.have.property('numObjects')
