@@ -38,6 +38,8 @@ exports.lock = (dir, callback) => {
             .catch(err => cb(err))
         }
       })
+    }, callback)
+    .catch(err => {
+      log(err)
     })
-    .catch(err => callback(err))
 }
