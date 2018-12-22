@@ -8,7 +8,8 @@ const Block = require('ipfs-block')
 const setImmediate = require('async/setImmediate')
 const reject = require('async/reject')
 const CID = require('cids')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
+const collect = require('pull-stream/sinks/collect')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -60,7 +61,7 @@ function createBaseStore (store) {
     query (query, callback) {
       pull(
         store.query(query),
-        pull.collect(callback)
+        collect(callback)
       )
     },
     /**

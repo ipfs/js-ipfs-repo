@@ -3,9 +3,9 @@
 const Key = require('interface-datastore').Key
 const queue = require('async/queue')
 const waterfall = require('async/waterfall')
-const _get = require('lodash.get')
-const _set = require('lodash.set')
-const _has = require('lodash.has')
+const _get = require('dlv')
+const _set = require('just-safe-set')
+const Buffer = require('safe-buffer').Buffer
 
 const configKey = new Key('config')
 
@@ -37,7 +37,7 @@ module.exports = (store) => {
         } catch (err) {
           return callback(err)
         }
-        if (key !== undefined && !_has(config, key)) {
+        if (key !== undefined && !_get(config, key)) {
           return callback(new Error('Key ' + key + ' does not exist in config'))
         }
         const value = key !== undefined ? _get(config, key) : config
@@ -91,7 +91,10 @@ module.exports = (store) => {
       waterfall(
         [
           (cb) => configStore.get(cb),
-          (config, cb) => cb(null, _set(config, key, value)),
+          (config, cb) => {
+            _set(config, key, value)
+            cb(null, config)
+          },
           _saveAll
         ],
         callback)

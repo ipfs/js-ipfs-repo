@@ -4,12 +4,13 @@ const waterfall = require('async/waterfall')
 const series = require('async/series')
 const parallel = require('async/parallel')
 const each = require('async/each')
-const _get = require('lodash.get')
+const _get = require('dlv')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
+const reduce = require('pull-stream/sinks/reduce')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -328,7 +329,7 @@ class IpfsRepo {
 function getSize (queryFn, callback) {
   pull(
     queryFn.query({}),
-    pull.reduce((sum, block) => {
+    reduce((sum, block) => {
       return sum
         .plus(block.value.byteLength)
         .plus(block.key._buf.byteLength)
