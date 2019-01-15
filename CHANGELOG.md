@@ -1,3 +1,13 @@
+<a name="0.26.1"></a>
+## [0.26.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.0...v0.26.1) (2019-01-15)
+
+
+### Bug Fixes
+
+* fix repo lock and buffer api ([#185](https://github.com/ipfs/js-ipfs-repo/issues/185)) ([f56aea3](https://github.com/ipfs/js-ipfs-repo/commit/f56aea3))
+
+
+
 <a name="0.26.0"></a>
 # [0.26.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.25.2...v0.26.0) (2018-12-07)
 
