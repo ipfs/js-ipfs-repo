@@ -8,7 +8,7 @@ const _get = require('lodash.get')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
-const Big = require('big.js')
+const Big = require('bignumber.js')
 const pull = require('pull-stream')
 
 const backends = require('./backends')
