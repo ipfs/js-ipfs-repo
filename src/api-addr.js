@@ -10,30 +10,28 @@ module.exports = (store) => {
     /**
      * Get the current configuration from the repo.
      *
-     * @param {function(Error, Object)} callback
-     * @returns {void}
+     * @returns {Promise<Object>}
      */
-    get (callback) {
-      store.get(apiFile, (err, value) => callback(err, value && value.toString()))
+    async get () {
+      const value = await store.get(apiFile)
+      return value && value.toString()
     },
     /**
      * Set the current configuration for this repo.
      *
      * @param {Object} value - the api address to be written
-     * @param {function(Error)} callback
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    set (value, callback) {
-      store.put(apiFile, Buffer.from(value.toString()), callback)
+    set (value) {
+      return store.put(apiFile, Buffer.from(value.toString()))
     },
     /**
      * Deletes api file
      *
-     * @param {function(Error, bool)} callback
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    delete (callback) {
-      store.delete(apiFile, callback)
+    delete () {
+      return store.delete(apiFile)
     }
   }
 }

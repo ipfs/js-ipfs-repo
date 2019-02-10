@@ -49,15 +49,14 @@
     "rimraf": "^2.6.2"
   },
   "dependencies": {
-    "async": "^2.6.1",
     "base32.js": "~0.1.0",
     "bignumber.js": "^8.0.2",
     "cids": "~0.5.7",
     "datastore-core": "~0.6.0",
     "datastore-fs": "~0.7.0",
-    "datastore-level": "~0.10.0",
+    "datastore-level": "git://github.com/ipfs/js-datastore-level.git#refactor/async-iterators",
     "debug": "^4.1.0",
-    "interface-datastore": "~0.6.0",
+    "interface-datastore": "git://github.com/ipfs/interface-datastore.git#refactor/async-iterators",
     "ipfs-block": "~0.8.0",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
