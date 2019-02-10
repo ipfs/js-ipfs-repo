@@ -22,24 +22,11 @@ const STALE_TIME = 20000
  * Lock the repo in the given dir.
  *
  * @param {string} dir
- * @param {function(Error, lock)} callback
- * @returns {void}
+ * @returns {Object}
  */
-exports.lock = (dir, callback) => {
+exports.lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
-
-  lock(dir, { lockfilePath: file, stale: STALE_TIME })
-    .then(release => {
-      callback(null, {
-        close: (cb) => {
-          release()
-            .then(() => cb())
-            .catch(err => cb(err))
-        }
-      })
-    }, callback)
-    .catch(err => {
-      log(err)
-    })
+  const release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+  return { close: () => release() }
 }

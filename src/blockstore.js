@@ -5,11 +5,7 @@ const ShardingStore = core.ShardingDatastore
 const Key = require('interface-datastore').Key
 const base32 = require('base32.js')
 const Block = require('ipfs-block')
-const setImmediate = require('async/setImmediate')
-const reject = require('async/reject')
 const CID = require('cids')
-const pull = require('pull-stream/pull')
-const collect = require('pull-stream/sinks/collect')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -32,21 +28,17 @@ const cidToDsKey = (cid) => {
   return keyFromBuffer(cid.buffer)
 }
 
-module.exports = (filestore, options, callback) => {
-  maybeWithSharding(filestore, options, (err, store) => {
-    if (err) { return callback(err) }
-
-    callback(null, createBaseStore(store))
-  })
+module.exports = async (filestore, options) => {
+  const store = await maybeWithSharding(filestore, options)
+  return createBaseStore(store)
 }
 
-function maybeWithSharding (filestore, options, callback) {
+function maybeWithSharding (filestore, options) {
   if (options.sharding) {
     const shard = new core.shard.NextToLast(2)
-    ShardingStore.createOrOpen(filestore, shard, callback)
-  } else {
-    setImmediate(() => callback(null, filestore))
+    return ShardingStore.createOrOpen(filestore, shard)
   }
+  return filestore
 }
 
 function createBaseStore (store) {
@@ -55,142 +47,113 @@ function createBaseStore (store) {
      * Query the store.
      *
      * @param {object} query
-     * @param {function(Error, Array)} callback
-     * @return {void}
+     * @return {Iterable}
      */
-    query (query, callback) {
-      pull(
-        store.query(query),
-        collect(callback)
-      )
+    query (query) {
+      return store.query(query)
     },
     /**
      * Get a single block by CID.
      *
      * @param {CID} cid
-     * @param {function(Error, Block)} callback
-     * @returns {void}
+     * @returns {Promise<Block>}
      */
-    get (cid, callback) {
+    async get (cid) {
       if (!CID.isCID(cid)) {
-        return setImmediate(() => {
-          callback(new Error('Not a valid cid'))
-        })
+        throw new Error('Not a valid cid')
       }
-
       const key = cidToDsKey(cid)
-      store.get(key, (err, blockData) => {
-        if (err) {
-          // If not found, we try with the other CID version.
-          // If exists, then store that block under the CID that was requested.
-          // Some duplication occurs.
-          if (err.code === 'ERR_NOT_FOUND') {
-            const otherCid = cidToOtherVersion(cid)
-            if (!otherCid) return callback(err)
+      let blockData
+      try {
+        blockData = await store.get(key)
+        return new Block(blockData, cid)
+      } catch (err) {
+        if (err.code === 'ERR_NOT_FOUND') {
+          const otherCid = cidToOtherVersion(cid)
+          if (!otherCid) throw err
 
-            const otherKey = cidToDsKey(otherCid)
-            return store.get(otherKey, (err, blockData) => {
-              if (err) return callback(err)
-
-              store.put(key, blockData, (err) => {
-                if (err) return callback(err)
-                callback(null, new Block(blockData, cid))
-              })
-            })
-          }
-
-          return callback(err)
+          const otherKey = cidToDsKey(otherCid)
+          const blockData = await store.get(otherKey)
+          await store.put(key, blockData)
+          return new Block(blockData, cid)
         }
-
-        callback(null, new Block(blockData, cid))
-      })
+      }
     },
-    put (block, callback) {
+    /**
+     * Write a single block to the store.
+     *
+     * @param {Block} block
+     * @returns {Promise<void>}
+     */
+    put (block) {
       if (!Block.isBlock(block)) {
-        return setImmediate(() => {
-          callback(new Error('invalid block'))
-        })
+        throw new Error('invalid block')
       }
 
       const k = cidToDsKey(block.cid)
-
-      store.has(k, (err, exists) => {
-        if (err) { return callback(err) }
-        if (exists) { return callback() }
-
-        store.put(k, block.data, callback)
+      return store.has(k).then((exists) => {
+        if (exists) { return }
+        return store.put(k, block.data)
       })
     },
+
     /**
      * Like put, but for more.
      *
      * @param {Array<Block>} blocks
-     * @param {function(Error)} callback
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    putMany (blocks, callback) {
+    async putMany (blocks) {
       const keys = blocks.map((b) => ({
         key: cidToDsKey(b.cid),
         block: b
       }))
 
-      const batch = store.batch()
-      reject(keys, (k, cb) => store.has(k.key, cb), (err, newKeys) => {
-        if (err) {
-          return callback(err)
-        }
-
-        newKeys.forEach((k) => {
-          batch.put(k.key, k.block.data)
-        })
-
-        batch.commit(callback)
+      const batch = await store.batch()
+      const newKeys = await Promise.all(keys.filter((k) => { store.has(k.key) }))
+      newKeys.forEach((k) => {
+        batch.put(k.key, k.block.data)
       })
+      return batch.commit()
     },
     /**
      * Does the store contain block with this cid?
      *
      * @param {CID} cid
-     * @param {function(Error, bool)} callback
-     * @returns {void}
+     * @returns {Promise<bool>}
      */
-    has (cid, callback) {
+    has (cid) {
       if (!CID.isCID(cid)) {
-        return setImmediate(() => {
-          callback(new Error('Not a valid cid'))
-        })
+        throw new Error('Not a valid cid')
       }
 
-      store.has(cidToDsKey(cid), (err, exists) => {
-        if (err) return callback(err)
-        if (exists) return callback(null, true)
-
-        // If not found, we try with the other CID version.
-        const otherCid = cidToOtherVersion(cid)
-        if (!otherCid) return callback(null, false)
-
-        store.has(cidToDsKey(otherCid), callback)
-      })
+      return store.has(cidToDsKey(cid))
+        .then((exists) => {
+          if (exists) return exists
+          const otherCid = cidToOtherVersion(cid)
+          if (!otherCid) return false
+          return store.has(cidToDsKey(otherCid))
+        })
     },
     /**
      * Delete a block from the store
      *
      * @param {CID} cid
-     * @param {function(Error)} callback
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    delete (cid, callback) {
+    delete (cid) {
       if (!CID.isCID(cid)) {
-        return setImmediate(() => {
-          callback(new Error('Not a valid cid'))
-        })
+        throw new Error('Not a valid cid')
       }
-
-      store.delete(cidToDsKey(cid), callback)
+      return store.delete(cidToDsKey(cid))
     },
-
-    close (callback) {
-      store.close(callback)
+    /**
+     * Close the store
+     *
+     * @returns {Promise<void>}
+     */
+    close () {
+      return store.close()
     }
   }
 }
