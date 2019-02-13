@@ -13,7 +13,6 @@ const each = require('async/each')
 const map = require('async/map')
 const _ = require('lodash')
 const multihashing = require('multihashing-async')
-const Buffer = require('safe-buffer').Buffer
 
 module.exports = (repo) => {
   describe('blockstore', () => {
