@@ -1,2 +1,3 @@
 * text=auto
 test/test-repo/** text eol=lf
+test/fixtures/** text eol=lf
