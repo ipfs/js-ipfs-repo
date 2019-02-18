@@ -4,6 +4,10 @@
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
   "browser": {
     "rimraf": false,
     "datastore-fs": "datastore-level",
