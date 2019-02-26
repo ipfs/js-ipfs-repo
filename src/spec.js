@@ -12,7 +12,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () {
       return store.has(specKey)
     },
     /**
@@ -20,9 +20,9 @@ module.exports = (store) => {
      *
      * @returns {Promise<Buffer>}
      */
-    get () {
-      return store.get()
-        .then(buf => JSON.parse(buf.toString()))
+    async get () {
+      const buf = await store.get()
+      return JSON.parse(buf.toString())
     },
     /**
      * Set the datastore spec of the repo, writing it to the underlying store.
@@ -30,7 +30,7 @@ module.exports = (store) => {
      * @param {number} spec
      * @returns {Promise<void>}
      */
-    set (spec) {
+    async set (spec) {
       return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }

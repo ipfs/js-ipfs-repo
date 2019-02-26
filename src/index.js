@@ -147,7 +147,7 @@ class IpfsRepo {
    *
    * @returns {Promise<void>}
    */
-  _closeLock () {
+  async _closeLock () {
     if (this.lockfile) {
       return this.lockfile.close()
     }

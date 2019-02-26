@@ -13,7 +13,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () {
       return store.has(versionKey)
     },
     /**
@@ -21,17 +21,17 @@ module.exports = (store) => {
      *
      * @returns {Promise<Integer>}
      */
-    get () {
-      return this.get(versionKey)
-        .then(buf => parseInt(buf.toString().trim(), 10))
+    async get () {
+      const buf = await this.get(versionKey)
+      return parseInt(buf.toString().trim(), 10)
     },
     /**
      * Set the version of the repo, writing it to the underlying store.
      *
      * @param {number} version
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    set (version) {
+    async set (version) {
       return store.put(versionKey, Buffer.from(String(version)))
     },
     /**
