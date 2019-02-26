@@ -20,7 +20,7 @@ module.exports = (store) => {
      * @param {String} key - the config key to get
      * @returns {Promise<Object>}
      */
-    get (key) {
+    async get (key) {
       if (!key) {
         key = undefined
       }
@@ -61,7 +61,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () {
       return store.has(configKey)
     }
   }
