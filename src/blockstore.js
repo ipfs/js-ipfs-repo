@@ -85,16 +85,15 @@ function createBaseStore (store) {
      * @param {Block} block
      * @returns {Promise<void>}
      */
-    put (block) {
+    async put (block) {
       if (!Block.isBlock(block)) {
         throw new Error('invalid block')
       }
 
       const k = cidToDsKey(block.cid)
-      return store.has(k).then((exists) => {
-        if (exists) { return }
-        return store.put(k, block.data)
-      })
+      const exists = await store.has(k)
+      if (exists) return
+      return store.put(k, block.data)
     },
 
     /**
@@ -109,8 +108,12 @@ function createBaseStore (store) {
         block: b
       }))
 
-      const batch = await store.batch()
-      const newKeys = await Promise.all(keys.filter((k) => { store.has(k.key) }))
+      const batch = store.batch()
+      const newKeys = (await Promise.all(keys.map(async k => {
+        const exists = await store.has(k.key)
+        return exists ? null : k
+      }))).filter(Boolean)
+
       newKeys.forEach((k) => {
         batch.put(k.key, k.block.data)
       })
@@ -122,18 +125,16 @@ function createBaseStore (store) {
      * @param {CID} cid
      * @returns {Promise<bool>}
      */
-    has (cid) {
+    async has (cid) {
       if (!CID.isCID(cid)) {
         throw new Error('Not a valid cid')
       }
 
-      return store.has(cidToDsKey(cid))
-        .then((exists) => {
-          if (exists) return exists
-          const otherCid = cidToOtherVersion(cid)
-          if (!otherCid) return false
-          return store.has(cidToDsKey(otherCid))
-        })
+      const exists = await store.has(cidToDsKey(cid))
+      if (exists) return exists
+      const otherCid = cidToOtherVersion(cid)
+      if (!otherCid) return false
+      return store.has(cidToDsKey(otherCid))
     },
     /**
      * Delete a block from the store
@@ -141,7 +142,7 @@ function createBaseStore (store) {
      * @param {CID} cid
      * @returns {Promise<void>}
      */
-    delete (cid) {
+    async delete (cid) {
       if (!CID.isCID(cid)) {
         throw new Error('Not a valid cid')
       }
@@ -152,7 +153,7 @@ function createBaseStore (store) {
      *
      * @returns {Promise<void>}
      */
-    close () {
+    async close () {
       return store.close()
     }
   }
