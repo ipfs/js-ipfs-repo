@@ -82,7 +82,14 @@ class IpfsRepo {
     // check if the repo is already initialized
     try {
       await this.root.open()
-      await this._isInitialized()
+      const initialized = await this._isInitialized()
+      if (!initialized) {
+        throw Object.assign(new Error('repo is not initialized yet'),
+          {
+            code: ERRORS.ERR_REPO_NOT_INITIALIZED,
+            path: this.path
+          })
+      }
       this.lockfile = await this._openLock(this.path)
       log('aquired repo.lock')
       log('creating datastore')
@@ -150,28 +157,16 @@ class IpfsRepo {
   /**
    * Check if the repo is already initialized.
    * @private
-   * @returns {Promise<void>}
+   * @returns {Promise<bool>}
    */
   async _isInitialized () {
     log('init check')
-    let res
-    let config, spec, version
+    let config, spec
     try {
-      [config, spec, version] = await Promise.all([this.config.exists(), this.spec.exists(), this.version.check(repoVersion)])
-      res = {
-        config: config,
-        spec: spec,
-        version: version
-      }
+      [config, spec] = await Promise.all([this.config.exists(), this.spec.exists(), this.version.check(repoVersion)])
+      return config && spec
     } catch (err) {
-      if (err && !res.config) {
-        throw Object.assign(new Error('repo is not initialized yet'),
-          {
-            code: ERRORS.ERR_REPO_NOT_INITIALIZED,
-            path: this.path
-          })
-      }
-      throw err
+      return false
     }
   }
 
