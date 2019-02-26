@@ -58,12 +58,12 @@ class IpfsRepo {
    * @param {Object} config - config to write into `config`.
    * @returns {Promise<void>}
    */
-  init (config) {
+  async init (config) {
     log('initializing at: %s', this.path)
-    return this.root.open()
-      .then(() => this.config.set(buildConfig(config)))
-      .then(() => this.spec.set(buildDatastoreSpec(config)))
-      .then(() => this.version.set(repoVersion))
+    await this.root.open()
+    await this.config.set(buildConfig(config))
+    await this.spec.set(buildDatastoreSpec(config))
+    await this.version.set(repoVersion)
   }
 
   /**
