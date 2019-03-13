@@ -1,3 +1,13 @@
+<a name="0.26.3"></a>
+## [0.26.3](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.2...v0.26.3) (2019-03-13)
+
+
+### Bug Fixes
+
+* update lock file package to fix compromised lock check ([#193](https://github.com/ipfs/js-ipfs-repo/issues/193)) ([73d95cd](https://github.com/ipfs/js-ipfs-repo/commit/73d95cd))
+
+
+
 <a name="0.26.2"></a>
 ## [0.26.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.2-rc.0...v0.26.2) (2019-02-18)
 
