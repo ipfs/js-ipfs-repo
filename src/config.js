@@ -5,7 +5,7 @@ const queue = require('async/queue')
 const waterfall = require('async/waterfall')
 const _get = require('dlv')
 const _set = require('just-safe-set')
-const Buffer = require('safe-buffer').Buffer
+const Buffer = require('buffer').Buffer
 
 const configKey = new Key('config')
 
