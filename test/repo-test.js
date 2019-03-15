@@ -49,6 +49,15 @@ module.exports = (repo) => {
         })
       })
 
+      it('get config key should fail with non string key', (done) => {
+        repo.config.get(1111, (err, value) => {
+          expect(err).to.exist()
+          console.log(value)
+
+          done()
+        })
+      })
+
       it('set config key', (done) => {
         series([
           (cb) => repo.config.set('c.x', 'd', cb),
