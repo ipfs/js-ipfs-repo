@@ -46,7 +46,13 @@ module.exports = (store) => {
           return callback(new Error('Key ' + key + ' must be a string.'))
         }
 
-        callback(null, _get(config, key, null) || new Error('Key ' + key + ' does not exist in config'))
+        const value = _get(config, key, null)
+
+        if (value === null) {
+          return callback(new Error('Key ' + key + ' does not exist in config.'))
+        }
+
+        callback(null, value)
       })
     },
     /**
