@@ -1,3 +1,13 @@
+<a name="0.26.4"></a>
+## [0.26.4](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.3...v0.26.4) (2019-03-18)
+
+
+### Bug Fixes
+
+* reduce bundle size ([#186](https://github.com/ipfs/js-ipfs-repo/issues/186)) ([0aa9d77](https://github.com/ipfs/js-ipfs-repo/commit/0aa9d77))
+
+
+
 <a name="0.26.3"></a>
 ## [0.26.3](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.2...v0.26.3) (2019-03-13)
 
