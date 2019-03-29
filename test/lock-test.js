@@ -41,16 +41,10 @@ module.exports = (repo) => {
   })
 
   describe('lock-memory', () => {
-    it('should lock a dir', async () => {
+    it('should lock and unlock dir', async () => {
       const dir = '/foo/bar'
       expect(await lockMemory.locked(dir)).to.be.false()
 
-      await lockMemory.lock(dir)
-      expect(await lockMemory.locked(dir)).to.be.true()
-    })
-
-    it('should unlock a dir', async () => {
-      const dir = '/foo/bar'
       const closer = await lockMemory.lock(dir)
       expect(await lockMemory.locked(dir)).to.be.true()
 

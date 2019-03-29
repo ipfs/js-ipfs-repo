@@ -1,6 +1,21 @@
 'use strict'
 
 /**
+ * Error raised when there is lock already in place when repo is being opened.
+ */
+class LockExistsError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'LockExistsError'
+    this.code = 'ERR_LOCK_EXISTS'
+    this.message = message
+  }
+}
+
+LockExistsError.code = 'ERR_LOCK_EXISTS'
+exports.LockExistsError = LockExistsError
+
+/**
  * Error raised when requested item is not found.
  */
 class NotFoundError extends Error {
