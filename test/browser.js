@@ -21,4 +21,5 @@ describe('IPFS Repo Tests on the Browser', () => {
   require('./blockstore-test')(repo)
   require('./datastore-test')(repo)
   require('./keystore-test')(repo)
+  require('./lock-test')(repo)
 })
