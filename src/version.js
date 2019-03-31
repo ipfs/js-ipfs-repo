@@ -22,7 +22,7 @@ module.exports = (store) => {
      * @returns {Promise<Integer>}
      */
     async get () {
-      const buf = await this.get(versionKey)
+      const buf = await store.get(versionKey)
       return parseInt(buf.toString().trim(), 10)
     },
     /**

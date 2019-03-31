@@ -38,7 +38,7 @@ module.exports = (repo) => {
         await repo.blocks.put(empty)
       })
 
-      it('massive multiwrite', async () => {
+      it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
         const hashes = await Promise.all(_.range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
         await Promise.all(_.range(100).map((i) => {
@@ -47,7 +47,7 @@ module.exports = (repo) => {
         }))
       })
 
-      it('.putMany', async () => {
+      it('.putMany', async function () {
         this.timeout(15000) // add time for ci
         const blocks = await Promise.all(_.range(50).map(async (i) => {
           const d = Buffer.from('many' + Math.random())
@@ -55,10 +55,10 @@ module.exports = (repo) => {
           return new Block(d, new CID(hash))
         }))
         await repo.blocks.putMany(blocks)
-        blocks.each(async (block) => {
+        for (const block of blocks) {
           const block1 = await repo.blocks.get(block.cid)
           expect(block1).to.be.eql(block)
-        })
+        }
       })
 
       it('returns an error on invalid block', async () => {
@@ -76,44 +76,45 @@ module.exports = (repo) => {
         const block = await repo.blocks.get(b.cid)
         expect(block).to.be.eql(b)
       })
-    })
 
-    it('massive read', async function () {
-      this.timeout(15000) // add time for ci
-      await Promise.all(_.range(20 * 100).map(async (i) => {
-        const j = i % blockData.length
-        const hash = await multihashing(blockData[j], 'sha2-256')
-        const block = await repo.blocks.get(new CID(hash))
-        block.to.be.eql(blockData[j])
-      }))
-    })
+      it('massive read', async function () {
+        this.timeout(15000) // add time for ci
+        await Promise.all(_.range(20 * 100).map(async (i) => {
+          const j = i % blockData.length
+          const hash = await multihashing(blockData[j], 'sha2-256')
+          const block = await repo.blocks.get(new CID(hash))
+          expect(block.data).to.be.eql(blockData[j])
+        }))
+      })
 
-    it('returns an error on invalid block', async () => {
-      try {
-        await repo.blocks.get('woot')
-      } catch (err) {
-        expect(err).to.exist()
-      }
-      assert.fail()
-    })
+      it('returns an error on invalid block', async () => {
+        try {
+          await repo.blocks.get('woot')
+        } catch (err) {
+          expect(err).to.exist()
+          return
+        }
+        assert.fail()
+      })
 
-    it('should get block stored under v0 CID with a v1 CID', async () => {
-      const data = Buffer.from(`TEST${Date.now()}`)
-      const hash = await multihashing(data, 'sha2-256')
-      const cid = new CID(hash)
-      await repo.blocks.put(new Block(data, cid))
-      const block = await repo.blocks.get(cid.toV1())
-      expect(block.data).to.eql(data)
-    })
+      it('should get block stored under v0 CID with a v1 CID', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await repo.blocks.get(cid.toV1())
+        expect(block.data).to.eql(data)
+      })
 
-    it('should get block stored under v1 CID with a v0 CID', async () => {
-      const data = Buffer.from(`TEST${Date.now()}`)
+      it('should get block stored under v1 CID with a v0 CID', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
 
-      const hash = await multihashing(data, 'sha2-256')
-      const cid = new CID(1, 'dag-pb', hash)
-      await repo.blocks.put(new Block(data, cid))
-      const block = await repo.blocks.get(cid.toV0())
-      expect(block.data).to.empty(data)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-pb', hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await repo.blocks.get(cid.toV0())
+        expect(block.data).to.eql(data)
+      })
     })
 
     describe('.has', () => {

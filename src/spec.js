@@ -12,7 +12,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    async exists () {
+    exists () {
       return store.has(specKey)
     },
     /**
@@ -21,7 +21,7 @@ module.exports = (store) => {
      * @returns {Promise<Buffer>}
      */
     async get () {
-      const buf = await store.get()
+      const buf = await store.get(specKey)
       return JSON.parse(buf.toString())
     },
     /**
@@ -30,7 +30,7 @@ module.exports = (store) => {
      * @param {number} spec
      * @returns {Promise<void>}
      */
-    async set (spec) {
+    set (spec) {
       return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }

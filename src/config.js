@@ -1,7 +1,7 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
-const queue = require('async/queue')
+const Queue = require('p-queue')
 const _get = require('lodash.get')
 const _set = require('lodash.set')
 const _has = require('lodash.has')
@@ -10,8 +10,7 @@ const Buffer = require('safe-buffer').Buffer
 const configKey = new Key('config')
 
 module.exports = (store) => {
-  const setQueue = queue(_doSet, 1)
-  setQueue.error = (err) => { throw err }
+  const setQueue = new Queue({ concurrency: 1 })
 
   const configStore = {
     /**
@@ -24,16 +23,17 @@ module.exports = (store) => {
       if (!key) {
         key = undefined
       }
-      return store.get(configKey)
-        .then((encodedValue) => {
-          const config = JSON.parse(encodedValue.toString())
-          if (key !== undefined && !_has(config, key)) {
-            throw new Error(`Key ${key} does not exist in config`)
-          }
-          const value = key !== undefined ? _get(config, key) : config
-          return value
-        })
+
+      const encodedValue = await store.get(configKey)
+      const config = JSON.parse(encodedValue.toString())
+      if (key !== undefined && !_has(config, key)) {
+        throw new Error(`Key ${key} does not exist in config`)
+      }
+
+      const value = key !== undefined ? _get(config, key) : config
+      return value
     },
+
     /**
      * Set the current configuration for this repo.
      *
@@ -42,18 +42,21 @@ module.exports = (store) => {
      * @returns {void}
      */
     set (key, value) {
-      if (!key || typeof key !== 'string') {
-        throw new Error('Invalid key type')
+      if (arguments.length === 1) {
+        value = key
+        key = undefined
+      } else if (!key || typeof key !== 'string') {
+        throw new Error('Invalid key type: ' + typeof key)
       }
 
       if (value === undefined || Buffer.isBuffer(value)) {
-        throw new Error('Invalid value type')
+        throw new Error('Invalid value type: ' + typeof value)
       }
 
-      setQueue.push({
+      return setQueue.add(() => _doSet({
         key: key,
         value: value
-      })
+      }))
     },
 
     /**
@@ -61,7 +64,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    async exists () {
+    exists () {
       return store.has(configKey)
     }
   }
@@ -74,8 +77,9 @@ module.exports = (store) => {
     if (key) {
       const config = await configStore.get()
       _set(config, key, value)
-      await _saveAll(config)
+      return _saveAll(config)
     }
+    return _saveAll(value)
   }
 
   function _saveAll (config) {

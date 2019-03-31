@@ -5,6 +5,8 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 
+const Error = require('../src/errors')
+
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
     it('check if Repo exists', async () => {
@@ -73,6 +75,28 @@ module.exports = (repo) => {
         await repo.open()
         const version = await repo.version.get()
         expect(version).to.exist()
+      })
+
+      it('close twice throws error', async () => {
+        await repo.close()
+        try {
+          await repo.close()
+        } catch (err) {
+          expect(err.code).to.eql(Error.ERR_REPO_ALREADY_CLOSED)
+          return
+        }
+        expect.fail('Did not throw')
+      })
+
+      it('open twice throws error', async () => {
+        await repo.open()
+        try {
+          await repo.open()
+        } catch (err) {
+          expect(err.code).to.eql(Error.ERR_REPO_ALREADY_OPEN)
+          return
+        }
+        expect.fail('Did not throw')
       })
     })
   })

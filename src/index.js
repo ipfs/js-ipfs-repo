@@ -5,6 +5,8 @@ const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
+const errcode = require('err-code')
+const { collect } = require('streaming-iterables')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -61,37 +63,30 @@ class IpfsRepo {
    */
   async init (config) {
     log('initializing at: %s', this.path)
-    await this.root.open()
+    await this._openRoot()
     await this.config.set(buildConfig(config))
     await this.spec.set(buildDatastoreSpec(config))
     await this.version.set(repoVersion)
   }
 
   /**
-   * Open the repo. If the repo is already open no action will be taken.
-   * If the repo is not initialized it will return an error.
+   * Open the repo. If the repo is already open an error will be thrown.
+   * If the repo is not initialized it will throw an error.
    *
    * @returns {Promise<void>}
    */
   async open () {
     if (!this.closed) {
-      throw new Error('repo is already open')
+      throw errcode('repo is already open', ERRORS.ERR_REPO_ALREADY_OPEN)
     }
     log('opening at: %s', this.path)
 
     // check if the repo is already initialized
     try {
-      await this.root.open()
-      const initialized = await this._isInitialized()
-      if (!initialized) {
-        throw Object.assign(new Error('repo is not initialized yet'),
-          {
-            code: ERRORS.ERR_REPO_NOT_INITIALIZED,
-            path: this.path
-          })
-      }
+      await this._openRoot()
+      await this._checkInitialized()
       this.lockfile = await this._openLock(this.path)
-      log('aquired repo.lock')
+      log('acquired repo.lock')
       log('creating datastore')
       this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
       log('creating blocks')
@@ -102,13 +97,14 @@ class IpfsRepo {
       this.closed = false
       log('all opened')
     } catch (err) {
-      if (err && this.lockfile) {
-        try {
-          this._closeLock()
-        } catch (err2) {
-          log('error removing lock', err2)
-        }
+      if (!this.lockfile) {
+        throw err
+      }
+      try {
+        await this._closeLock()
         this.lockfile = null
+      } catch (err2) {
+        log('error removing lock', err2)
         throw err
       }
     }
@@ -128,6 +124,20 @@ class IpfsRepo {
 
     assert(this.options.lock, 'No lock provided')
     return this.options.lock
+  }
+
+  /**
+   * Opens the root backend, catching and ignoring an 'Already open' error
+   * @returns {Promise}
+   */
+  async _openRoot () {
+    try {
+      await this.root.open()
+    } catch (err) {
+      if (err.message !== 'Already open') {
+        throw err
+      }
+    }
   }
 
   /**
@@ -157,16 +167,25 @@ class IpfsRepo {
   /**
    * Check if the repo is already initialized.
    * @private
-   * @returns {Promise<bool>}
+   * @returns {Promise}
    */
-  async _isInitialized () {
+  async _checkInitialized () {
     log('init check')
-    let config, spec
+    let config
     try {
-      [config, spec] = await Promise.all([this.config.exists(), this.spec.exists(), this.version.check(repoVersion)])
-      return config && spec
+      [config] = await Promise.all([
+        this.config.exists(),
+        this.spec.exists(),
+        this.version.check(repoVersion)
+      ])
     } catch (err) {
-      return false
+      if (!config) {
+        throw Object.assign(
+          errcode('repo is not initialized yet', ERRORS.ERR_REPO_NOT_INITIALIZED), {
+            path: this.path
+          })
+      }
+      throw err
     }
   }
 
@@ -177,10 +196,19 @@ class IpfsRepo {
    */
   async close () {
     if (this.closed) {
-      throw new Error('repo is already closed')
+      throw errcode('repo is already closed', ERRORS.ERR_REPO_ALREADY_CLOSED)
     }
     log('closing at: %s', this.path)
-    await this.apiAddr.delete()
+
+    try {
+      // Delete api, ignoring irrelevant errors
+      await this.apiAddr.delete()
+    } catch (err) {
+      if (err.code !== ERRORS.ERR_REPO_NOT_INITIALIZED && !err.message.startsWith('ENOENT')) {
+        throw err
+      }
+    }
+
     await Promise.all([this.blocks, this.keys, this.datastore].map((store) => store.close()))
     log('unlocking')
     this.closed = true
@@ -230,17 +258,17 @@ class IpfsRepo {
     }
   }
 
-  _storageMaxStat () {
-    return this.config.get('Datastore.StorageMax')
-      .then((max) => new Big(max))
-      .catch(() => new Big(noLimit))
+  async _storageMaxStat () {
+    try {
+      const max = await this.config.get('Datastore.StorageMax')
+      return new Big(max)
+    } catch (err) {
+      return new Big(noLimit)
+    }
   }
 
   async _blockStat () {
-    const list = []
-    for await (const block of this.blocks.query({})) {
-      list.push(block)
-    }
+    const list = await collect(this.blocks.query({}))
     const count = new Big(list.length)
     let size = new Big(0)
 
@@ -249,7 +277,7 @@ class IpfsRepo {
         .plus(block.value.byteLength)
         .plus(block.key._buf.byteLength)
     })
-    return { count: count, size: size }
+    return { count, size }
   }
 }
 

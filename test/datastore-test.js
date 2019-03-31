@@ -39,10 +39,10 @@ module.exports = (repo) => {
 
       it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        await Promise.all(_.range(20 * 100).map((i) => {
+        await Promise.all(_.range(20 * 100).map(async (i) => {
           const j = i % dataList.length
-          return repo.datastore.get(new Key('hello' + j))
-            .then(val => expect(val).to.be.eql(dataList[j]))
+          const val = await repo.datastore.get(new Key('hello' + j))
+          expect(val).to.be.eql(dataList[j])
         }))
       }).timeout(10 * 1000)
     })

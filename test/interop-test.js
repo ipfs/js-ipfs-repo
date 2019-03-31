@@ -24,11 +24,10 @@ module.exports = (repo) => {
         'QmUxpzJGJYTK5AzH36jV9ucM2WdF5KhjANb4FAhqnREzuC',
         'QmQbb26h9dcU5iNPMNEzYZnZN9YLTXBtFwuHmmo6YU4Aig'
       ].map((hash) => new CID(mh.fromB58String(hash)))
-      const values = await Promise.all(cids.map(cid => repo.blocks.get(cid)))
-      values.forEach((value) => {
-        expect(value.length).to.equal(2)
-        expect(value.map(val => val.data.length)).to.eql([2659, 12783])
-      })
+
+      const values = await Promise.all(cids.map((cid) => repo.blocks.get(cid)))
+      expect(values.length).to.equal(2)
+      expect(values.map((value) => value.data.length)).to.eql([2659, 12783])
     })
 
     it('reads pin set from the datastore', async () => {
