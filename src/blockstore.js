@@ -153,7 +153,7 @@ function createBaseStore (store) {
      *
      * @returns {Promise<void>}
      */
-    close () {
+    async close () {
       return store.close()
     }
   }

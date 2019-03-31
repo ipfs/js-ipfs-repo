@@ -12,7 +12,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () {
       return store.has(specKey)
     },
     /**
@@ -30,7 +30,7 @@ module.exports = (store) => {
      * @param {number} spec
      * @returns {Promise<void>}
      */
-    set (spec) {
+    async set (spec) {
       return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }
