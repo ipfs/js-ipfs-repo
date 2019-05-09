@@ -25,13 +25,14 @@ module.exports = (repo) => {
       ], done)
     })
 
-    it('should prevent multiple repos from using the same path', (done) => {
+    it.only('should prevent multiple repos from using the same path', (done) => {
       const repoClone = new IPFSRepo(repo.path, repo.options)
 
       // Levelup throws an uncaughtException when a lock already exists, catch it
       const mochaExceptionHandler = process.listeners('uncaughtException').pop()
       process.removeListener('uncaughtException', mochaExceptionHandler)
       process.once('uncaughtException', function (err) {
+        console.log('uncaughtException', err)
         expect(err.message).to.match(/already held|IO error|already being hold/)
       })
 
@@ -40,6 +41,7 @@ module.exports = (repo) => {
           try {
             repoClone.init({}, cb)
           } catch (err) {
+            console.log('caught', err)
             cb(err)
           }
         },
@@ -47,6 +49,8 @@ module.exports = (repo) => {
           repoClone.open(cb)
         }
       ], function (err) {
+        console.log('callback', err)
+
         // There will be no listeners if the uncaughtException was triggered
         if (process.listeners('uncaughtException').length > 0) {
           expect(err.message).to.match(/already locked|already held|already being hold|ELOCKED/)
