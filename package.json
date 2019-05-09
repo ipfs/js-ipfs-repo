@@ -60,7 +60,7 @@
     "cids": "~0.5.8",
     "datastore-core": "~0.6.0",
     "datastore-fs": "~0.8.0",
-    "datastore-level": "~0.10.0",
+    "datastore-level": "~0.11.0",
     "debug": "^4.1.0",
     "dlv": "^1.1.2",
     "interface-datastore": "~0.6.0",
