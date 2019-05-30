@@ -7,5 +7,5 @@ const Repo = require('ipfs-repo');
 
   await repo.init({ my: 'config' })
   await repo.open()
-  console.log('repo is ready')
+  console.log('repo is ready') // eslint-disable-line no-console
 })()

@@ -14,7 +14,7 @@ const LOCKS = {}
  * @param {string} dir
  * @returns {Promise<Object>}
  */
-exports.lock = async (dir) => {
+exports.lock = (dir) => {
   const file = dir + '/' + lockFile
   log('locking %s', file)
   LOCKS[file] = true

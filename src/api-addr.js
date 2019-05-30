@@ -21,7 +21,7 @@ module.exports = (store) => {
      * @param {Object} value - the api address to be written
      * @returns {Promise<void>}
      */
-    async set (value) {
+    set (value) {
       return store.put(apiFile, Buffer.from(value.toString()))
     },
     /**
@@ -29,7 +29,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<void>}
      */
-    async delete () {
+    delete () {
       return store.delete(apiFile)
     }
   }

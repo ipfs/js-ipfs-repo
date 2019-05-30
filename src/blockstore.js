@@ -142,7 +142,7 @@ function createBaseStore (store) {
      * @param {CID} cid
      * @returns {Promise<void>}
      */
-    async delete (cid) {
+    delete (cid) {
       if (!CID.isCID(cid)) {
         throw new Error('Not a valid cid')
       }
@@ -153,7 +153,7 @@ function createBaseStore (store) {
      *
      * @returns {Promise<void>}
      */
-    async close () {
+    close () {
       return store.close()
     }
   }

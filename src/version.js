@@ -13,7 +13,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    async exists () {
+    exists () {
       return store.has(versionKey)
     },
     /**
@@ -31,7 +31,7 @@ module.exports = (store) => {
      * @param {number} version
      * @returns {Promise<void>}
      */
-    async set (version) {
+    set (version) {
       return store.put(versionKey, Buffer.from(String(version)))
     },
     /**

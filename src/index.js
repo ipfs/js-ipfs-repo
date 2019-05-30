@@ -18,7 +18,6 @@ const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 
-
 const log = debug('repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
@@ -158,7 +157,7 @@ class IpfsRepo {
    *
    * @returns {Promise<void>}
    */
-  async _closeLock () {
+  _closeLock () {
     if (this.lockfile) {
       return this.lockfile.close()
     }

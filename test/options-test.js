@@ -44,7 +44,7 @@ describe('custom options tests', () => {
 
   it('ensures a custom lock has a .close method', async () => {
     const lock = {
-      lock: async (path) => {
+      lock: () => {
         return {}
       }
     }
