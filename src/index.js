@@ -76,7 +76,7 @@ class IpfsRepo {
    */
   async open () {
     if (!this.closed) {
-      throw errcode('repo is already open', ERRORS.ERR_REPO_ALREADY_OPEN)
+      throw errcode(new Error('repo is already open'), ERRORS.ERR_REPO_ALREADY_OPEN)
     }
     log('opening at: %s', this.path)
 
@@ -96,16 +96,16 @@ class IpfsRepo {
       this.closed = false
       log('all opened')
     } catch (err) {
-      if (!this.lockfile) {
-        throw err
+      if (this.lockfile) {
+        try {
+          await this._closeLock()
+          this.lockfile = null
+        } catch (err2) {
+          log('error removing lock', err2)
+        }
       }
-      try {
-        await this._closeLock()
-        this.lockfile = null
-      } catch (err2) {
-        log('error removing lock', err2)
-        throw err
-      }
+
+      throw err
     }
   }
 
@@ -179,10 +179,9 @@ class IpfsRepo {
       ])
     } catch (err) {
       if (!config) {
-        throw Object.assign(
-          errcode('repo is not initialized yet', ERRORS.ERR_REPO_NOT_INITIALIZED), {
-            path: this.path
-          })
+        throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
+          path: this.path
+        })
       }
       throw err
     }
@@ -195,7 +194,7 @@ class IpfsRepo {
    */
   async close () {
     if (this.closed) {
-      throw errcode('repo is already closed', ERRORS.ERR_REPO_ALREADY_CLOSED)
+      throw errcode(new Error('repo is already closed'), ERRORS.ERR_REPO_ALREADY_CLOSED)
     }
     log('closing at: %s', this.path)
 

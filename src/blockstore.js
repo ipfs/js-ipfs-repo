@@ -109,14 +109,17 @@ function createBaseStore (store) {
       }))
 
       const batch = store.batch()
-      const newKeys = (await Promise.all(keys.map(async k => {
-        const exists = await store.has(k.key)
-        return exists ? null : k
-      }))).filter(Boolean)
 
-      newKeys.forEach((k) => {
-        batch.put(k.key, k.block.data)
-      })
+      await Promise.all(
+        keys.map(async k => {
+          if (await store.has(k.key)) {
+            return
+          }
+
+          batch.put(k.key, k.block.data)
+        })
+      )
+
       return batch.commit()
     },
     /**
