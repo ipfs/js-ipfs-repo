@@ -16,15 +16,16 @@
   },
   "scripts": {
     "test": "aegir test",
-    "test:node": "aegir test --target node",
-    "test:browser": "aegir test --target browser",
+    "test:node": "aegir test -t node",
+    "test:browser": "aegir test -t browser",
+    "test:webworker": "aegir test -t webworker",
     "build": "aegir build",
     "lint": "aegir lint",
     "release": "aegir release --docs",
     "release-minor": "aegir release --type minor --docs",
     "release-major": "aegir release --type major --docs",
-    "coverage": "aegir coverage",
-    "coverage-publish": "aegir-coverage --provider coveralls",
+    "coverage": "nyc -s npm run test:node && nyc report --reporter=html",
+    "dep-check": "aegir dep-check",
     "docs": "aegir docs"
   },
   "repository": {
