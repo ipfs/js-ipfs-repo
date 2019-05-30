@@ -1,16 +1,12 @@
 'use strict'
 
-const waterfall = require('async/waterfall')
-const series = require('async/series')
-const parallel = require('async/parallel')
-const each = require('async/each')
-const _get = require('dlv')
+const _get = require('lodash.get')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
-const pull = require('pull-stream/pull')
-const reduce = require('pull-stream/sinks/reduce')
+const errcode = require('err-code')
+const { collect } = require('streaming-iterables')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -21,6 +17,7 @@ const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
+
 
 const log = debug('repo')
 
@@ -62,83 +59,55 @@ class IpfsRepo {
    * Initialize a new repo.
    *
    * @param {Object} config - config to write into `config`.
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  init (config, callback) {
+  async init (config) {
     log('initializing at: %s', this.path)
-
-    series([
-      (cb) => this.root.open(ignoringAlreadyOpened(cb)),
-      (cb) => this.config.set(buildConfig(config), cb),
-      (cb) => this.spec.set(buildDatastoreSpec(config), cb),
-      (cb) => this.version.set(repoVersion, cb)
-    ], callback)
+    await this._openRoot()
+    await this.config.set(buildConfig(config))
+    await this.spec.set(buildDatastoreSpec(config))
+    await this.version.set(repoVersion)
   }
 
   /**
-   * Open the repo. If the repo is already open no action will be taken.
-   * If the repo is not initialized it will return an error.
+   * Open the repo. If the repo is already open an error will be thrown.
+   * If the repo is not initialized it will throw an error.
    *
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  open (callback) {
+  async open () {
     if (!this.closed) {
-      setImmediate(() => callback(new Error('repo is already open')))
-      return // early
+      throw errcode('repo is already open', ERRORS.ERR_REPO_ALREADY_OPEN)
     }
     log('opening at: %s', this.path)
 
     // check if the repo is already initialized
-    waterfall([
-      (cb) => this.root.open(ignoringAlreadyOpened(cb)),
-      (cb) => this._isInitialized(cb),
-      (cb) => this._openLock(this.path, cb),
-      (lck, cb) => {
-        log('aquired repo.lock')
-        this.lockfile = lck
-        cb()
-      },
-      (cb) => {
-        log('creating datastore')
-        this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
-        log('creating blocks')
-        const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
-        blockstore(
-          blocksBaseStore,
-          this.options.storageBackendOptions.blocks,
-          cb)
-      },
-      (blocks, cb) => {
-        this.blocks = blocks
-        cb()
-      },
-      (cb) => {
-        log('creating keystore')
-        this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
-        cb()
-      },
-
-      (cb) => {
-        this.closed = false
-        log('all opened')
-        cb()
+    try {
+      await this._openRoot()
+      await this._checkInitialized()
+      this.lockfile = await this._openLock(this.path)
+      log('acquired repo.lock')
+      log('creating datastore')
+      this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
+      log('creating blocks')
+      const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
+      this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
+      log('creating keystore')
+      this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
+      this.closed = false
+      log('all opened')
+    } catch (err) {
+      if (!this.lockfile) {
+        throw err
       }
-    ], (err) => {
-      if (err && this.lockfile) {
-        this._closeLock((err2) => {
-          if (!err2) {
-            this.lockfile = null
-          } else {
-            log('error removing lock', err2)
-          }
-          callback(err)
-        })
-      } else {
-        callback(err)
+      try {
+        await this._closeLock()
+        this.lockfile = null
+      } catch (err2) {
+        log('error removing lock', err2)
+        throw err
       }
-    })
+    }
   }
 
   /**
@@ -158,106 +127,102 @@ class IpfsRepo {
   }
 
   /**
+   * Opens the root backend, catching and ignoring an 'Already open' error
+   * @returns {Promise}
+   */
+  async _openRoot () {
+    try {
+      await this.root.open()
+    } catch (err) {
+      if (err.message !== 'Already open') {
+        throw err
+      }
+    }
+  }
+
+  /**
    * Creates a lock on the repo if a locker is specified. The lockfile object will
    * be returned in the callback if one has been created.
    *
    * @param {string} path
-   * @param {function(Error, lockfile)} callback
-   * @returns {void}
+   * @returns {Promise<lockfile>}
    */
-  _openLock (path, callback) {
-    this._locker.lock(path, (err, lockfile) => {
-      if (err) {
-        return callback(err, null)
-      }
-
-      assert.strictEqual(typeof lockfile.close, 'function', 'Locks must have a close method')
-      callback(null, lockfile)
-    })
+  async _openLock (path) {
+    const lockfile = await this._locker.lock(path)
+    assert.strictEqual(typeof lockfile.close, 'function', 'Locks must have a close method')
+    return lockfile
   }
 
   /**
    * Closes the lock on the repo
    *
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  _closeLock (callback) {
+  async _closeLock () {
     if (this.lockfile) {
-      return this.lockfile.close(callback)
+      return this.lockfile.close()
     }
-    callback()
   }
 
   /**
    * Check if the repo is already initialized.
-   *
    * @private
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise}
    */
-  _isInitialized (callback) {
+  async _checkInitialized () {
     log('init check')
-    parallel(
-      {
-        config: (cb) => this.config.exists(cb),
-        spec: (cb) => this.spec.exists(cb),
-        version: (cb) => this.version.check(repoVersion, cb)
-      },
-      (err, res) => {
-        log('init', err, res)
-        if (err && !res.config) {
-          return callback(Object.assign(new Error('repo is not initialized yet'),
-            {
-              code: ERRORS.ERR_REPO_NOT_INITIALIZED,
-              path: this.path
-            }))
-        }
-        callback(err)
+    let config
+    try {
+      [config] = await Promise.all([
+        this.config.exists(),
+        this.spec.exists(),
+        this.version.check(repoVersion)
+      ])
+    } catch (err) {
+      if (!config) {
+        throw Object.assign(
+          errcode('repo is not initialized yet', ERRORS.ERR_REPO_NOT_INITIALIZED), {
+            path: this.path
+          })
       }
-    )
+      throw err
+    }
   }
 
   /**
    * Close the repo and cleanup.
    *
-   * @param {function(Error)} callback
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  close (callback) {
+  async close () {
     if (this.closed) {
-      return callback(new Error('repo is already closed'))
+      throw errcode('repo is already closed', ERRORS.ERR_REPO_ALREADY_CLOSED)
+    }
+    log('closing at: %s', this.path)
+
+    try {
+      // Delete api, ignoring irrelevant errors
+      await this.apiAddr.delete()
+    } catch (err) {
+      if (err.code !== ERRORS.ERR_REPO_NOT_INITIALIZED && !err.message.startsWith('ENOENT')) {
+        throw err
+      }
     }
 
-    log('closing at: %s', this.path)
-    series([
-      (cb) => this.apiAddr.delete(ignoringNotFound(cb)),
-      (cb) => {
-        each(
-          [this.blocks, this.keys, this.datastore],
-          (store, callback) => store.close(callback),
-          cb)
-      },
-      (cb) => {
-        log('unlocking')
-        this.closed = true
-        this._closeLock(cb)
-      },
-      (cb) => {
-        this.lockfile = null
-        cb()
-      }
-    ], (err) => callback(err))
+    await Promise.all([this.blocks, this.keys, this.datastore].map((store) => store.close()))
+    log('unlocking')
+    this.closed = true
+    await this._closeLock()
+    this.lockfile = null
   }
 
   /**
    * Check if a repo exists.
    *
-   * @param {function(Error, bool)} callback
-   * @returns {void}
+   * @returns {Promise<bool>}
    */
-  exists (callback) {
-    this.version.exists(callback)
+  exists () {
+    return this.version.exists()
   }
 
   /**
@@ -265,95 +230,69 @@ class IpfsRepo {
    *
    * @param {Object}  options
    * @param {Boolean} options.human
-   * @param {function(Error, Object)} callback
-   * @return {void}
+   * @return {Object}
    */
-  stat (options, callback) {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
+  async stat (options) {
     options = Object.assign({}, { human: false }, options)
+    let storageMax, blocks, version, datastore, keys
+    [storageMax, blocks, version, datastore, keys] = await Promise.all([
+      this._storageMaxStat(),
+      this._blockStat(),
+      this.version.get(),
+      getSize(this.datastore),
+      getSize(this.keys)
+    ])
+    let size = blocks.size
+      .plus(datastore)
+      .plus(keys)
 
-    parallel({
-      storageMax: (cb) => this.config.get('Datastore.StorageMax', (err, max) => {
-        if (err) {
-          cb(null, new Big(noLimit))
-        } else {
-          cb(null, new Big(max))
-        }
-      }),
-      version: (cb) => this.version.get(cb),
-      blocks: (cb) => this.blocks.query({}, (err, list) => {
-        list = list || []
+    if (options.human) {
+      size = size.div(1048576)
+    }
+    return {
+      repoPath: this.path,
+      storageMax: storageMax,
+      version: version,
+      numObjects: blocks.count,
+      repoSize: size
+    }
+  }
 
-        const count = new Big(list.length)
-        let size = new Big(0)
+  async _storageMaxStat () {
+    try {
+      const max = await this.config.get('Datastore.StorageMax')
+      return new Big(max)
+    } catch (err) {
+      return new Big(noLimit)
+    }
+  }
 
-        list.forEach(block => {
-          size = size
-            .plus(block.value.byteLength)
-            .plus(block.key._buf.byteLength)
-        })
+  async _blockStat () {
+    const list = await collect(this.blocks.query({}))
+    const count = new Big(list.length)
+    let size = new Big(0)
 
-        cb(err, {
-          count: count,
-          size: size
-        })
-      }),
-      datastore: (cb) => getSize(this.datastore, cb),
-      keys: (cb) => getSize(this.keys, cb)
-    }, (err, results) => {
-      if (err) return callback(err)
-
-      let size = results.blocks.size
-        .plus(results.datastore)
-        .plus(results.keys)
-
-      if (options.human) {
-        size = size.div(1048576)
-      }
-
-      callback(null, {
-        repoPath: this.path,
-        storageMax: results.storageMax,
-        version: results.version,
-        numObjects: results.blocks.count,
-        repoSize: size
-      })
+    list.forEach(block => {
+      size = size
+        .plus(block.value.byteLength)
+        .plus(block.key._buf.byteLength)
     })
+    return { count, size }
   }
 }
 
-function getSize (queryFn, callback) {
-  pull(
-    queryFn.query({}),
-    reduce((sum, block) => {
-      return sum
-        .plus(block.value.byteLength)
-        .plus(block.key._buf.byteLength)
-    }, new Big(0), callback))
+async function getSize (queryFn) {
+  let sum = new Big(0)
+  for await (const block of queryFn.query({})) {
+    sum.plus(block.value.byteLength)
+      .plus(block.key._buf.byteLength)
+  }
+  return sum
 }
 
 module.exports = IpfsRepo
 module.exports.repoVersion = repoVersion
 module.exports.errors = ERRORS
-
-function ignoringIf (cond, cb) {
-  return (err) => {
-    cb(err && !cond(err) ? err : null)
-  }
-}
-function ignoringAlreadyOpened (cb) {
-  return ignoringIf((err) => err.message === 'Already open', cb)
-}
-
-function ignoringNotFound (cb) {
-  return ignoringIf((err) => {
-    return err && (err.code === ERRORS.ERR_REPO_NOT_INITIALIZED || err.message.startsWith('ENOENT'))
-  }, cb)
-}
 
 function buildOptions (_options) {
   const options = Object.assign({}, defaultOptions, _options)

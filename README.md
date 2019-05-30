@@ -107,19 +107,9 @@ Example:
 const Repo = require('ipfs-repo')
 const repo = new Repo('/tmp/ipfs-repo')
 
-repo.init({ cool: 'config' }, (err) => {
-  if (err) {
-    throw err
-  }
-
-  repo.open((err) => {
-    if (err) {
-      throw err
-    }
-
-    console.log('repo is ready')
-  })
-})
+await repo.init({ cool: 'config' })
+await repo.open()
+console.log('repo is ready')
 ```
 
 This now has created the following structure, either on disk or as an in memory representation:
@@ -157,63 +147,61 @@ Arguments:
 const repo = new Repo('path/to/repo')
 ```
 
-#### `repo.init (callback)`
+#### `Promise repo.init ()`
 
 Creates the necessary folder structure inside the repo.
 
-#### `repo.open (callback)`
+#### `Promise repo.open ()`
 
 [Locks](https://en.wikipedia.org/wiki/Record_locking) the repo to prevent conflicts arising from simultaneous access.
 
-#### `repo.close (callback)`
+#### `Promise repo.close ()`
 
 Unlocks the repo.
 
-#### `repo.exists (callback)`
+#### `Promise<boolean> repo.exists ()`
 
-Tells whether this repo exists or not. Calls back with `(err, bool)`.
+Tells whether this repo exists or not. Returns a boolean.
 
 ### Repos
 
 Root repo:
 
-#### `repo.put (key, value:Buffer, callback)`
+#### `Promise repo.put (key, value:Buffer)`
 
 Put a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 
-#### `repo.get (key, callback)`
+#### `Promise<value> repo.get (key)`
 
 Get a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
-* `callback` is a callback function `function (err, result:Buffer)`
 
 [Blocks](https://github.com/ipfs/js-ipfs-block#readme):
 
-#### `repo.blocks.put (block:Block, callback)`
+#### `Promise repo.blocks.put (block:Block)`
 
 * `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
-#### `repo.blocks.putMany (blocks, callback)`
+#### `Promise repo.blocks.putMany (blocks)`
 
 Put many blocks.
 
 * `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
-#### `repo.blocks.get (cid, callback)`
+#### `Promise<Buffer> repo.blocks.get (cid)`
 
 Get block.
 
 * `cid` is the content id of [type CID](https://github.com/ipld/js-cid#readme).
-* `callback` is a callback function `function (err, result:Buffer)`
 
 Datastore:
 
 #### `repo.datastore`
 
-This is contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
+This contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
 
 
 ### Utils
@@ -222,77 +210,70 @@ This is contains a full implementation of [the `interface-datastore` API](https:
 
 Instead of using `repo.set('config')` this exposes an API that allows you to set and get a decoded config object, as well as, in a safe manner, change any of the config values individually.
 
-##### `repo.config.set(key:string, value, callback)`
+##### `Promise repo.config.set(key:string, value)`
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
 * `key` is a string specifying the object path. Example:
 
 ```js
-repo.config.set('a.b.c', 'c value', (err) => {
-  if (err) { throw err }
-  repo.config.get((err, config) => {
-    if (err) { throw err }
-    assert.equal(config.a.b.c, 'c value')
-  })
-})
+await repo.config.set('a.b.c', 'c value')
+const config = await repo.config.get()
+assert.equal(config.a.b.c, 'c value')
 ```
 
-##### `repo.config.get(value, callback)`
+##### `Promise repo.config.set(value)`
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-##### `repo.config.get(key:string, callback)`
+##### `Promise<string> repo.config.get(key:string)`
 
-Get a config value. `callback` is a function with the signature: `function (err, value)`, wehre the `
-value` is of the same type that was set before.
+Get a config value. Returns the same type that was set before.
 
 * `key` is a string specifying the object path. Example:
 
 ```js
-repo.config.get('a.b.c', (err, value) => {
-  if (err) { throw err }
-  console.log('config.a.b.c = ', value)
-})
+const value = await repo.config.get('a.b.c')
+console.log('config.a.b.c = ', value)
 ```
 
-##### `repo.config.get(callback)`
+##### `Promise<Object> repo.config.get()`
 
-Get the entire config value. `callback` is a function with the signature: `function (err, configValue:Object)`.
+Get the entire config value.
 
-#### `repo.config.exists(callback)`
+#### `Promise<boolean> repo.config.exists()`
 
-Whether the config sub-repo exists. Calls back with `(err, bool)`.
+Whether the config sub-repo exists.
 
 #### `repo.version`
 
-##### `repo.version.get (callback)`
+##### `Promise<number> repo.version.get ()`
 
-Gets the repo version.
+Gets the repo version (an integer).
 
-##### `repo.version.set (version:number, callback)`
+##### `Promise repo.version.set (version:number)`
 
 Sets the repo version
 
 #### `repo.apiAddr`
 
-#### `repo.apiAddr.get (callback)`
+#### `Promise<string> repo.apiAddr.get ()`
 
 Gets the API address.
 
-#### `repo.apiAddr.set (value, callback)`
+#### `Promise repo.apiAddr.set (value)`
 
 Sets the API address.
 
 * `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
 
-### `repo.stat ([options], callback)`
+### `Promise<Object> repo.stat ([options])`
 
 Gets the repo status.
 
 `options` is an object which might contain the key `human`, which is a boolean indicating whether or not the `repoSize` should be displayed in MiB or not.
 
-`callback` is a function with the signature `function (err, stats)`, where `stats` is an Object with the following keys:
+Returns an Object with the following keys:
 
 - `numObjects`
 - `repoPath`
@@ -311,27 +292,27 @@ const memoryLock = require('ipfs-repo/src/lock-memory')  // Default in browser
 
 You can also provide your own custom Lock. It must be an object with the following interface:
 
-#### `lock.lock (dir, callback)`
+#### `Promise lock.lock (dir)`
 
-Sets the lock if one does not already exist. If a lock already exists, `callback` should be called with an error.
+Sets the lock if one does not already exist. If a lock already exists, should throw an error.
 
 `dir` is a string to the directory the lock should be created at. The repo typically creates the lock at its root.
 
-`callback` is a function with the signature `function (err, closer)`, where `closer` has a `close` method for removing the lock.
+Returns `closer`, where `closer` has a `close` method for removing the lock.
 
-##### `closer.close (callback)`
+##### `Promise closer.close ()`
 
 Closes the lock created by `lock.open`
 
-`callback` is a function with the signature `function (err)`. If no error was returned, the lock was successfully removed.
+If no error was thrown, the lock was successfully removed.
 
-#### `lock.locked (dir, callback)`
+#### `Promise<boolean> lock.locked (dir)`
 
 Checks the existence of the lock.
 
 `dir` is a string to the directory to check for the lock. The repo typically checks for the lock at its root.
 
-`callback` is a function with the signature `function (err, boolean)`, where `boolean` indicates the existence of the lock.
+Returns a `boolean` indicating the existence of the lock.
 
 ## Notes
 

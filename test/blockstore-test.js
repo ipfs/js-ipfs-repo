@@ -5,12 +5,9 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const assert = chai.assert
 const Block = require('ipfs-block')
 const CID = require('cids')
-const parallel = require('async/parallel')
-const waterfall = require('async/waterfall')
-const each = require('async/each')
-const map = require('async/map')
 const _ = require('lodash')
 const multihashing = require('multihashing-async')
 
@@ -20,230 +17,142 @@ module.exports = (repo) => {
     const bData = Buffer.from('hello world')
     let b
 
-    before((done) => {
-      multihashing(bData, 'sha2-256', (err, h) => {
-        if (err) {
-          return done(err)
-        }
-
-        b = new Block(bData, new CID(h))
-        done()
-      })
+    before(async () => {
+      const hash = await multihashing(bData, 'sha2-256')
+      b = new Block(bData, new CID(hash))
     })
 
     describe('.put', () => {
-      it('simple', (done) => {
-        repo.blocks.put(b, done)
+      it('simple', async () => {
+        await repo.blocks.put(b)
       })
 
-      it('multi write (locks)', (done) => {
-        parallel([
-          (cb) => repo.blocks.put(b, cb),
-          (cb) => repo.blocks.put(b, cb)
-        ], done)
+      it('multi write (locks)', async () => {
+        await Promise.all([repo.blocks.put(b), repo.blocks.put(b)])
       })
 
-      it('empty value', (done) => {
+      it('empty value', async () => {
         const d = Buffer.alloc(0)
-        multihashing(d, 'sha2-256', (err, multihash) => {
-          expect(err).to.not.exist()
-          const empty = new Block(d, new CID(multihash))
-          repo.blocks.put(empty, done)
-        })
+        const multihash = await multihashing(d, 'sha2-256')
+        const empty = new Block(d, new CID(multihash))
+        await repo.blocks.put(empty)
       })
 
-      it('massive multiwrite', function (done) {
+      it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        waterfall([
-          (cb) => map(_.range(100), (i, cb) => {
-            multihashing(blockData[i], 'sha2-256', cb)
-          }, cb),
-          (hashes, cb) => each(_.range(100), (i, cb) => {
-            const block = new Block(blockData[i], new CID(hashes[i]))
-            repo.blocks.put(block, cb)
-          }, cb)
-        ], done)
+        const hashes = await Promise.all(_.range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
+        await Promise.all(_.range(100).map((i) => {
+          const block = new Block(blockData[i], new CID(hashes[i]))
+          return repo.blocks.put(block)
+        }))
       })
 
-      it('.putMany', function (done) {
+      it('.putMany', async function () {
         this.timeout(15000) // add time for ci
-        waterfall([
-          (cb) => map(_.range(50), (i, cb) => {
-            const d = Buffer.from('many' + Math.random())
-            multihashing(d, 'sha2-256', (err, hash) => {
-              if (err) {
-                return cb(err)
-              }
-              cb(null, new Block(d, new CID(hash)))
-            })
-          }, cb),
-          (blocks, cb) => {
-            repo.blocks.putMany(blocks, (err) => {
-              expect(err).to.not.exist()
-              map(blocks, (b, cb) => {
-                repo.blocks.get(b.cid, cb)
-              }, (err, res) => {
-                expect(err).to.not.exist()
-                expect(res).to.be.eql(blocks)
-                cb()
-              })
-            })
-          }
-        ], done)
+        const blocks = await Promise.all(_.range(50).map(async (i) => {
+          const d = Buffer.from('many' + Math.random())
+          const hash = await multihashing(d, 'sha2-256')
+          return new Block(d, new CID(hash))
+        }))
+        await repo.blocks.putMany(blocks)
+        for (const block of blocks) {
+          const block1 = await repo.blocks.get(block.cid)
+          expect(block1).to.be.eql(block)
+        }
       })
 
-      it('returns an error on invalid block', (done) => {
-        repo.blocks.put('hello', (err) => {
+      it('returns an error on invalid block', async () => {
+        try {
+          await repo.blocks.put('hello')
+          assert.fail()
+        } catch (err) {
           expect(err).to.exist()
-          done()
-        })
+        }
       })
     })
 
     describe('.get', () => {
-      it('simple', (done) => {
-        repo.blocks.get(b.cid, (err, block) => {
-          expect(err).to.not.exist()
-          expect(block).to.be.eql(b)
-          done()
-        })
+      it('simple', async () => {
+        const block = await repo.blocks.get(b.cid)
+        expect(block).to.be.eql(b)
       })
 
-      it('massive read', function (done) {
+      it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        parallel(_.range(20 * 100).map((i) => (cb) => {
+        await Promise.all(_.range(20 * 100).map(async (i) => {
           const j = i % blockData.length
-          waterfall([
-            (cb) => multihashing(blockData[j], 'sha2-256', cb),
-            (h, cb) => {
-              const cid = new CID(h)
-              repo.blocks.get(cid, cb)
-            },
-            (block, cb) => {
-              expect(block.data).to.be.eql(blockData[j])
-              cb()
-            }
-          ], cb)
-        }), done)
+          const hash = await multihashing(blockData[j], 'sha2-256')
+          const block = await repo.blocks.get(new CID(hash))
+          expect(block.data).to.be.eql(blockData[j])
+        }))
       })
 
-      it('returns an error on invalid block', (done) => {
-        repo.blocks.get('woot', (err, val) => {
+      it('returns an error on invalid block', async () => {
+        try {
+          await repo.blocks.get('woot')
+        } catch (err) {
           expect(err).to.exist()
-          expect(val).to.not.exist()
-          done()
-        })
+          return
+        }
+        assert.fail()
       })
 
-      it('should get block stored under v0 CID with a v1 CID', done => {
+      it('should get block stored under v0 CID with a v1 CID', async () => {
         const data = Buffer.from(`TEST${Date.now()}`)
-
-        multihashing(data, 'sha2-256', (err, hash) => {
-          if (err) return done(err)
-
-          const cid = new CID(hash)
-
-          repo.blocks.put(new Block(data, cid), err => {
-            if (err) return done(err)
-
-            repo.blocks.get(cid.toV1(), (err, block) => {
-              expect(err).to.not.exist()
-              expect(block.data).to.eql(data)
-              done()
-            })
-          })
-        })
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await repo.blocks.get(cid.toV1())
+        expect(block.data).to.eql(data)
       })
 
-      it('should get block stored under v1 CID with a v0 CID', done => {
+      it('should get block stored under v1 CID with a v0 CID', async () => {
         const data = Buffer.from(`TEST${Date.now()}`)
 
-        multihashing(data, 'sha2-256', (err, hash) => {
-          if (err) return done(err)
-
-          const cid = new CID(1, 'dag-pb', hash)
-
-          repo.blocks.put(new Block(data, cid), err => {
-            if (err) return done(err)
-
-            repo.blocks.get(cid.toV0(), (err, block) => {
-              expect(err).to.not.exist()
-              expect(block.data).to.eql(data)
-              done()
-            })
-          })
-        })
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-pb', hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await repo.blocks.get(cid.toV0())
+        expect(block.data).to.eql(data)
       })
     })
 
     describe('.has', () => {
-      it('existing block', (done) => {
-        repo.blocks.has(b.cid, (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.eql(true)
-          done()
-        })
+      it('existing block', async () => {
+        const exists = await repo.blocks.has(b.cid)
+        expect(exists).to.eql(true)
       })
 
-      it('non existent block', (done) => {
-        repo.blocks.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'), (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.eql(false)
-          done()
-        })
+      it('non existent block', async () => {
+        const exists = await repo.blocks.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'))
+        expect(exists).to.eql(false)
       })
 
-      it('should have block stored under v0 CID with a v1 CID', done => {
+      it('should have block stored under v0 CID with a v1 CID', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(hash)
+        await repo.blocks.put(new Block(data, cid))
+        const exists = await repo.blocks.has(cid.toV1())
+        expect(exists).to.eql(true)
+      })
+
+      it('should have block stored under v1 CID with a v0 CID', async () => {
         const data = Buffer.from(`TEST${Date.now()}`)
 
-        multihashing(data, 'sha2-256', (err, hash) => {
-          if (err) return done(err)
-
-          const cid = new CID(hash)
-
-          repo.blocks.put(new Block(data, cid), err => {
-            if (err) return done(err)
-
-            repo.blocks.has(cid.toV1(), (err, exists) => {
-              expect(err).to.not.exist()
-              expect(exists).to.eql(true)
-              done()
-            })
-          })
-        })
-      })
-
-      it('should have block stored under v1 CID with a v0 CID', done => {
-        const data = Buffer.from(`TEST${Date.now()}`)
-
-        multihashing(data, 'sha2-256', (err, hash) => {
-          if (err) return done(err)
-
-          const cid = new CID(1, 'dag-pb', hash)
-
-          repo.blocks.put(new Block(data, cid), err => {
-            if (err) return done(err)
-
-            repo.blocks.has(cid.toV0(), (err, exists) => {
-              expect(err).to.not.exist()
-              expect(exists).to.eql(true)
-              done()
-            })
-          })
-        })
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-pb', hash)
+        await repo.blocks.put(new Block(data, cid))
+        const exists = await repo.blocks.has(cid.toV0())
+        expect(exists).to.eql(true)
       })
     })
 
     describe('.delete', () => {
-      it('simple', (done) => {
-        waterfall([
-          (cb) => repo.blocks.delete(b.cid, cb),
-          (cb) => repo.blocks.has(b.cid, cb)
-        ], (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.equal(false)
-          done()
-        })
+      it('simple', async () => {
+        await repo.blocks.delete(b.cid)
+        const exists = await repo.blocks.has(b.cid)
+        expect(exists).to.equal(false)
       })
     })
   })
