@@ -148,7 +148,11 @@ class IpfsRepo {
    */
   async _openLock (path) {
     const lockfile = await this._locker.lock(path)
-    assert.strictEqual(typeof lockfile.close, 'function', 'Locks must have a close method')
+
+    if (typeof lockfile.close !== 'function') {
+      throw errcode(new Error('Locks must have a close method'), 'ERR_NO_CLOSE_FUNCTION')
+    }
+
     return lockfile
   }
 

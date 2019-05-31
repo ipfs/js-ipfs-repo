@@ -247,17 +247,17 @@ Whether the config sub-repo exists.
 
 #### `repo.version`
 
-##### `Promise<number> repo.version.get ()`
+##### `Promise<Number> repo.version.get ()`
 
 Gets the repo version (an integer).
 
-##### `Promise repo.version.set (version:number)`
+##### `Promise repo.version.set (version:Number)`
 
 Sets the repo version
 
 #### `repo.apiAddr`
 
-#### `Promise<string> repo.apiAddr.get ()`
+#### `Promise<String> repo.apiAddr.get ()`
 
 Gets the API address.
 

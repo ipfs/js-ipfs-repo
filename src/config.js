@@ -2,10 +2,9 @@
 
 const Key = require('interface-datastore').Key
 const Queue = require('p-queue')
-const _get = require('lodash.get')
-const _set = require('lodash.set')
+const _get = require('just-safe-get')
+const _set = require('just-safe-set')
 const _has = require('lodash.has')
-const Buffer = require('safe-buffer').Buffer
 
 const configKey = new Key('config')
 

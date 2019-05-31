@@ -58,7 +58,7 @@ describe('custom options tests', () => {
     } catch (err) {
       error = err
     }
-    expect(error.message).to.equal('Locks must have a close method')
+    expect(error.code).to.equal('ERR_NO_CLOSE_FUNCTION')
   })
 })
 

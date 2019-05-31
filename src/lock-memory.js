@@ -10,7 +10,7 @@ const LOCKS = {}
 
 /**
  * Lock the repo in the given dir.
- * TODO
+ *
  * @param {string} dir
  * @returns {Promise<Object>}
  */
@@ -36,8 +36,7 @@ exports.lock = (dir) => {
  */
 exports.locked = (dir) => {
   const file = dir + '/' + lockFile
-  log('checking lock: %s')
+  log(`checking lock: ${file}`)
 
-  const locked = LOCKS[file]
-  return locked
+  return LOCKS[file]
 }

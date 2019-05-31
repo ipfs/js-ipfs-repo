@@ -9,7 +9,7 @@ module.exports = (store) => {
     /**
      * Get the current configuration from the repo.
      *
-     * @returns {Promise<string>}
+     * @returns {Promise<String>}
      */
     async get () {
       const value = await store.get(apiFile)
@@ -19,7 +19,7 @@ module.exports = (store) => {
      * Set the current configuration for this repo.
      *
      * @param {Object} value - the api address to be written
-     * @returns {Promise<void>}
+     * @returns {Promise<?>}
      */
     set (value) {
       return store.put(apiFile, Buffer.from(value.toString()))
