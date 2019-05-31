@@ -39,7 +39,7 @@
   ],
   "homepage": "https://github.com/ipfs/js-ipfs-repo",
   "engines": {
-    "node": ">=6.0.0",
+    "node": ">=10.0.0",
     "npm": ">=3.0.0"
   },
   "devDependencies": {
@@ -56,7 +56,6 @@
   "dependencies": {
     "base32.js": "~0.1.0",
     "bignumber.js": "^9.0.0",
-    "buffer": "^5.2.1",
     "cids": "~0.7.0",
     "datastore-core": "~0.7.0",
     "datastore-fs": "~0.9.0",
@@ -74,7 +73,6 @@
     "p-queue": "^5.0.0",
     "proper-lockfile": "^4.0.0",
     "pull-stream": "^3.6.9",
-    "safe-buffer": "^5.1.2",
     "sort-keys": "^3.0.0",
     "streaming-iterables": "^4.0.2"
   },
