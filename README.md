@@ -161,7 +161,7 @@ Unlocks the repo.
 
 #### `Promise<boolean> repo.exists ()`
 
-Tells whether this repo exists or not. Returns a boolean.
+Tells whether this repo exists or not. Returned promise resolves to a `boolean`.
 
 ### Repos
 
@@ -173,7 +173,7 @@ Put a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 
-#### `Promise<value> repo.get (key)`
+#### `Promise<Buffer> repo.get (key)`
 
 Get a value at the root of the repo.
 
@@ -226,9 +226,9 @@ assert.equal(config.a.b.c, 'c value')
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-##### `Promise<string> repo.config.get(key:string)`
+##### `Promise<?> repo.config.get(key:string)`
 
-Get a config value. Returns the same type that was set before.
+Get a config value. Returned promise resolves to the same type that was set before.
 
 * `key` is a string specifying the object path. Example:
 
@@ -273,7 +273,7 @@ Gets the repo status.
 
 `options` is an object which might contain the key `human`, which is a boolean indicating whether or not the `repoSize` should be displayed in MiB or not.
 
-Returns an Object with the following keys:
+Returned promise resolves to an `Object` with the following keys:
 
 - `numObjects`
 - `repoPath`
@@ -310,9 +310,9 @@ If no error was thrown, the lock was successfully removed.
 
 Checks the existence of the lock.
 
-`dir` is a string to the directory to check for the lock. The repo typically checks for the lock at its root.
+`dir` is the path to the directory to check for the lock. The repo typically checks for the lock at its root.
 
-Returns a `boolean` indicating the existence of the lock.
+Returned promise resolves to a `boolean` indicating the existence of the lock.
 
 ## Notes
 
