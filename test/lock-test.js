@@ -5,6 +5,7 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const IPFSRepo = require('../')
+const lockMemory = require('../src/lock-memory')
 
 module.exports = (repo) => {
   describe('Repo lock tests', () => {
@@ -36,6 +37,37 @@ module.exports = (repo) => {
         process.removeAllListeners('uncaughtException')
         process.addListener('uncaughtException', mochaExceptionHandler)
       }
+    })
+  })
+
+  describe('lock-memory', () => {
+    it('should lock a dir', () => {
+      const dir = '/foo/bar'
+      expect(lockMemory.locked(dir)).to.be.false()
+
+      lockMemory.lock(dir)
+      expect(lockMemory.locked(dir)).to.be.true()
+    })
+
+    it('should unlock a dir', () => {
+      const dir = '/foo/bar'
+      const closer = lockMemory.lock(dir)
+      expect(lockMemory.locked(dir)).to.be.true()
+
+      closer.close()
+      expect(lockMemory.locked(dir)).to.be.false()
+    })
+
+    it('should unlock a dir twice without exploding', () => {
+      const dir = '/foo/bar'
+      const closer = lockMemory.lock(dir)
+      expect(lockMemory.locked(dir)).to.be.true()
+
+      closer.close()
+      expect(lockMemory.locked(dir)).to.be.false()
+
+      closer.close()
+      expect(lockMemory.locked(dir)).to.be.false()
     })
   })
 }

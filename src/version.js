@@ -3,6 +3,7 @@
 const Key = require('interface-datastore').Key
 const debug = require('debug')
 const log = debug('repo:version')
+const errcode = require('err-code')
 
 const versionKey = new Key('version')
 
@@ -47,7 +48,7 @@ module.exports = (store) => {
       const compatibleVersion = (version === 6 && expected === 7) || (expected === 6 && version === 7)
 
       if (version !== expected && !compatibleVersion) {
-        throw new Error(`ipfs repo needs migration: expected version v${expected}, found version v${version}`)
+        throw errcode(new Error(`ipfs repo needs migration: expected version v${expected}, found version v${version}`), 'ERR_INVALID_REPO_VERSION')
       }
     }
   }

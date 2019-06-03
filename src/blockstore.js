@@ -6,6 +6,7 @@ const Key = require('interface-datastore').Key
 const base32 = require('base32.js')
 const Block = require('ipfs-block')
 const CID = require('cids')
+const errcode = require('err-code')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -60,7 +61,7 @@ function createBaseStore (store) {
      */
     async get (cid) {
       if (!CID.isCID(cid)) {
-        throw new Error('Not a valid cid')
+        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
       const key = cidToDsKey(cid)
       let blockData
@@ -70,13 +71,18 @@ function createBaseStore (store) {
       } catch (err) {
         if (err.code === 'ERR_NOT_FOUND') {
           const otherCid = cidToOtherVersion(cid)
-          if (!otherCid) throw err
+
+          if (!otherCid) {
+            throw err
+          }
 
           const otherKey = cidToDsKey(otherCid)
           const blockData = await store.get(otherKey)
           await store.put(key, blockData)
           return new Block(blockData, cid)
         }
+
+        throw err
       }
     },
     /**
@@ -130,7 +136,7 @@ function createBaseStore (store) {
      */
     async has (cid) {
       if (!CID.isCID(cid)) {
-        throw new Error('Not a valid cid')
+        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
 
       const exists = await store.has(cidToDsKey(cid))
@@ -147,7 +153,7 @@ function createBaseStore (store) {
      */
     delete (cid) {
       if (!CID.isCID(cid)) {
-        throw new Error('Not a valid cid')
+        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
       return store.delete(cidToDsKey(cid))
     },

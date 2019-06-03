@@ -38,5 +38,5 @@ exports.locked = (dir) => {
   const file = dir + '/' + lockFile
   log(`checking lock: ${file}`)
 
-  return LOCKS[file]
+  return Boolean(LOCKS[file])
 }

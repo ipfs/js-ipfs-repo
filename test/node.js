@@ -97,6 +97,8 @@ describe('IPFS Repo Tests onNode.js', () => {
     require('./keystore-test')(repo)
     require('./stat-test')(repo)
     require('./lock-test')(repo)
+    require('./config-test')(repo)
+    require('./api-addr-test')(repo)
     if (!r.init) {
       require('./interop-test')(repo)
     }

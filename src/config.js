@@ -5,6 +5,7 @@ const Queue = require('p-queue')
 const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const _has = require('lodash.has')
+const errcode = require('err-code')
 
 const configKey = new Key('config')
 
@@ -45,11 +46,11 @@ module.exports = (store) => {
         value = key
         key = undefined
       } else if (!key || typeof key !== 'string') {
-        throw new Error('Invalid key type: ' + typeof key)
+        throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
       }
 
       if (value === undefined || Buffer.isBuffer(value)) {
-        throw new Error('Invalid value type: ' + typeof value)
+        throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
       return setQueue.add(() => _doSet({

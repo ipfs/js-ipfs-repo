@@ -1,6 +1,6 @@
 'use strict'
 
-const _get = require('lodash.get')
+const _get = require('just-safe-get')
 const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
@@ -162,9 +162,7 @@ class IpfsRepo {
    * @returns {Promise<void>}
    */
   _closeLock () {
-    if (this.lockfile) {
-      return this.lockfile.close()
-    }
+    return this.lockfile.close()
   }
 
   /**
@@ -182,12 +180,19 @@ class IpfsRepo {
         this.version.check(repoVersion)
       ])
     } catch (err) {
-      if (!config) {
+      if (err.code === 'ERR_NOT_FOUND') {
         throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
           path: this.path
         })
       }
+
       throw err
+    }
+
+    if (!config) {
+      throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
+        path: this.path
+      })
     }
   }
 
