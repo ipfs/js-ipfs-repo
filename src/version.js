@@ -14,7 +14,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () { // eslint-disable-line require-await
       return store.has(versionKey)
     },
     /**
@@ -32,7 +32,7 @@ module.exports = (store) => {
      * @param {number} version
      * @returns {Promise<void>}
      */
-    set (version) {
+    async set (version) { // eslint-disable-line require-await
       return store.put(versionKey, Buffer.from(String(version)))
     },
     /**

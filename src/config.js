@@ -41,7 +41,7 @@ module.exports = (store) => {
      * @param {Object} value - the config value to be written
      * @returns {void}
      */
-    set (key, value) {
+    async set (key, value) { // eslint-disable-line require-await
       if (arguments.length === 1) {
         value = key
         key = undefined
@@ -64,7 +64,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<bool>}
      */
-    exists () {
+    async exists () { // eslint-disable-line require-await
       return store.has(configKey)
     }
   }

@@ -41,33 +41,33 @@ module.exports = (repo) => {
   })
 
   describe('lock-memory', () => {
-    it('should lock a dir', () => {
+    it('should lock a dir', async () => {
       const dir = '/foo/bar'
-      expect(lockMemory.locked(dir)).to.be.false()
+      expect(await lockMemory.locked(dir)).to.be.false()
 
-      lockMemory.lock(dir)
-      expect(lockMemory.locked(dir)).to.be.true()
+      await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
     })
 
-    it('should unlock a dir', () => {
+    it('should unlock a dir', async () => {
       const dir = '/foo/bar'
-      const closer = lockMemory.lock(dir)
-      expect(lockMemory.locked(dir)).to.be.true()
+      const closer = await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
 
-      closer.close()
-      expect(lockMemory.locked(dir)).to.be.false()
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
     })
 
-    it('should unlock a dir twice without exploding', () => {
+    it('should unlock a dir twice without exploding', async () => {
       const dir = '/foo/bar'
-      const closer = lockMemory.lock(dir)
-      expect(lockMemory.locked(dir)).to.be.true()
+      const closer = await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
 
-      closer.close()
-      expect(lockMemory.locked(dir)).to.be.false()
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
 
-      closer.close()
-      expect(lockMemory.locked(dir)).to.be.false()
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
     })
   })
 }

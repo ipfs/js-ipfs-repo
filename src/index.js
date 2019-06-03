@@ -6,7 +6,6 @@ const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
-const { collect } = require('streaming-iterables')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -228,7 +227,7 @@ class IpfsRepo {
    *
    * @returns {Promise<bool>}
    */
-  exists () {
+  async exists () { // eslint-disable-line require-await
     return this.version.exists()
   }
 
@@ -275,15 +274,16 @@ class IpfsRepo {
   }
 
   async _blockStat () {
-    const list = await collect(this.blocks.query({}))
-    const count = new Big(list.length)
+    let count = new Big(0)
     let size = new Big(0)
 
-    list.forEach(block => {
+    for await (const block of this.blocks.query({})) {
+      count = count.plus(1)
       size = size
         .plus(block.value.byteLength)
         .plus(block.key._buf.byteLength)
-    })
+    }
+
     return { count, size }
   }
 }

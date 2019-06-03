@@ -21,7 +21,7 @@ module.exports = (store) => {
      * @param {Object} value - the api address to be written
      * @returns {Promise<?>}
      */
-    set (value) {
+    async set (value) { // eslint-disable-line require-await
       return store.put(apiFile, Buffer.from(value.toString()))
     },
     /**
@@ -29,7 +29,7 @@ module.exports = (store) => {
      *
      * @returns {Promise<void>}
      */
-    delete () {
+    async delete () { // eslint-disable-line require-await
       return store.delete(apiFile)
     }
   }

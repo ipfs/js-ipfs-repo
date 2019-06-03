@@ -28,5 +28,9 @@ exports.lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
   const release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
-  return { close: () => release() }
+  return {
+    close: async () => { // eslint-disable-line require-await
+      release()
+    }
+  }
 }

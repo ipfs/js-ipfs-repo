@@ -14,12 +14,12 @@ const LOCKS = {}
  * @param {string} dir
  * @returns {Promise<Object>}
  */
-exports.lock = (dir) => {
+exports.lock = async (dir) => { // eslint-disable-line require-await
   const file = dir + '/' + lockFile
   log('locking %s', file)
   LOCKS[file] = true
   const closer = {
-    close () {
+    async close () { // eslint-disable-line require-await
       if (LOCKS[file]) {
         delete LOCKS[file]
       }
@@ -34,7 +34,7 @@ exports.lock = (dir) => {
  * @param {string} dir
  * @returns {bool}
  */
-exports.locked = (dir) => {
+exports.locked = async (dir) => { // eslint-disable-line require-await
   const file = dir + '/' + lockFile
   log(`checking lock: ${file}`)
 

@@ -50,8 +50,10 @@ function createBaseStore (store) {
      * @param {object} query
      * @return {Iterable}
      */
-    query (query) {
-      return store.query(query)
+    async * query (query) {
+      for await (const block of store.query(query)) {
+        yield block
+      }
     },
     /**
      * Get a single block by CID.
@@ -151,7 +153,7 @@ function createBaseStore (store) {
      * @param {CID} cid
      * @returns {Promise<void>}
      */
-    delete (cid) {
+    async delete (cid) { // eslint-disable-line require-await
       if (!CID.isCID(cid)) {
         throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
@@ -162,7 +164,7 @@ function createBaseStore (store) {
      *
      * @returns {Promise<void>}
      */
-    close () {
+    async close () { // eslint-disable-line require-await
       return store.close()
     }
   }

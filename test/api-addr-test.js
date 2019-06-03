@@ -21,7 +21,7 @@ module.exports = () => {
     })
 
     describe('.set', () => {
-      it('should set a value in the store', () => {
+      it('should set a value in the store', async () => {
         let val
 
         const api = apiAddr({
@@ -30,7 +30,7 @@ module.exports = () => {
           }
         })
 
-        api.set('0')
+        await api.set('0')
 
         expect(val).to.deep.equal(Buffer.from('0'))
       })
