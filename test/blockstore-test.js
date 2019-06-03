@@ -191,6 +191,18 @@ module.exports = (repo) => {
         }
       })
 
+      it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-cbor', hash)
+
+        try {
+          await repo.blocks.get(cid)
+        } catch (err) {
+          expect(err.code).to.equal('ERR_NOT_FOUND')
+        }
+      })
+
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
         const data = Buffer.from(`TEST${Date.now()}`)
@@ -268,6 +280,15 @@ module.exports = (repo) => {
         } catch (err) {
           expect(err.code).to.equal('ERR_INVALID_CID')
         }
+      })
+
+      it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-cbor', hash)
+        const result = await repo.blocks.has(cid)
+
+        expect(result).to.be.false()
       })
     })
 
