@@ -1,7 +1,6 @@
 'use strict'
 
 const debug = require('debug')
-const setImmediate = require('async/setImmediate')
 
 const log = debug('repo:lock')
 
@@ -13,39 +12,31 @@ const LOCKS = {}
  * Lock the repo in the given dir.
  *
  * @param {string} dir
- * @param {function(Error, lock)} callback
- * @returns {void}
+ * @returns {Promise<Object>}
  */
-exports.lock = (dir, callback) => {
+exports.lock = async (dir) => { // eslint-disable-line require-await
   const file = dir + '/' + lockFile
   log('locking %s', file)
   LOCKS[file] = true
   const closer = {
-    close (cb) {
+    async close () { // eslint-disable-line require-await
       if (LOCKS[file]) {
         delete LOCKS[file]
       }
-      setImmediate(cb)
     }
   }
-  setImmediate(() => {
-    callback(null, closer)
-  })
+  return closer
 }
 
 /**
  * Check if the repo in the given directory is locked.
  *
  * @param {string} dir
- * @param {function(Error, bool)} callback
- * @returns {void}
+ * @returns {bool}
  */
-exports.locked = (dir, callback) => {
+exports.locked = async (dir) => { // eslint-disable-line require-await
   const file = dir + '/' + lockFile
-  log('checking lock: %s')
+  log(`checking lock: ${file}`)
 
-  const locked = LOCKS[file]
-  setImmediate(() => {
-    callback(null, locked)
-  })
+  return Boolean(LOCKS[file])
 }

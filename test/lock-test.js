@@ -4,28 +4,18 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const series = require('async/series')
 const IPFSRepo = require('../')
+const lockMemory = require('../src/lock-memory')
 
 module.exports = (repo) => {
   describe('Repo lock tests', () => {
-    it('should handle locking for a repo lifecycle', (done) => {
+    it('should handle locking for a repo lifecycle', async () => {
       expect(repo.lockfile).to.not.equal(null)
-      series([
-        (cb) => {
-          repo.close(cb)
-        },
-        (cb) => {
-          expect(repo.lockfile).to.equal(null)
-          cb()
-        },
-        (cb) => {
-          repo.open(cb)
-        }
-      ], done)
+      await repo.close()
+      await repo.open()
     })
 
-    it('should prevent multiple repos from using the same path', (done) => {
+    it('should prevent multiple repos from using the same path', async () => {
       const repoClone = new IPFSRepo(repo.path, repo.options)
 
       // Levelup throws an uncaughtException when a lock already exists, catch it
@@ -35,29 +25,49 @@ module.exports = (repo) => {
         expect(err.message).to.match(/already held|IO error|already being held/)
       })
 
-      series([
-        (cb) => {
-          try {
-            repoClone.init({}, cb)
-          } catch (err) {
-            cb(err)
-          }
-        },
-        (cb) => {
-          repoClone.open(cb)
-        }
-      ], function (err) {
-        // There will be no listeners if the uncaughtException was triggered
+      try {
+        await repoClone.init({})
+        await repoClone.open()
+      } catch (err) {
         if (process.listeners('uncaughtException').length > 0) {
           expect(err.message).to.match(/already locked|already held|already being held|ELOCKED/)
         }
-
+      } finally {
         // Reset listeners to maintain test integrity
         process.removeAllListeners('uncaughtException')
         process.addListener('uncaughtException', mochaExceptionHandler)
+      }
+    })
+  })
 
-        done()
-      })
+  describe('lock-memory', () => {
+    it('should lock a dir', async () => {
+      const dir = '/foo/bar'
+      expect(await lockMemory.locked(dir)).to.be.false()
+
+      await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
+    })
+
+    it('should unlock a dir', async () => {
+      const dir = '/foo/bar'
+      const closer = await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
+
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
+    })
+
+    it('should unlock a dir twice without exploding', async () => {
+      const dir = '/foo/bar'
+      const closer = await lockMemory.lock(dir)
+      expect(await lockMemory.locked(dir)).to.be.true()
+
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
+
+      await closer.close()
+      expect(await lockMemory.locked(dir)).to.be.false()
     })
   })
 }

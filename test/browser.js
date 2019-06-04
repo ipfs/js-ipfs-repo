@@ -2,27 +2,25 @@
 
 'use strict'
 
-const series = require('async/series')
-
 const IPFSRepo = require('../src')
 
 describe('IPFS Repo Tests on the Browser', () => {
   require('./options-test')
   const repo = new IPFSRepo('myrepo')
 
-  before((done) => {
-    series([
-      (cb) => repo.init({}, cb),
-      (cb) => repo.open(cb)
-    ], done)
+  before(async () => {
+    await repo.init({})
+    await repo.open()
   })
 
-  after((done) => {
-    repo.close(done)
+  after(async () => {
+    await repo.close()
   })
 
   require('./repo-test')(repo)
   require('./blockstore-test')(repo)
   require('./datastore-test')(repo)
   require('./keystore-test')(repo)
+  require('./config-test')(repo)
+  require('./api-addr-test')(repo)
 })

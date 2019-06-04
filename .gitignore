@@ -2,7 +2,7 @@ docs
 yarn.lock
 package-lock.json
 
-test/test-repo-for*
+test-repo-for*
 .vscode
 .eslintrc
 # Logs
@@ -21,6 +21,7 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+.nyc_output
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -35,3 +36,4 @@ build
 node_modules
 
 dist
+

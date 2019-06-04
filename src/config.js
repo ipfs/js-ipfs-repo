@@ -1,121 +1,89 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
-const queue = require('async/queue')
-const waterfall = require('async/waterfall')
-const _get = require('dlv')
+const Queue = require('p-queue')
+const _get = require('just-safe-get')
 const _set = require('just-safe-set')
-const Buffer = require('buffer').Buffer
+const _has = require('lodash.has')
+const errcode = require('err-code')
 
 const configKey = new Key('config')
 
 module.exports = (store) => {
-  const setQueue = queue(_doSet, 1)
+  const setQueue = new Queue({ concurrency: 1 })
 
   const configStore = {
     /**
      * Get the current configuration from the repo.
      *
      * @param {String} key - the config key to get
-     * @param {function(Error, Object)} callback
-     * @returns {void}
+     * @returns {Promise<Object>}
      */
-    get (key, callback) {
-      if (typeof key === 'function') {
-        callback = key
-        key = undefined
-      }
+    async get (key) {
       if (!key) {
         key = undefined
       }
-      store.get(configKey, (err, encodedValue) => {
-        if (err) { return callback(err) }
 
-        let config
-        try {
-          config = JSON.parse(encodedValue.toString())
-        } catch (err) {
-          return callback(err)
-        }
+      const encodedValue = await store.get(configKey)
+      const config = JSON.parse(encodedValue.toString())
+      if (key !== undefined && !_has(config, key)) {
+        throw new Error(`Key ${key} does not exist in config`)
+      }
 
-        if (typeof key === 'undefined') {
-          return callback(null, config)
-        }
-
-        if (typeof key !== 'string') {
-          return callback(new Error('Key ' + key + ' must be a string.'))
-        }
-
-        const value = _get(config, key, null)
-
-        if (value === null) {
-          return callback(new Error('Key ' + key + ' does not exist in config.'))
-        }
-
-        callback(null, value)
-      })
+      const value = key !== undefined ? _get(config, key) : config
+      return value
     },
+
     /**
      * Set the current configuration for this repo.
      *
      * @param {String} key - the config key to be written
      * @param {Object} value - the config value to be written
-     * @param {function(Error)} callback
      * @returns {void}
      */
-    set (key, value, callback) {
-      if (typeof value === 'function') {
-        callback = value
+    async set (key, value) { // eslint-disable-line require-await
+      if (arguments.length === 1) {
         value = key
         key = undefined
       } else if (!key || typeof key !== 'string') {
-        return callback(new Error('Invalid key type'))
+        throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
       }
 
       if (value === undefined || Buffer.isBuffer(value)) {
-        return callback(new Error('Invalid value type'))
+        throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
-      setQueue.push({
+      return setQueue.add(() => _doSet({
         key: key,
         value: value
-      }, callback)
+      }))
     },
 
     /**
      * Check if a config file exists.
      *
-     * @param {function(Error, bool)} callback
-     * @returns {void}
+     * @returns {Promise<bool>}
      */
-    exists (callback) {
-      store.has(configKey, callback)
+    async exists () { // eslint-disable-line require-await
+      return store.has(configKey)
     }
   }
 
   return configStore
 
-  function _doSet (m, callback) {
+  async function _doSet (m) {
     const key = m.key
     const value = m.value
     if (key) {
-      waterfall(
-        [
-          (cb) => configStore.get(cb),
-          (config, cb) => {
-            _set(config, key, value)
-            cb(null, config)
-          },
-          _saveAll
-        ],
-        callback)
-    } else {
-      _saveAll(value, callback)
+      const config = await configStore.get()
+      _set(config, key, value)
+      return _saveAll(config)
     }
+    return _saveAll(value)
   }
 
-  function _saveAll (config, callback) {
+  function _saveAll (config) {
     const buf = Buffer.from(JSON.stringify(config, null, 2))
-    store.put(configKey, buf, callback)
+    return store.put(configKey, buf)
   }
 }

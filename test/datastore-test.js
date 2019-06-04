@@ -5,9 +5,6 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const parallel = require('async/parallel')
-const waterfall = require('async/waterfall')
-const each = require('async/each')
 const _ = require('lodash')
 const Key = require('interface-datastore').Key
 
@@ -18,75 +15,55 @@ module.exports = (repo) => {
     const b = new Key('hello')
 
     describe('.put', () => {
-      it('simple', (done) => {
-        repo.datastore.put(b, data, done)
+      it('simple', async () => {
+        await repo.datastore.put(b, data)
       })
 
-      it('multi write (locks)', (done) => {
-        parallel([
-          (cb) => repo.datastore.put(b, data, cb),
-          (cb) => repo.datastore.put(b, data, cb)
-        ], done)
+      it('multi write (locks)', async () => {
+        await Promise.all([repo.datastore.put(b, data), repo.datastore.put(b, data)])
       })
 
-      it('massive multiwrite', function (done) {
+      it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        each(_.range(100), (i, cb) => {
-          repo.datastore.put(new Key('hello' + i), dataList[i], cb)
-        }, done)
+        await Promise.all(_.range(100).map((i) => {
+          return repo.datastore.put(new Key('hello' + i), dataList[i])
+        }))
       })
     })
 
     describe('.get', () => {
-      it('simple', (done) => {
-        repo.datastore.get(b, (err, val) => {
-          expect(err).to.not.exist()
-          expect(val).to.be.eql(data)
-          done()
-        })
+      it('simple', async () => {
+        const val = await repo.datastore.get(b)
+        expect(val).to.be.eql(data)
       })
 
-      it('massive read', function (done) {
+      it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        parallel(_.range(20 * 100).map((i) => (cb) => {
+        await Promise.all(_.range(20 * 100).map(async (i) => {
           const j = i % dataList.length
-          repo.datastore.get(new Key('hello' + j), (err, val) => {
-            expect(err).to.not.exist()
-            expect(val).to.be.eql(dataList[j])
-            cb()
-          })
-        }), done)
+          const val = await repo.datastore.get(new Key('hello' + j))
+          expect(val).to.be.eql(dataList[j])
+        }))
       }).timeout(10 * 1000)
     })
 
     describe('.has', () => {
-      it('existing entry', (done) => {
-        repo.datastore.has(b, (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.eql(true)
-          done()
-        })
+      it('existing entry', async () => {
+        const exists = await repo.datastore.has(b)
+        expect(exists).to.eql(true)
       })
 
-      it('non existent block', (done) => {
-        repo.datastore.has(new Key('world'), (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.eql(false)
-          done()
-        })
+      it('non existent block', async () => {
+        const exists = await repo.datastore.has(new Key('world'))
+        expect(exists).to.eql(false)
       })
     })
 
     describe('.delete', () => {
-      it('simple', (done) => {
-        waterfall([
-          (cb) => repo.datastore.delete(b, cb),
-          (cb) => repo.datastore.has(b, cb)
-        ], (err, exists) => {
-          expect(err).to.not.exist()
-          expect(exists).to.equal(false)
-          done()
-        })
+      it('simple', async () => {
+        await repo.datastore.delete(b)
+        const exists = await repo.datastore.has(b)
+        expect(exists).to.equal(false)
       })
     })
   })

@@ -10,35 +10,28 @@ module.exports = (store) => {
     /**
      * Check if a datastore spec file exists.
      *
-     * @param {function(Error, bool)} callback
-     * @returns {void}
+     * @returns {Promise<bool>}
      */
-    exists (callback) {
-      store.has(specKey, callback)
+    async exists () { // eslint-disable-line require-await
+      return store.has(specKey)
     },
     /**
      * Get the current datastore spec.
      *
-     * @param {function(Error, number)} callback
-     * @returns {void}
+     * @returns {Promise<Buffer>}
      */
-    get (callback) {
-      store.get(specKey, (err, buf) => {
-        if (err) {
-          return callback(err)
-        }
-        callback(null, JSON.parse(buf.toString()))
-      })
+    async get () {
+      const buf = await store.get(specKey)
+      return JSON.parse(buf.toString())
     },
     /**
      * Set the datastore spec of the repo, writing it to the underlying store.
-     *
+     * TODO unclear on what the type should be or if it's required
      * @param {number} spec
-     * @param {function(Error)} callback
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    set (spec, callback) {
-      store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))), callback)
+    async set (spec) { // eslint-disable-line require-await
+      return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }
 }

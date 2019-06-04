@@ -5,9 +5,14 @@ const ncp = require('ncp').ncp
 const rimraf = require('rimraf')
 const fs = require('fs')
 const path = require('path')
-const series = require('async/series')
+const promisify = require('util').promisify
+
 const chai = require('chai')
 chai.use(require('dirty-chai'))
+
+const asyncRimraf = promisify(rimraf)
+const asyncNcp = promisify(ncp)
+const fsstat = promisify(fs.stat)
 
 const IPFSRepo = require('../src')
 
@@ -16,30 +21,24 @@ describe('IPFS Repo Tests onNode.js', () => {
 
   const customLock = {
     lockName: 'test.lock',
-    lock: (dir, callback) => {
-      customLock.locked(dir, (err, isLocked) => {
-        if (err || isLocked) {
-          return callback(new Error('already locked'))
-        }
-
-        const lockPath = path.join(dir, customLock.lockName)
-        fs.writeFileSync(lockPath, '')
-
-        callback(null, {
-          close: (cb) => {
-            rimraf(lockPath, cb)
-          }
-        })
-      })
+    lock: async (dir) => {
+      const isLocked = await customLock.locked(dir)
+      if (isLocked) {
+        throw new Error('already locked')
+      }
+      const lockPath = path.join(dir, customLock.lockName)
+      fs.writeFileSync(lockPath, '')
+      return {
+        close: () => asyncRimraf(lockPath)
+      }
     },
-    locked: (dir, callback) => {
-      fs.stat(path.join(dir, customLock.lockName), (err, stats) => {
-        if (err) {
-          callback(null, false)
-        } else {
-          callback(null, true)
-        }
-      })
+    locked: async (dir) => {
+      try {
+        await fsstat(path.join(dir, customLock.lockName))
+        return true
+      } catch (err) {
+        return false
+      }
     }
   }
 
@@ -78,24 +77,18 @@ describe('IPFS Repo Tests onNode.js', () => {
 
     const repo = new IPFSRepo(repoPath, r.opts)
 
-    before((done) => {
-      series([
-        (cb) => {
-          if (r.init) {
-            repo.init({}, cb)
-          } else {
-            ncp(testRepoPath, repoPath, cb)
-          }
-        },
-        (cb) => repo.open(cb)
-      ], done)
+    before(async () => {
+      if (r.init) {
+        await repo.init({})
+      } else {
+        await asyncNcp(testRepoPath, repoPath)
+      }
+      await repo.open()
     })
 
-    after((done) => {
-      series([
-        (cb) => repo.close(cb),
-        (cb) => rimraf(repoPath, cb)
-      ], done)
+    after(async () => {
+      await repo.close()
+      await asyncRimraf(repoPath)
     })
 
     require('./repo-test')(repo)
@@ -104,6 +97,8 @@ describe('IPFS Repo Tests onNode.js', () => {
     require('./keystore-test')(repo)
     require('./stat-test')(repo)
     require('./lock-test')(repo)
+    require('./config-test')(repo)
+    require('./api-addr-test')(repo)
     if (!r.init) {
       require('./interop-test')(repo)
     }

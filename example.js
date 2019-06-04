@@ -1,18 +1,11 @@
 'use strict'
 
-const Repo = require('ipfs-repo')
-const repo = new Repo('/Users/awesome/.jsipfs')
+const Repo = require('ipfs-repo');
 
-repo.init({ my: 'config' }, (err) => {
-  if (err) {
-    throw err
-  }
+(async () => {
+  const repo = new Repo('/Users/awesome/.jsipfs')
 
-  repo.open((err) => {
-    if (err) {
-      throw err
-    }
-
-    console.log('repo is ready')
-  })
-})
+  await repo.init({ my: 'config' })
+  await repo.open()
+  console.log('repo is ready') // eslint-disable-line no-console
+})()

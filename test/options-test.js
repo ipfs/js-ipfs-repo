@@ -31,8 +31,8 @@ describe('custom options tests', () => {
 
   it('allows for a custom lock', () => {
     const lock = {
-      lock: (path, callback) => { },
-      locked: (path, callback) => { }
+      lock: async (path) => { },
+      locked: async (path) => { }
     }
 
     const repo = new Repo(repoPath, {
@@ -42,21 +42,23 @@ describe('custom options tests', () => {
     expect(repo._getLocker()).to.deep.equal(lock)
   })
 
-  it('ensures a custom lock has a .close method', (done) => {
+  it('ensures a custom lock has a .close method', async () => {
     const lock = {
-      lock: (path, callback) => {
-        callback(null, {})
+      lock: () => {
+        return {}
       }
     }
 
     const repo = new Repo(repoPath, {
       lock
     })
-
-    expect(
-      () => repo._openLock(repo.path)
-    ).to.throw('Locks must have a close method')
-    done()
+    let error
+    try {
+      await repo._openLock(repo.path)
+    } catch (err) {
+      error = err
+    }
+    expect(error.code).to.equal('ERR_NO_CLOSE_FUNCTION')
   })
 })
 
