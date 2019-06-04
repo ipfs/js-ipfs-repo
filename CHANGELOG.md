@@ -1,3 +1,18 @@
+<a name="0.27.0"></a>
+# [0.27.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.6...v0.27.0) (2019-06-04)
+
+
+### Features
+
+* refactor/async await ([#199](https://github.com/ipfs/js-ipfs-repo/issues/199)) ([e6db5cf](https://github.com/ipfs/js-ipfs-repo/commit/e6db5cf))
+
+
+### BREAKING CHANGES
+
+* ipfs-repo has been refactored to use async/await. All callback support has been dropped. See the README for the new api.
+
+
+
 <a name="0.26.6"></a>
 ## [0.26.6](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.5...v0.26.6) (2019-05-13)
 
