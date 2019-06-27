@@ -6,6 +6,7 @@ const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const _has = require('lodash.has')
 const errcode = require('err-code')
+const errors = require('./errors')
 
 const configKey = new Key('config')
 
@@ -27,7 +28,7 @@ module.exports = (store) => {
       const encodedValue = await store.get(configKey)
       const config = JSON.parse(encodedValue.toString())
       if (key !== undefined && !_has(config, key)) {
-        throw new Error(`Key ${key} does not exist in config`)
+        throw new errors.NotFoundError(`Key ${key} does not exist in config`)
       }
 
       const value = key !== undefined ? _get(config, key) : config

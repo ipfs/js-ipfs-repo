@@ -26,5 +26,15 @@ module.exports = (repo) => {
         }
       })
     })
+    describe('.get', () => {
+      it('should throw NotFoundError when key does not exist', async () => {
+        try {
+          await repo.config.get('someRandomKey')
+          throw new Error('Should have thrown')
+        } catch (err) {
+          expect(err.code).to.equal('ERR_NOT_FOUND')
+        }
+      })
+    })
   })
 }
