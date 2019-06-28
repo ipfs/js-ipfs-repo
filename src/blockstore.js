@@ -3,9 +3,10 @@
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 const Block = require('ipld-block')
-const { cidToKey, keyToCid } = require('./blockstore-utils')
+const { cidToKey } = require('./blockstore-utils')
 const map = require('it-map')
-const pipe = require('it-pipe')
+const drain = require('it-drain')
+const pushable = require('it-pushable')
 
 module.exports = async (filestore, options) => {
   const store = await maybeWithSharding(filestore, options)
@@ -23,7 +24,7 @@ function maybeWithSharding (filestore, options) {
 function createBaseStore (store) {
   return {
     /**
-     * Query the store.
+     * Query the store
      *
      * @param {Object} query
      * @param {Object} options
@@ -32,8 +33,9 @@ function createBaseStore (store) {
     async * query (query, options) { // eslint-disable-line require-await
       yield * store.query(query, options)
     },
+
     /**
-     * Get a single block by CID.
+     * Get a single block by CID
      *
      * @param {CID} cid
      * @param {Object} options
@@ -41,29 +43,13 @@ function createBaseStore (store) {
      */
     async get (cid, options) {
       const key = cidToKey(cid)
-      let blockData
-      try {
-        blockData = await store.get(key, options)
-        return new Block(blockData, cid)
-      } catch (err) {
-        if (err.code === 'ERR_NOT_FOUND') {
-          const otherCid = cidToOtherVersion(cid)
+      const blockData = await store.get(key, options)
 
-          if (!otherCid) {
-            throw err
-          }
-
-          const otherKey = cidToKey(otherCid)
-          const blockData = await store.get(otherKey, options)
-          await store.put(key, blockData)
-          return new Block(blockData, cid)
-        }
-
-        throw err
-      }
+      return new Block(blockData, cid)
     },
+
     /**
-     * Like get, but for more.
+     * Like get, but for more
      *
      * @param {AsyncIterator<CID>} cids
      * @param {Object} options
@@ -74,8 +60,9 @@ function createBaseStore (store) {
         yield this.get(cid, options)
       }
     },
+
     /**
-     * Write a single block to the store.
+     * Write a single block to the store
      *
      * @param {Block} block
      * @param {Object} options
@@ -86,59 +73,75 @@ function createBaseStore (store) {
         throw new Error('invalid block')
       }
 
-      const exists = await this.has(block.cid)
+      const key = cidToKey(block.cid)
+      const exists = await store.has(key, options)
 
-      if (exists) {
-        return this.get(block.cid, options)
+      if (!exists) {
+        await store.put(key, block.data, options)
       }
-
-      await store.put(cidToKey(block.cid), block.data, options)
 
       return block
     },
 
     /**
-     * Like put, but for more.
+     * Like put, but for more
      *
      * @param {AsyncIterable<Block>|Iterable<Block>} blocks
      * @param {Object} options
      * @returns {AsyncIterable<Block>}
      */
     async * putMany (blocks, options) { // eslint-disable-line require-await
-      yield * pipe(
-        blocks,
-        (source) => {
-          // turn them into a key/value pair
-          return map(source, (block) => {
-            return { key: cidToKey(block.cid), value: block.data }
-          })
-        },
-        (source) => {
-          // put them into the datastore
-          return store.putMany(source, options)
-        },
-        (source) => {
-          // map the returned key/value back into a block
-          return map(source, ({ key, value }) => {
-            return new Block(value, keyToCid(key))
-          })
+      // we cannot simply chain to `store.putMany` because we convert a CID into
+      // a key based on the multihash only, so we lose the version & codec and
+      // cannot give the user back the CID they used to create the block, so yield
+      // to `store.putMany` but return the actual block the user passed in.
+      //
+      // nb. we want to use `store.putMany` here so bitswap can control batching
+      // up block HAVEs to send to the network - if we use multiple `store.put`s
+      // it will not be able to guess we are about to `store.put` more blocks
+      const output = pushable()
+
+      // process.nextTick runs on the microtask queue, setImmediate runs on the next
+      // event loop iteration so is slower. Use process.nextTick if it is available.
+      const runner = process && process.nextTick ? process.nextTick : setImmediate
+
+      runner(async () => {
+        try {
+          await drain(store.putMany(async function * () {
+            for await (const block of blocks) {
+              const key = cidToKey(block.cid)
+              const exists = await store.has(key, options)
+
+              if (!exists) {
+                yield { key, value: block.data }
+              }
+
+              // there is an assumption here that after the yield has completed
+              // the underlying datastore has finished writing the block
+              output.push(block)
+            }
+          }()))
+
+          output.end()
+        } catch (err) {
+          output.end(err)
         }
-      )
+      })
+
+      yield * output
     },
+
     /**
-     * Does the store contain block with this cid?
+     * Does the store contain block with this CID?
      *
      * @param {CID} cid
      * @param {Object} options
      * @returns {Promise<bool>}
      */
-    async has (cid, options) {
-      const exists = await store.has(cidToKey(cid), options)
-      if (exists) return exists
-      const otherCid = cidToOtherVersion(cid)
-      if (!otherCid) return false
-      return store.has(cidToKey(otherCid), options)
+    async has (cid, options) { // eslint-disable-line require-await
+      return store.has(cidToKey(cid), options)
     },
+
     /**
      * Delete a block from the store
      *
@@ -149,6 +152,7 @@ function createBaseStore (store) {
     async delete (cid, options) { // eslint-disable-line require-await
       return store.delete(cidToKey(cid), options)
     },
+
     /**
      * Delete a block from the store
      *
@@ -157,12 +161,9 @@ function createBaseStore (store) {
      * @returns {Promise<void>}
      */
     async * deleteMany (cids, options) { // eslint-disable-line require-await
-      yield * store.deleteMany((async function * () {
-        for await (const cid of cids) {
-          yield cidToKey(cid)
-        }
-      }()), options)
+      yield * store.deleteMany(map(cids, cid => cidToKey(cid)), options)
     },
+
     /**
      * Close the store
      *
@@ -171,13 +172,5 @@ function createBaseStore (store) {
     async close () { // eslint-disable-line require-await
       return store.close()
     }
-  }
-}
-
-function cidToOtherVersion (cid) {
-  try {
-    return cid.version === 0 ? cid.toV1() : cid.toV0()
-  } catch (err) {
-    return null
   }
 }

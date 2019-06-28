@@ -40,17 +40,20 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
     - [`Promise<Buffer> repo.get(key)`](#promisebuffer-repogetkey)
   - [Blocks](#blocks)
     - [`Promise<Block> repo.blocks.put(block:Block)`](#promiseblock-repoblocksputblockblock)
-    - [`AsyncIterator<Block> repo.blocks.putMany(source)`](#asynciteratorblock-repoblocksputmanysource)
-    - [`Promise<Buffer> repo.blocks.get(cid)`](#promisebuffer-repoblocksgetcid)
-    - [`AsyncIterable<Buffer> repo.blocks.getMany(source)`](#asynciterablebuffer-repoblocksgetmanysource)
+    - [`AsyncIterator<Block> repo.blocks.putMany(source:AsyncIterable<Block>)`](#asynciteratorblock-repoblocksputmanysourceasynciterableblock)
+    - [`Promise<Block> repo.blocks.get(cid:CID)`](#promiseblock-repoblocksgetcidcid)
+    - [`AsyncIterable<Block> repo.blocks.getMany(source:AsyncIterable<CID>)`](#asynciterableblock-repoblocksgetmanysourceasynciterablecid)
+    - [`Promise<boolean> repo.blocks.has (cid:CID)`](#promiseboolean-repoblockshas-cidcid)
+    - [`Promise<boolean> repo.blocks.delete (cid:CID)`](#promiseboolean-repoblocksdelete-cidcid)
+    - [`Promise<Array<Object>> repo.blocks.query (query)`](#promisearrayobject-repoblocksquery-query)
     - [`Promise<CID> repo.blocks.delete(cid:CID)`](#promisecid-repoblocksdeletecidcid)
-    - [`AsyncIterator<CID> repo.blocks.deleteMany(source)`](#asynciteratorcid-repoblocksdeletemanysource)
+    - [`AsyncIterator<CID> repo.blocks.deleteMany(source:AsyncIterable<CID>)`](#asynciteratorcid-repoblocksdeletemanysourceasynciterablecid)
   - [Datastore](#datastore)
     - [`repo.datastore`](#repodatastore)
   - [Config](#config)
-    - [`Promise repo.config.set(key:string, value)`](#promise-repoconfigsetkeystring-value)
-    - [`Promise repo.config.replace(value)`](#promise-repoconfigreplacevalue)
-    - [`Promise<?> repo.config.get(key:string)`](#promise-repoconfiggetkeystring)
+    - [`Promise repo.config.set(key:String, value:Object)`](#promise-repoconfigsetkeystring-valueobject)
+    - [`Promise repo.config.replace(value:Object)`](#promise-repoconfigreplacevalueobject)
+    - [`Promise<?> repo.config.get(key:String)`](#promise-repoconfiggetkeystring)
     - [`Promise<Object> repo.config.getAll()`](#promiseobject-repoconfiggetall)
     - [`Promise<boolean> repo.config.exists()`](#promiseboolean-repoconfigexists)
   - [Version](#version)
@@ -229,23 +232,43 @@ Get a value at the root of the repo
 
 * `block` should be of type [Block][]
 
-#### `AsyncIterator<Block> repo.blocks.putMany(source)`
+#### `AsyncIterator<Block> repo.blocks.putMany(source:AsyncIterable<Block>)`
 
 Put many blocks.
 
 * `source` should be an AsyncIterable that yields entries of type [Block][]
 
-#### `Promise<Buffer> repo.blocks.get(cid)`
+#### `Promise<Block> repo.blocks.get(cid:CID)`
 
 Get block.
 
 * `cid` is the content id of type [CID][]
 
-#### `AsyncIterable<Buffer> repo.blocks.getMany(source)`
+#### `AsyncIterable<Block> repo.blocks.getMany(source:AsyncIterable<CID>)`
 
-Get block.
+Get many blocks
 
 * `source` should be an AsyncIterable that yields entries of type [CID][]
+
+#### `Promise<boolean> repo.blocks.has (cid:CID)`
+
+Indicate if a block is present for the passed CID
+
+* `cid` should be of the type [CID][]
+
+#### `Promise<boolean> repo.blocks.delete (cid:CID)`
+
+Deletes a block
+
+* `cid` should be of the type [CID][]
+
+#### `Promise<Array<Object>> repo.blocks.query (query)`
+
+Query what blocks are available in blockstore.
+
+* `query` is a object as specified in [interface-datastore](https://github.com/ipfs/interface-datastore#query).
+
+Datastore:
 
 #### `Promise<CID> repo.blocks.delete(cid:CID)`
 
@@ -253,7 +276,7 @@ Get block.
 
 Delete a block
 
-#### `AsyncIterator<CID> repo.blocks.deleteMany(source)`
+#### `AsyncIterator<CID> repo.blocks.deleteMany(source:AsyncIterable<CID>)`
 
 * `source` should be an Iterable or AsyncIterable that yields entries of the type [CID][]
 
@@ -269,7 +292,7 @@ This contains a full implementation of [the `interface-datastore` API](https://g
 
 Instead of using `repo.set('config')` this exposes an API that allows you to set and get a decoded config object, as well as, in a safe manner, change any of the config values individually.
 
-#### `Promise repo.config.set(key:string, value)`
+#### `Promise repo.config.set(key:String, value:Object)`
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
@@ -281,11 +304,11 @@ const config = await repo.config.get()
 assert.equal(config.a.b.c, 'c value')
 ```
 
-#### `Promise repo.config.replace(value)`
+#### `Promise repo.config.replace(value:Object)`
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-#### `Promise<?> repo.config.get(key:string)`
+#### `Promise<?> repo.config.get(key:String)`
 
 Get a config value. Returned promise resolves to the same type that was set before.
 
@@ -379,7 +402,7 @@ Returned promise resolves to a `boolean` indicating the existence of the lock.
 
 ### Migrations
 
-When there is a new repo migration and the version of repo is increased, don't
+When there is a new repo migration and the version of the repo is increased, don't
 forget to propagate the changes into the test repo (`test/test-repo`).
 
 **For tools that run mainly in the browser environment, be aware that disabling automatic

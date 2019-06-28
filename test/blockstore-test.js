@@ -66,7 +66,10 @@ module.exports = (repo) => {
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
         }))
-        await drain(repo.blocks.putMany(blocks))
+
+        const put = await all(repo.blocks.putMany(blocks))
+        expect(put).to.deep.equal(blocks)
+
         for (const block of blocks) {
           const block1 = await repo.blocks.get(block.cid)
           expect(block1).to.be.eql(block)
