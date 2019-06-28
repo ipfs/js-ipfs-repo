@@ -6,7 +6,9 @@ const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
+const migrator = require('ipfs-repo-migrations')
 
+const constants = require('./constants')
 const backends = require('./backends')
 const version = require('./version')
 const config = require('./config')
@@ -25,8 +27,6 @@ const lockers = {
   memory: require('./lock-memory'),
   fs: require('./lock')
 }
-
-const repoVersion = require('./constants').repoVersion
 
 /**
  * IpfsRepo implements all required functionality to read and write to an ipfs repo.
@@ -64,7 +64,7 @@ class IpfsRepo {
     await this._openRoot()
     await this.config.set(buildConfig(config))
     await this.spec.set(buildDatastoreSpec(config))
-    await this.version.set(repoVersion)
+    await this.version.set(constants.repoVersion)
   }
 
   /**
@@ -92,6 +92,17 @@ class IpfsRepo {
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
       log('creating keystore')
       this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
+
+      if (!await this.version.check(constants.repoVersion)) {
+        log('Something is fishy')
+        if (!this.options.disableAutoMigration) {
+          log('Let see what')
+          await this._migrate(constants.repoVersion)
+        } else {
+          throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
+        }
+      }
+
       this.closed = false
       log('all opened')
     } catch (err) {
@@ -176,7 +187,7 @@ class IpfsRepo {
       [config] = await Promise.all([
         this.config.exists(),
         this.spec.exists(),
-        this.version.check(repoVersion)
+        this.version.exists()
       ])
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
@@ -264,6 +275,40 @@ class IpfsRepo {
     }
   }
 
+  async _migrate (toVersion) {
+    let disableMigrationsConfig
+    try {
+      disableMigrationsConfig = await this.config.get('repoDisableAutoMigration')
+    } catch (e) {
+      if (e.code === ERRORS.NotFoundError.code) {
+        disableMigrationsConfig = false
+      } else {
+        throw e
+      }
+    }
+
+    if (disableMigrationsConfig) {
+      throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
+    }
+
+    const currentRepoVersion = await this.version.get()
+    log(currentRepoVersion)
+    if (currentRepoVersion >= toVersion) {
+      if (currentRepoVersion > toVersion) {
+        log('Your repo\'s version is higher then this version of js-ipfs-repo require! You should revert it.')
+      }
+
+      log('Nothing to migrate')
+      return
+    }
+
+    if (toVersion > migrator.getLatestMigrationVersion()) {
+      throw new Error('The ipfs-repo-migrations package does not have migration for version: ' + toVersion)
+    }
+
+    return migrator.migrate(this.path, { toVersion: toVersion, ignoreLock: true, repoOptions: this.options })
+  }
+
   async _storageMaxStat () {
     try {
       const max = await this.config.get('Datastore.StorageMax')
@@ -299,7 +344,7 @@ async function getSize (queryFn) {
 
 module.exports = IpfsRepo
 module.exports.utils = { blockstore: require('./blockstore-utils') }
-module.exports.repoVersion = repoVersion
+module.exports.repoVersion = constants.repoVersion
 module.exports.errors = ERRORS
 
 function buildOptions (_options) {

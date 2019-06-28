@@ -16,8 +16,39 @@ const fsstat = promisify(fs.stat)
 
 const IPFSRepo = require('../src')
 
+async function createTempRepo ({ init, dontOpen, opts }) {
+  const testRepoPath = path.join(__dirname, 'test-repo')
+  const date = Date.now().toString()
+  const repoPath = testRepoPath + '-for-' + date
+
+  const repo = new IPFSRepo(repoPath, opts)
+
+  if (init) {
+    await repo.init({})
+  } else {
+    await asyncNcp(testRepoPath, repoPath)
+  }
+
+  if (!dontOpen) {
+    await repo.open()
+  }
+
+  return {
+    path: repoPath,
+    instance: repo,
+    teardown: async () => {
+      try {
+        await repo.close()
+      } catch (e) {
+      }
+      await asyncRimraf(repoPath)
+    }
+  }
+}
+
 describe('IPFS Repo Tests onNode.js', () => {
   require('./options-test')
+  require('./migrations-test')(createTempRepo)
 
   const customLock = {
     lockName: 'test.lock',
@@ -87,7 +118,10 @@ describe('IPFS Repo Tests onNode.js', () => {
     })
 
     after(async () => {
-      await repo.close()
+      try {
+        await repo.close()
+      } catch (e) {
+      }
       await asyncRimraf(repoPath)
     })
 

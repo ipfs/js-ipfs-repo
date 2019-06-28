@@ -28,6 +28,7 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
   - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
 - [API](#api)
+- [Notes](#notes)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -317,6 +318,11 @@ Returned promise resolves to a `boolean` indicating the existence of the lock.
 ## Notes
 
 - [Explanation of how repo is structured](https://github.com/ipfs/js-ipfs-repo/pull/111#issuecomment-279948247)
+
+### Migrations
+
+When there is a new repo migration and the version of repo is increased, don't 
+forget to propagate the changes into the test repo (`test/test-repo`).
 
 ## Contribute
 

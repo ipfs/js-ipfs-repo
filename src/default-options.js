@@ -2,6 +2,7 @@
 
 // Default configuration for a repo in node.js
 module.exports = {
+  disableAutoMigration: false,
   lock: 'fs',
   storageBackends: {
     root: require('datastore-fs'),

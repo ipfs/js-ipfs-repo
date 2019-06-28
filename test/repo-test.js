@@ -72,41 +72,29 @@ module.exports = (repo) => {
         expect(await repo.version.get()).to.equal(v1)
       })
 
-      it('succeeds when requested version is the same as the actual version', async () => {
+      it('returns true when requested version is the same as the actual version', async () => {
         await repo.version.set(5)
-        await repo.version.check(5)
+        expect(await repo.version.check(5)).to.be.true()
       })
 
-      it('throws when requesting a past version', async () => {
+      it('returns false when requesting a past version', async () => {
         await repo.version.set(5)
-
-        try {
-          await repo.version.check(4)
-          throw new Error('Should have thrown error')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_REPO_VERSION')
-        }
+        expect(await repo.version.check(4)).to.be.false()
       })
 
-      it('throws when requesting a future version', async () => {
+      it('returns false when requesting a future version', async () => {
         await repo.version.set(1)
-
-        try {
-          await repo.version.check(2)
-          throw new Error('Should have thrown error')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_REPO_VERSION')
-        }
+        expect(await repo.version.check(2)).to.be.false()
       })
 
       it('treats v6 and v7 as the same', async () => {
         await repo.version.set(7)
-        await repo.version.check(6)
+        expect(await repo.version.check(6)).to.be.true()
       })
 
       it('treats v7 and v6 as the same', async () => {
         await repo.version.set(6)
-        await repo.version.check(7)
+        expect(await repo.version.check(7)).to.be.true()
       })
     })
 
