@@ -293,11 +293,12 @@ class IpfsRepo {
 
     const currentRepoVersion = await this.version.get()
     log(currentRepoVersion)
-    if (currentRepoVersion >= toVersion) {
-      if (currentRepoVersion > toVersion) {
-        log('Your repo\'s version is higher then this version of js-ipfs-repo require! You should revert it.')
-      }
 
+    if (currentRepoVersion > toVersion) {
+      throw new ERRORS.InvalidRepoVersionError('Your repo\'s version is higher then this version of js-ipfs-repo require! You have to revert it.')
+    }
+
+    if (currentRepoVersion === toVersion) {
       log('Nothing to migrate')
       return
     }
