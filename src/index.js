@@ -22,6 +22,7 @@ const ERRORS = require('./errors')
 const log = debug('repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
+const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
 
 const lockers = {
   memory: require('./lock-memory'),
@@ -93,10 +94,9 @@ class IpfsRepo {
       log('creating keystore')
       this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
 
-      if (!await this.version.check(constants.repoVersion)) {
-        log('Something is fishy')
-        if (!this.options.disableAutoMigration) {
-          log('Let see what')
+      const isCompatible = await this.version.check(constants.repoVersion)
+      if (!isCompatible) {
+        if (await this._isAutoMigrationEnabled()) {
           await this._migrate(constants.repoVersion)
         } else {
           throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
@@ -275,38 +275,34 @@ class IpfsRepo {
     }
   }
 
-  async _migrate (toVersion) {
-    let disableMigrationsConfig
+  async _isAutoMigrationEnabled () {
+    let autoMigrateConfig
     try {
-      disableMigrationsConfig = await this.config.get('repoDisableAutoMigration')
+      autoMigrateConfig = await this.config.get(AUTO_MIGRATE_CONFIG_KEY)
     } catch (e) {
       if (e.code === ERRORS.NotFoundError.code) {
-        disableMigrationsConfig = false
+        autoMigrateConfig = true
       } else {
         throw e
       }
     }
+    log(`optin: ${this.options.autoMigrate}; config: ${autoMigrateConfig}`)
 
-    if (disableMigrationsConfig) {
-      throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
-    }
+    return autoMigrateConfig && this.options.autoMigrate
+  }
 
+  async _migrate (toVersion) {
     const currentRepoVersion = await this.version.get()
-    log(currentRepoVersion)
 
     if (currentRepoVersion > toVersion) {
       throw new ERRORS.InvalidRepoVersionError('Your repo\'s version is higher then this version of js-ipfs-repo require! You have to revert it.')
     }
 
     if (currentRepoVersion === toVersion) {
-      log('Nothing to migrate')
       return
     }
 
-    if (toVersion > migrator.getLatestMigrationVersion()) {
-      throw new Error('The ipfs-repo-migrations package does not have migration for version: ' + toVersion)
-    }
-
+    log('migrating to version ' + toVersion)
     return migrator.migrate(this.path, { toVersion: toVersion, ignoreLock: true, repoOptions: this.options })
   }
 

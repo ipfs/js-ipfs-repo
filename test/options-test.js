@@ -66,7 +66,7 @@ function noop () {}
 
 function expectedRepoOptions () {
   const options = {
-    disableAutoMigration: false,
+    autoMigrate: true,
     lock: process.browser ? 'memory' : 'fs',
     storageBackends: {
       // packages are exchanged to browser-compatible

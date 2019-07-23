@@ -57,7 +57,7 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.true()
     })
 
-    it('should not migrate when option disableAutoMigration is true', async () => {
+    it('should not migrate when option autoMigrate is false', async () => {
       migrateStub.resolves()
       repoVersionStub.resolves(8)
       getLatestMigrationVersionStub.returns(9)
@@ -66,7 +66,7 @@ module.exports = (createTempRepo) => {
       await repo.close()
 
       const newOpts = Object.assign({}, repo.options)
-      newOpts.disableAutoMigration = true
+      newOpts.autoMigrate = false
       const newRepo = new IPFSRepo(repo.path, newOpts)
 
       expect(migrateStub.called).to.be.false()
@@ -80,12 +80,12 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.false()
     })
 
-    it('should not migrate when config option repoDisableAutoMigration is true', async () => {
+    it('should not migrate when config option repoAutoMigrate is false', async () => {
       migrateStub.resolves()
       repoVersionStub.resolves(8)
       getLatestMigrationVersionStub.returns(9)
 
-      await repo.config.set('repoDisableAutoMigration', true)
+      await repo.config.set('repoAutoMigrate', false)
       await repo.version.set(7)
       await repo.close()
 
@@ -122,25 +122,15 @@ module.exports = (createTempRepo) => {
 
       expect(migrateStub.called).to.be.false()
 
-      await repo.open()
-
-      expect(migrateStub.called).to.be.false()
-    })
-
-    it('should throw error if ipfs-repo-migrations does not contain expected migration', async () => {
-      migrateStub.resolves()
-      repoVersionStub.value(8)
-      getLatestMigrationVersionStub.returns(7)
-
-      await repo.version.set(7)
-      await repo.close()
-
       try {
         await repo.open()
-        throw Error('Should throw')
+        throw Error('Should throw error')
       } catch (e) {
-        expect(e.message).to.include('package does not have migration')
+        expect(migrateStub.called).to.be.false()
+        expect(e.code).to.equal(errors.InvalidRepoVersionError.code)
       }
+
+      expect(migrateStub.called).to.be.false()
     })
   })
 }
