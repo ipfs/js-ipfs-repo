@@ -31,8 +31,10 @@ describe('custom options tests', () => {
 
   it('allows for a custom lock', () => {
     const lock = {
-      lock: async (path) => { },
-      locked: async (path) => { }
+      lock: async (path) => {
+      },
+      locked: async (path) => {
+      }
     }
 
     const repo = new Repo(repoPath, {
@@ -58,11 +60,12 @@ describe('custom options tests', () => {
     } catch (err) {
       error = err
     }
-    expect(error.code).to.equal('ERR_NO_CLOSE_FUNCTION')
+    expect(error.code).to.equal(Repo.errors.ERR_NO_CLOSE_FUNCTION.code)
   })
 })
 
-function noop () {}
+function noop () {
+}
 
 function expectedRepoOptions () {
   const options = {

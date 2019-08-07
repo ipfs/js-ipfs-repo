@@ -5,8 +5,7 @@ const Queue = require('p-queue')
 const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const _has = require('lodash.has')
-const errcode = require('err-code')
-const errors = require('./errors')
+const { ERR_NOT_FOUND, ERR_INVALID_VALUE, ERR_INVALID_KEY } = require('./errors')
 
 const configKey = new Key('config')
 
@@ -28,7 +27,7 @@ module.exports = (store) => {
       const encodedValue = await store.get(configKey)
       const config = JSON.parse(encodedValue.toString())
       if (key !== undefined && !_has(config, key)) {
-        throw new errors.NotFoundError(`Key ${key} does not exist in config`)
+        throw new ERR_NOT_FOUND(`Key ${key} does not exist in config`)
       }
 
       const value = key !== undefined ? _get(config, key) : config
@@ -47,11 +46,11 @@ module.exports = (store) => {
         value = key
         key = undefined
       } else if (!key || typeof key !== 'string') {
-        throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
+        throw new ERR_INVALID_KEY('Invalid key type: ' + typeof key)
       }
 
       if (value === undefined || Buffer.isBuffer(value)) {
-        throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
+        throw new ERR_INVALID_VALUE('Invalid value type: ' + typeof value)
       }
 
       return setQueue.add(() => _doSet({

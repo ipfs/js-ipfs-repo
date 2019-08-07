@@ -5,6 +5,8 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 
+const errors = require('../src/errors')
+
 module.exports = (repo) => {
   describe('config', () => {
     describe('.set', () => {
@@ -13,7 +15,7 @@ module.exports = (repo) => {
           await repo.config.set(5, 'value')
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_KEY')
+          expect(err.code).to.equal(errors.ERR_INVALID_KEY.code)
         }
       })
 
@@ -22,7 +24,7 @@ module.exports = (repo) => {
           await repo.config.set('foo', Buffer.from([0, 1, 2]))
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_VALUE')
+          expect(err.code).to.equal(errors.ERR_INVALID_VALUE.code)
         }
       })
     })
@@ -32,7 +34,7 @@ module.exports = (repo) => {
           await repo.config.get('someRandomKey')
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_NOT_FOUND')
+          expect(err.code).to.equal(errors.ERR_NOT_FOUND.code)
         }
       })
     })

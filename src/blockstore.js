@@ -6,7 +6,7 @@ const Key = require('interface-datastore').Key
 const base32 = require('base32.js')
 const Block = require('ipfs-block')
 const CID = require('cids')
-const errcode = require('err-code')
+const { ERR_INVALID_CID } = require('./errors')
 
 /**
  * Transform a raw buffer to a base32 encoded key.
@@ -63,7 +63,7 @@ function createBaseStore (store) {
      */
     async get (cid) {
       if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+        throw new ERR_INVALID_CID('Not a valid CID')
       }
       const key = cidToDsKey(cid)
       let blockData
@@ -138,7 +138,7 @@ function createBaseStore (store) {
      */
     async has (cid) {
       if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+        throw new ERR_INVALID_CID('Not a valid CID')
       }
 
       const exists = await store.has(cidToDsKey(cid))
@@ -155,7 +155,7 @@ function createBaseStore (store) {
      */
     async delete (cid) { // eslint-disable-line require-await
       if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+        throw new ERR_INVALID_CID('Not a valid CID')
       }
       return store.delete(cidToDsKey(cid))
     },

@@ -5,7 +5,6 @@ const assert = require('assert')
 const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
-const errcode = require('err-code')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -15,7 +14,7 @@ const apiAddr = require('./api-addr')
 const blockstore = require('./blockstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
-const ERRORS = require('./errors')
+const errors = require('./errors')
 
 const log = debug('repo')
 
@@ -75,7 +74,7 @@ class IpfsRepo {
    */
   async open () {
     if (!this.closed) {
-      throw errcode(new Error('repo is already open'), ERRORS.ERR_REPO_ALREADY_OPEN)
+      throw new errors.ERR_REPO_ALREADY_OPEN('Repo is already open')
     }
     log('opening at: %s', this.path)
 
@@ -149,7 +148,7 @@ class IpfsRepo {
     const lockfile = await this._locker.lock(path)
 
     if (typeof lockfile.close !== 'function') {
-      throw errcode(new Error('Locks must have a close method'), 'ERR_NO_CLOSE_FUNCTION')
+      throw new errors.ERR_NO_CLOSE_FUNCTION('Locks must have a close method')
     }
 
     return lockfile
@@ -180,18 +179,14 @@ class IpfsRepo {
       ])
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
-        throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
-          path: this.path
-        })
+        throw new errors.ERR_REPO_NOT_INITIALIZED('Repo is not initialized yet', this.path)
       }
 
       throw err
     }
 
     if (!config) {
-      throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
-        path: this.path
-      })
+      throw new errors.ERR_REPO_NOT_INITIALIZED('Repo is not initialized yet', this.path)
     }
   }
 
@@ -202,7 +197,7 @@ class IpfsRepo {
    */
   async close () {
     if (this.closed) {
-      throw errcode(new Error('repo is already closed'), ERRORS.ERR_REPO_ALREADY_CLOSED)
+      throw new errors.ERR_REPO_ALREADY_CLOSED('Repo is already closed')
     }
     log('closing at: %s', this.path)
 
@@ -210,7 +205,7 @@ class IpfsRepo {
       // Delete api, ignoring irrelevant errors
       await this.apiAddr.delete()
     } catch (err) {
-      if (err.code !== ERRORS.ERR_REPO_NOT_INITIALIZED && !err.message.startsWith('ENOENT')) {
+      if (err.code !== errors.ERR_REPO_NOT_INITIALIZED.code && !err.message.startsWith('ENOENT')) {
         throw err
       }
     }
@@ -299,7 +294,7 @@ async function getSize (queryFn) {
 
 module.exports = IpfsRepo
 module.exports.repoVersion = repoVersion
-module.exports.errors = ERRORS
+module.exports.errors = errors
 
 function buildOptions (_options) {
   const options = Object.assign({}, defaultOptions, _options)

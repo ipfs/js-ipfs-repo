@@ -14,6 +14,7 @@ const path = require('path')
 const Key = require('interface-datastore').Key
 const base32 = require('base32.js')
 const IPFSRepo = require('../')
+const errors = IPFSRepo.errors
 
 module.exports = (repo) => {
   describe('blockstore', () => {
@@ -187,7 +188,7 @@ module.exports = (repo) => {
           await repo.blocks.get('foo')
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
+          expect(err.code).to.equal(errors.ERR_INVALID_CID.code)
         }
       })
 
@@ -278,7 +279,7 @@ module.exports = (repo) => {
           await repo.blocks.has('foo')
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
+          expect(err.code).to.equal(errors.ERR_INVALID_CID.code)
         }
       })
 
@@ -304,7 +305,7 @@ module.exports = (repo) => {
           await repo.blocks.delete('foo')
           throw new Error('Should have thrown')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
+          expect(err.code).to.equal(errors.ERR_INVALID_CID.code)
         }
       })
     })

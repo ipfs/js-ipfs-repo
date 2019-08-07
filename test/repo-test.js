@@ -6,7 +6,7 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 const path = require('path')
 const IPFSRepo = require('../')
-const Errors = require('../src/errors')
+const errors = require('../src/errors')
 const os = require('os')
 
 module.exports = (repo) => {
@@ -84,7 +84,7 @@ module.exports = (repo) => {
           await repo.version.check(4)
           throw new Error('Should have thrown error')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_REPO_VERSION')
+          expect(err.code).to.equal(errors.ERR_INVALID_REPO_VERSION.code)
         }
       })
 
@@ -95,7 +95,7 @@ module.exports = (repo) => {
           await repo.version.check(2)
           throw new Error('Should have thrown error')
         } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_REPO_VERSION')
+          expect(err.code).to.equal(errors.ERR_INVALID_REPO_VERSION.code)
         }
       })
 
@@ -125,7 +125,7 @@ module.exports = (repo) => {
         try {
           await repo.close()
         } catch (err) {
-          expect(err.code).to.eql(Errors.ERR_REPO_ALREADY_CLOSED)
+          expect(err.code).to.eql(errors.ERR_REPO_ALREADY_CLOSED.code)
           return
         }
         expect.fail('Did not throw')
@@ -136,7 +136,7 @@ module.exports = (repo) => {
         try {
           await repo.open()
         } catch (err) {
-          expect(err.code).to.eql(Errors.ERR_REPO_ALREADY_OPEN)
+          expect(err.code).to.eql(errors.ERR_REPO_ALREADY_OPEN.code)
           return
         }
         expect.fail('Did not throw')
@@ -235,7 +235,7 @@ module.exports = (repo) => {
         try {
           await otherRepo.open()
         } catch (err) {
-          expect(err.code).to.equal(Errors.ERR_REPO_NOT_INITIALIZED)
+          expect(err.code).to.equal(errors.ERR_REPO_NOT_INITIALIZED.code)
         }
       })
 
@@ -254,7 +254,7 @@ module.exports = (repo) => {
         try {
           await otherRepo.open()
         } catch (err) {
-          expect(err.code).to.equal(Errors.ERR_REPO_NOT_INITIALIZED)
+          expect(err.code).to.equal(errors.ERR_REPO_NOT_INITIALIZED.code)
         }
       })
 
