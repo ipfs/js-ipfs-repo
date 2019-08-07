@@ -1,5 +1,6 @@
 'use strict'
 
+const errors = require('./errors')
 const debug = require('debug')
 
 const log = debug('repo:lock')
@@ -17,6 +18,11 @@ const LOCKS = {}
 exports.lock = async (dir) => { // eslint-disable-line require-await
   const file = dir + '/' + lockFile
   log('locking %s', file)
+
+  if (LOCKS[file] === true) {
+    throw new errors.LockExistsError(`Lock already being held for file: ${file}`)
+  }
+
   LOCKS[file] = true
   const closer = {
     async close () { // eslint-disable-line require-await
