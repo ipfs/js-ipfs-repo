@@ -103,4 +103,6 @@ describe('IPFS Repo Tests onNode.js', () => {
       require('./interop-test')(repo)
     }
   }))
+
+  require('./blockstore-utils-test')()
 })
