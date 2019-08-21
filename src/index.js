@@ -298,6 +298,7 @@ async function getSize (queryFn) {
 }
 
 module.exports = IpfsRepo
+module.exports.utils = { blockstore: require('./blockstore-utils') }
 module.exports.repoVersion = repoVersion
 module.exports.errors = ERRORS
 

@@ -2,32 +2,10 @@
 
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
-const Key = require('interface-datastore').Key
-const base32 = require('base32.js')
 const Block = require('ipfs-block')
 const CID = require('cids')
 const errcode = require('err-code')
-
-/**
- * Transform a raw buffer to a base32 encoded key.
- *
- * @param {Buffer} rawKey
- * @returns {Key}
- */
-const keyFromBuffer = (rawKey) => {
-  const enc = new base32.Encoder()
-  return new Key('/' + enc.write(rawKey).finalize(), false)
-}
-
-/**
- * Transform a cid to the appropriate datastore key.
- *
- * @param {CID} cid
- * @returns {Key}
- */
-const cidToDsKey = (cid) => {
-  return keyFromBuffer(cid.buffer)
-}
+const { cidToKey } = require('./blockstore-utils')
 
 module.exports = async (filestore, options) => {
   const store = await maybeWithSharding(filestore, options)
@@ -65,7 +43,7 @@ function createBaseStore (store) {
       if (!CID.isCID(cid)) {
         throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
-      const key = cidToDsKey(cid)
+      const key = cidToKey(cid)
       let blockData
       try {
         blockData = await store.get(key)
@@ -78,7 +56,7 @@ function createBaseStore (store) {
             throw err
           }
 
-          const otherKey = cidToDsKey(otherCid)
+          const otherKey = cidToKey(otherCid)
           const blockData = await store.get(otherKey)
           await store.put(key, blockData)
           return new Block(blockData, cid)
@@ -98,7 +76,7 @@ function createBaseStore (store) {
         throw new Error('invalid block')
       }
 
-      const k = cidToDsKey(block.cid)
+      const k = cidToKey(block.cid)
       const exists = await store.has(k)
       if (exists) return
       return store.put(k, block.data)
@@ -112,7 +90,7 @@ function createBaseStore (store) {
      */
     async putMany (blocks) {
       const keys = blocks.map((b) => ({
-        key: cidToDsKey(b.cid),
+        key: cidToKey(b.cid),
         block: b
       }))
 
@@ -141,11 +119,11 @@ function createBaseStore (store) {
         throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
 
-      const exists = await store.has(cidToDsKey(cid))
+      const exists = await store.has(cidToKey(cid))
       if (exists) return exists
       const otherCid = cidToOtherVersion(cid)
       if (!otherCid) return false
-      return store.has(cidToDsKey(otherCid))
+      return store.has(cidToKey(otherCid))
     },
     /**
      * Delete a block from the store
@@ -157,7 +135,7 @@ function createBaseStore (store) {
       if (!CID.isCID(cid)) {
         throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
-      return store.delete(cidToDsKey(cid))
+      return store.delete(cidToKey(cid))
     },
     /**
      * Close the store
