@@ -1,3 +1,19 @@
+<a name="0.27.1"></a>
+## [0.27.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.27.0...v0.27.1) (2019-08-21)
+
+
+### Bug Fixes
+
+* memlock throws error when lock exists ([#200](https://github.com/ipfs/js-ipfs-repo/issues/200)) ([79fb031](https://github.com/ipfs/js-ipfs-repo/commit/79fb031))
+
+
+### Features
+
+* export blockstore key encode/decode utils ([#206](https://github.com/ipfs/js-ipfs-repo/issues/206)) ([f83edae](https://github.com/ipfs/js-ipfs-repo/commit/f83edae)), closes [/github.com/ipfs/js-ipfs/pull/2022/files#r303389863](https://github.com//github.com/ipfs/js-ipfs/pull/2022/files/issues/r303389863)
+* not found error for config values ([#201](https://github.com/ipfs/js-ipfs-repo/issues/201)) ([a8e5860](https://github.com/ipfs/js-ipfs-repo/commit/a8e5860))
+
+
+
 <a name="0.27.0"></a>
 # [0.27.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.26.6...v0.27.0) (2019-06-04)
 
