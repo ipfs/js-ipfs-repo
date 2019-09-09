@@ -5,11 +5,12 @@ const ShardingStore = core.ShardingDatastore
 const Block = require('ipfs-block')
 const CID = require('cids')
 const errcode = require('err-code')
+const callbackify = require('callbackify')
 const { cidToKey } = require('./blockstore-utils')
 
 module.exports = async (filestore, options) => {
   const store = await maybeWithSharding(filestore, options)
-  return createBaseStore(store)
+  return CallbackifiedCreateBaseStore(store)
 }
 
 function maybeWithSharding (filestore, options) {
@@ -145,6 +146,19 @@ function createBaseStore (store) {
     async close () { // eslint-disable-line require-await
       return store.close()
     }
+  }
+}
+
+function CallbackifiedCreateBaseStore (store) {
+  const baseStore = createBaseStore(store)
+  return {
+    query: callbackify(baseStore.query),
+    get: callbackify(baseStore.get),
+    put: callbackify(baseStore.put),
+    putMany: callbackify(baseStore.putMany),
+    has: callbackify(baseStore.has),
+    delete: callbackify(baseStore.delete),
+    close: callbackify(baseStore.close)
   }
 }
 

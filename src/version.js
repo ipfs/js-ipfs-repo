@@ -4,11 +4,12 @@ const Key = require('interface-datastore').Key
 const debug = require('debug')
 const log = debug('repo:version')
 const errcode = require('err-code')
+const callbackify = require('callbackify')
 
 const versionKey = new Key('version')
 
 module.exports = (store) => {
-  return {
+  const versionStore = {
     /**
      * Check if a version file exists.
      *
@@ -52,4 +53,13 @@ module.exports = (store) => {
       }
     }
   }
+
+  const callbackifiedVersionStore = {
+    exists: callbackify(versionStore.exists),
+    get: callbackify(versionStore.get),
+    set: callbackify(versionStore.set),
+    check: callbackify(versionStore.check)
+  }
+
+  return callbackifiedVersionStore
 }

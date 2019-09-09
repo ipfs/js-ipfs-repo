@@ -6,6 +6,7 @@ const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const _has = require('lodash.has')
 const errcode = require('err-code')
+const callbackify = require('callbackify')
 const errors = require('./errors')
 
 const configKey = new Key('config')
@@ -70,7 +71,13 @@ module.exports = (store) => {
     }
   }
 
-  return configStore
+  const callbackifiedConfigStore = {
+    get: callbackify.variadic(configStore.get),
+    set: callbackify.variadic(configStore.set),
+    exists: callbackify(configStore.exists)
+  }
+
+  return callbackifiedConfigStore
 
   async function _doSet (m) {
     const key = m.key

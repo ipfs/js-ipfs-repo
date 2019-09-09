@@ -1,11 +1,12 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
+const callbackify = require('callbackify')
 
 const apiFile = new Key('api')
 
 module.exports = (store) => {
-  return {
+  const apiAddrStore = {
     /**
      * Get the current configuration from the repo.
      *
@@ -33,4 +34,12 @@ module.exports = (store) => {
       return store.delete(apiFile)
     }
   }
+
+  const callbackifiedApiAddrStore = {
+    get: callbackify(apiAddrStore.get),
+    set: callbackify(apiAddrStore.set),
+    delete: callbackify(apiAddrStore.delete)
+  }
+
+  return callbackifiedApiAddrStore
 }

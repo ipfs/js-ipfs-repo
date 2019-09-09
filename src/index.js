@@ -6,6 +6,7 @@ const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
+const callbackify = require('callbackify')
 
 const backends = require('./backends')
 const version = require('./version')
@@ -87,6 +88,11 @@ class IpfsRepo {
       log('acquired repo.lock')
       log('creating datastore')
       this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
+//console.log('vmx: this.datastore:', this.datastore)
+      debugger
+      callbackifyDatastore(this.datastore)
+
+
       log('creating blocks')
       const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
@@ -297,7 +303,71 @@ async function getSize (queryFn) {
   return sum
 }
 
-module.exports = IpfsRepo
+function callbackifyDatastore (store) {
+  if (store.prototype) {
+    store.prototype.query = callbackify(store.query)
+    store.prototype.get = callbackify(store.get)
+    store.prototype.put = callbackify(store.put)
+    store.prototype.putMany = callbackify(store.putMany)
+    store.prototype.has = callbackify(store.has)
+    store.prototype.delete = callbackify(store.delete)
+    store.prototype.close = callbackify(store.close)
+  } else {
+    store.query = callbackify(store.query)
+    store.get = callbackify(store.get)
+    store.put = callbackify(store.put)
+    // NOTE vmx 2019-09-09: I have no idea why there isn't a putMany in this
+    // cast, but it makes the tests pass
+    //store.putMany = callbackify(store.putMany)
+    store.has = callbackify(store.has)
+    store.delete = callbackify(store.delete)
+    store.close = callbackify(store.close)
+  }
+}
+
+// Based on https://github.com/junosuarez/callbackify
+function callbackifyUndefinedSuccess(fn) {
+  var fnLength = fn.length
+  return function () {
+    var args = [].slice.call(arguments)
+    var ctx = this
+    if (args.length === fnLength + 1 &&
+        typeof args[fnLength] === 'function') {
+      // callback mode
+      var cb = args.pop()
+      fn.apply(this, args)
+        .then(
+          function (val) {
+            if (val === undefined) {
+              //cb.call(ctx, undefined)
+              cb.call(ctx)
+            } else {
+              cb.call(ctx, null, val)
+            }
+          },
+          function (err) { cb.call(ctx, err) }
+        )
+      return
+    }
+    // promise mode
+    return fn.apply(ctx, arguments)
+  }
+}
+
+class CallbackifiedIpfsRepo extends IpfsRepo { }
+
+CallbackifiedIpfsRepo.prototype.init = callbackify(IpfsRepo.prototype.init)
+CallbackifiedIpfsRepo.prototype.open = callbackifyUndefinedSuccess(IpfsRepo.prototype.open)
+//CallbackifiedIpfsRepo.prototype._openRoot = callbackify(IpfsRepo.prototype._openRoot)
+//CallbackifiedIpfsRepo.prototype._openLock = callbackify(IpfsRepo.prototype._openLock)
+//CallbackifiedIpfsRepo.prototype._checkInitialized = callbackify(IpfsRepo.prototype._checkInitialized)
+CallbackifiedIpfsRepo.prototype.close = callbackifyUndefinedSuccess(IpfsRepo.prototype.close)
+CallbackifiedIpfsRepo.prototype.exists = callbackifyUndefinedSuccess(IpfsRepo.prototype.exists)
+CallbackifiedIpfsRepo.prototype.stat = callbackify.variadic(IpfsRepo.prototype.stat)
+//CallbackifiedIpfsRepo.prototype._storageMaxStat = callbackify(IpfsRepo.prototype._storageMaxStat)
+//CallbackifiedIpfsRepo.prototype._blockStat = callbackify(IpfsRepo.prototype._blockStat)
+
+module.exports = CallbackifiedIpfsRepo
 module.exports.utils = { blockstore: require('./blockstore-utils') }
 module.exports.repoVersion = repoVersion
 module.exports.errors = ERRORS

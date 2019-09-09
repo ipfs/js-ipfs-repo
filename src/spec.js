@@ -2,11 +2,12 @@
 
 const Key = require('interface-datastore').Key
 const sortKeys = require('sort-keys')
+const callbackify = require('callbackify')
 
 const specKey = new Key('datastore_spec')
 
 module.exports = (store) => {
-  return {
+  const specStore = {
     /**
      * Check if a datastore spec file exists.
      *
@@ -34,4 +35,11 @@ module.exports = (store) => {
       return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }
+  const callbackifiedSpecStore = {
+    get: callbackify(specStore.get),
+    set: callbackify(specStore.set),
+    exists: callbackify(specStore.exists)
+  }
+
+  return callbackifiedSpecStore
 }
