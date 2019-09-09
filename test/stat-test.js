@@ -4,9 +4,19 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
+const Block = require('ipfs-block')
+const CID = require('cids')
 
 module.exports = (repo) => {
   describe('stat', () => {
+    before(async () => {
+      const data = new Block(
+        Buffer.from('foo'),
+        new CID('bafyreighz6vdlkdsvp4nu3lxhsofnk2eqxn6o57ag3mfxkqa7c327djhra')
+      )
+      await repo.blocks.put(data)
+    })
+
     it('get stats', async () => {
       const stats = await repo.stat()
       expect(stats).to.exist()
