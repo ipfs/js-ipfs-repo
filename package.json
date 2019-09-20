@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.27.1",
+  "version": "0.28.0",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
@@ -100,6 +100,7 @@
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Vasco Santos <vasco.santos@ua.pt>",
+    "Volker Mische <volker.mische@gmail.com>",
     "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
     "nginnever <ginneversource@gmail.com>",
     "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>",
