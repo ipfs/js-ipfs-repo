@@ -85,26 +85,21 @@ function createBaseStore (store) {
     /**
      * Like put, but for more.
      *
-     * @param {Array<Block>} blocks
+     * @param {AsyncIterable<Block>} blocks
      * @returns {Promise<void>}
      */
     async putMany (blocks) {
-      const keys = blocks.map((b) => ({
-        key: cidToKey(b.cid),
-        block: b
-      }))
-
       const batch = store.batch()
 
-      await Promise.all(
-        keys.map(async k => {
-          if (await store.has(k.key)) {
-            return
-          }
+      for await (const block of blocks) {
+        const key = cidToKey(block.cid)
 
-          batch.put(k.key, k.block.data)
-        })
-      )
+        if (await store.has(key)) {
+          continue
+        }
+
+        batch.put(key, block.data)
+      }
 
       return batch.commit()
     },
