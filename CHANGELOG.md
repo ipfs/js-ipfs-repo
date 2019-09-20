@@ -1,3 +1,24 @@
+<a name="0.28.0"></a>
+# [0.28.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.27.1...v0.28.0) (2019-09-20)
+
+
+### Features
+
+* accept async iterators into blockstore.putMany ([#209](https://github.com/ipfs/js-ipfs-repo/issues/209)) ([9c06303](https://github.com/ipfs/js-ipfs-repo/commit/9c06303))
+
+
+### BREAKING CHANGES
+
+* you must pass an iterable or async iterable to putMany
+- this should be relatively painless as the current API is to pass an
+array which is iterable, but it does change the API.
+
+* chore: remove CI commitlint
+* chore: add node 12 to CI
+* docs: update docs with new api
+
+
+
 <a name="0.27.1"></a>
 ## [0.27.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.27.0...v0.27.1) (2019-08-21)
 
