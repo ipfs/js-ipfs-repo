@@ -85,7 +85,7 @@ function createBaseStore (store) {
     /**
      * Like put, but for more.
      *
-     * @param {AsyncIterable<Block>} blocks
+     * @param {AsyncIterable<Block>|Iterable<Block>} blocks
      * @returns {Promise<void>}
      */
     async putMany (blocks) {
