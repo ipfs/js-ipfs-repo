@@ -189,7 +189,7 @@ Get a value at the root of the repo.
 
 Put many blocks.
 
-* `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+* `block` should be an Iterable or AsyncIterable that yields entries of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
 
 #### `Promise<Buffer> repo.blocks.get (cid)`
 
