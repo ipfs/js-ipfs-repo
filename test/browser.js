@@ -17,9 +17,7 @@ async function createTempRepo ({ dontOpen, opts }) {
 
   return {
     path: repoPath,
-    instance: repo,
-    teardown: async () => {
-    }
+    instance: repo
   }
 }
 
