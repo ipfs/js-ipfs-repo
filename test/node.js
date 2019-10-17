@@ -36,7 +36,7 @@ async function createTempRepo ({ init, dontOpen, opts }) {
 
   return {
     path: repoPath,
-    instance: repo,
+    instance: repo
   }
 }
 
