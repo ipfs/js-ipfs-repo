@@ -15,7 +15,6 @@ const IPFSRepo = require('../src')
 
 module.exports = (createTempRepo) => {
   describe('Migrations tests', () => {
-    let teardown
     let repo
     let migrateStub
     let repoVersionStub
@@ -34,12 +33,8 @@ module.exports = (createTempRepo) => {
     })
 
     beforeEach(async () => {
-      ({ instance: repo, teardown } = await createTempRepo({}))
+      ({ instance: repo } = await createTempRepo({}))
       sinon.reset()
-    })
-
-    afterEach(async () => {
-      await teardown()
     })
 
     it('should migrate by default', async () => {

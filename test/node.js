@@ -6,6 +6,7 @@ const rimraf = require('rimraf')
 const fs = require('fs')
 const path = require('path')
 const promisify = require('util').promisify
+const os = require('os')
 
 const chai = require('chai')
 chai.use(require('dirty-chai'))
@@ -19,7 +20,7 @@ const IPFSRepo = require('../src')
 async function createTempRepo ({ init, dontOpen, opts }) {
   const testRepoPath = path.join(__dirname, 'test-repo')
   const date = Date.now().toString()
-  const repoPath = testRepoPath + '-for-' + date
+  const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
 
   const repo = new IPFSRepo(repoPath, opts)
 
@@ -36,13 +37,6 @@ async function createTempRepo ({ init, dontOpen, opts }) {
   return {
     path: repoPath,
     instance: repo,
-    teardown: async () => {
-      try {
-        await repo.close()
-      } catch (e) {
-      }
-      await asyncRimraf(repoPath)
-    }
   }
 }
 

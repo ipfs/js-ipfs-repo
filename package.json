@@ -65,7 +65,7 @@
     "err-code": "^1.1.2",
     "interface-datastore": "~0.7.0",
     "ipfs-block": "~0.8.1",
-    "ipfs-repo-migrations": "ipfs/js-ipfs-repo-migrations#dev",
+    "ipfs-repo-migrations": "ipfs/js-ipfs-repo-migrations#master",
     "just-safe-get": "^1.3.0",
     "just-safe-set": "^2.1.0",
     "lodash.has": "^4.5.2",
