@@ -17,18 +17,21 @@ module.exports = (createTempRepo) => {
   describe('Migrations tests', () => {
     let repo
     let migrateStub
+    let revertStub
     let repoVersionStub
     let getLatestMigrationVersionStub
 
     before(() => {
       repoVersionStub = sinon.stub(constants, 'repoVersion')
       migrateStub = sinon.stub(migrator, 'migrate')
+      revertStub = sinon.stub(migrator, 'revert')
       getLatestMigrationVersionStub = sinon.stub(migrator, 'getLatestMigrationVersion')
     })
 
     after(() => {
       repoVersionStub.restore()
       migrateStub.restore()
+      revertStub.restore()
       getLatestMigrationVersionStub.restore()
     })
 
@@ -67,9 +70,9 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.false()
       try {
         await newRepo.open()
-        throw Error('Should throw error')
-      } catch (e) {
-        expect(e.code).to.equal(errors.InvalidRepoVersionError.code)
+        expect.fail('should have thrown error')
+      } catch (err) {
+        expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
       }
 
       expect(migrateStub.called).to.be.false()
@@ -87,10 +90,10 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.false()
       try {
         await repo.open()
-        throw Error('Should throw error')
-      } catch (e) {
+        expect.fail('should have thrown error')
+      } catch (err) {
         expect(migrateStub.called).to.be.false()
-        expect(e.code).to.equal(errors.InvalidRepoVersionError.code)
+        expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
       }
     })
 
@@ -108,23 +111,21 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.false()
     })
 
-    it('should not migrate when current repo versions is higher then expected', async () => {
-      migrateStub.resolves()
+    it('should revert when current repo versions is higher then expected', async () => {
+      revertStub.resolves()
       repoVersionStub.value(8)
+
+      expect(revertStub.called).to.be.false()
 
       await repo.version.set(9)
       await repo.close()
 
       expect(migrateStub.called).to.be.false()
+      expect(revertStub.called).to.be.false()
 
-      try {
-        await repo.open()
-        throw Error('Should throw error')
-      } catch (e) {
-        expect(migrateStub.called).to.be.false()
-        expect(e.code).to.equal(errors.InvalidRepoVersionError.code)
-      }
+      await repo.open()
 
+      expect(revertStub.called).to.be.true()
       expect(migrateStub.called).to.be.false()
     })
   })

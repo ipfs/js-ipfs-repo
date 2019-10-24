@@ -294,11 +294,12 @@ class IpfsRepo {
     const currentRepoVersion = await this.version.get()
 
     if (currentRepoVersion > toVersion) {
-      throw new ERRORS.InvalidRepoVersionError('Your repo\'s version is higher then this version of js-ipfs-repo require! You have to revert it.')
+      log('reverting to version ' + toVersion)
+      return migrator.revert(this.path, toVersion, { ignoreLock: true, repoOptions: this.options })
+    } else {
+      log('migrating to version ' + toVersion)
+      return migrator.migrate(this.path, toVersion, { ignoreLock: true, repoOptions: this.options })
     }
-
-    log('migrating to version ' + toVersion)
-    return migrator.migrate(this.path, { toVersion: toVersion, ignoreLock: true, repoOptions: this.options })
   }
 
   async _storageMaxStat () {
