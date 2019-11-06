@@ -4,21 +4,15 @@
 
 const IPFSRepo = require('../src')
 
-async function createTempRepo ({ dontOpen, opts }) {
+async function createTempRepo (options = {}) {
   const date = Date.now().toString()
   const repoPath = 'test-repo-for-' + date
 
-  const repo = new IPFSRepo(repoPath, opts)
+  const repo = new IPFSRepo(repoPath, options)
   await repo.init({})
+  await repo.open()
 
-  if (!dontOpen) {
-    await repo.open()
-  }
-
-  return {
-    path: repoPath,
-    instance: repo
-  }
+  return repo
 }
 
 describe('IPFS Repo Tests on the Browser', () => {

@@ -251,8 +251,7 @@ class IpfsRepo {
    */
   async stat (options) {
     options = Object.assign({}, { human: false }, options)
-    let storageMax, blocks, version, datastore, keys
-    [storageMax, blocks, version, datastore, keys] = await Promise.all([
+    const [storageMax, blocks, version, datastore, keys] = await Promise.all([
       this._storageMaxStat(),
       this._blockStat(),
       this.version.get(),
@@ -276,6 +275,10 @@ class IpfsRepo {
   }
 
   async _isAutoMigrationEnabled () {
+    if (this.options.autoMigrate !== undefined) {
+      return this.options.autoMigrate
+    }
+
     let autoMigrateConfig
     try {
       autoMigrateConfig = await this.config.get(AUTO_MIGRATE_CONFIG_KEY)
@@ -287,7 +290,7 @@ class IpfsRepo {
       }
     }
 
-    return autoMigrateConfig && this.options.autoMigrate
+    return autoMigrateConfig
   }
 
   async _migrate (toVersion) {
@@ -327,7 +330,7 @@ class IpfsRepo {
 }
 
 async function getSize (queryFn) {
-  let sum = new Big(0)
+  const sum = new Big(0)
   for await (const block of queryFn.query({})) {
     sum.plus(block.value.byteLength)
       .plus(block.key._buf.byteLength)

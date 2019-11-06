@@ -36,8 +36,50 @@ module.exports = (createTempRepo) => {
     })
 
     beforeEach(async () => {
-      ({ instance: repo } = await createTempRepo({}))
+      repo = await createTempRepo()
       sinon.reset()
+    })
+
+    // Testing migration logic
+    const migrationLogic = [
+      { config: true, option: true, result: true },
+      { config: true, option: false, result: false },
+      { config: true, option: undefined, result: true },
+      { config: false, option: true, result: true },
+      { config: false, option: false, result: false },
+      { config: false, option: undefined, result: false },
+      { config: undefined, option: true, result: true },
+      { config: undefined, option: false, result: false },
+      { config: undefined, option: undefined, result: true }
+    ]
+
+    migrationLogic.forEach(({ config, option, result }) => {
+      it(`should ${result ? '' : 'not '}migrate when config=${config} and option=${option}`, async () => {
+        migrateStub.resolves()
+        repoVersionStub.value(8)
+        getLatestMigrationVersionStub.returns(9)
+
+        if (config !== undefined) {
+          await repo.config.set('repoAutoMigrate', config)
+        }
+        await repo.version.set(7)
+        await repo.close()
+
+        const newOpts = Object.assign({}, repo.options)
+        newOpts.autoMigrate = option
+        const newRepo = new IPFSRepo(repo.path, newOpts)
+
+        expect(migrateStub.called).to.be.false()
+
+        try {
+          await newRepo.open()
+          if (!result) expect.fail('should have thrown error')
+        } catch (err) {
+          expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
+        }
+
+        expect(migrateStub.called).to.eq(result)
+      })
     })
 
     it('should migrate by default', async () => {
@@ -53,48 +95,6 @@ module.exports = (createTempRepo) => {
       await repo.open()
 
       expect(migrateStub.called).to.be.true()
-    })
-
-    it('should not migrate when option autoMigrate is false', async () => {
-      migrateStub.resolves()
-      repoVersionStub.resolves(8)
-      getLatestMigrationVersionStub.returns(9)
-
-      await repo.version.set(7)
-      await repo.close()
-
-      const newOpts = Object.assign({}, repo.options)
-      newOpts.autoMigrate = false
-      const newRepo = new IPFSRepo(repo.path, newOpts)
-
-      expect(migrateStub.called).to.be.false()
-      try {
-        await newRepo.open()
-        expect.fail('should have thrown error')
-      } catch (err) {
-        expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
-      }
-
-      expect(migrateStub.called).to.be.false()
-    })
-
-    it('should not migrate when config option repoAutoMigrate is false', async () => {
-      migrateStub.resolves()
-      repoVersionStub.resolves(8)
-      getLatestMigrationVersionStub.returns(9)
-
-      await repo.config.set('repoAutoMigrate', false)
-      await repo.version.set(7)
-      await repo.close()
-
-      expect(migrateStub.called).to.be.false()
-      try {
-        await repo.open()
-        expect.fail('should have thrown error')
-      } catch (err) {
-        expect(migrateStub.called).to.be.false()
-        expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
-      }
     })
 
     it('should not migrate when versions matches', async () => {

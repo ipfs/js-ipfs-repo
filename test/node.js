@@ -17,27 +17,13 @@ const fsstat = promisify(fs.stat)
 
 const IPFSRepo = require('../src')
 
-async function createTempRepo ({ init, dontOpen, opts }) {
-  const testRepoPath = path.join(__dirname, 'test-repo')
+async function createTempRepo (options = {}) {
   const date = Date.now().toString()
   const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
-
-  const repo = new IPFSRepo(repoPath, opts)
-
-  if (init) {
-    await repo.init({})
-  } else {
-    await asyncNcp(testRepoPath, repoPath)
-  }
-
-  if (!dontOpen) {
-    await repo.open()
-  }
-
-  return {
-    path: repoPath,
-    instance: repo
-  }
+  await asyncNcp(path.join(__dirname, 'test-repo'), repoPath)
+  const repo = new IPFSRepo(repoPath, options)
+  await repo.open()
+  return repo
 }
 
 describe('IPFS Repo Tests onNode.js', () => {
@@ -98,7 +84,7 @@ describe('IPFS Repo Tests onNode.js', () => {
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()
-    const repoPath = testRepoPath + '-for-' + date
+    const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
 
     const repo = new IPFSRepo(repoPath, r.opts)
 
@@ -112,10 +98,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     })
 
     after(async () => {
-      try {
-        await repo.close()
-      } catch (e) {
-      }
+      await repo.close()
       await asyncRimraf(repoPath)
     })
 

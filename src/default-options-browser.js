@@ -2,7 +2,6 @@
 
 // Default configuration for a repo in the browser
 module.exports = {
-  autoMigrate: true,
   lock: 'memory',
   storageBackends: {
     root: require('datastore-level'),

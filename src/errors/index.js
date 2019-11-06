@@ -7,8 +7,7 @@ class LockExistsError extends Error {
   constructor (message) {
     super(message)
     this.name = 'LockExistsError'
-    this.code = 'ERR_LOCK_EXISTS'
-    this.message = message
+    this.code = LockExistsError.code
   }
 }
 
@@ -22,8 +21,7 @@ class NotFoundError extends Error {
   constructor (message) {
     super(message)
     this.name = 'NotFoundError'
-    this.code = 'ERR_NOT_FOUND'
-    this.message = message
+    this.code = NotFoundError.code
   }
 }
 
@@ -37,8 +35,7 @@ class InvalidRepoVersionError extends Error {
   constructor (message) {
     super(message)
     this.name = 'InvalidRepoVersionError'
-    this.code = 'ERR_INVALID_REPO_VERSION'
-    this.message = message
+    this.code = InvalidRepoVersionError.code
   }
 }
 
