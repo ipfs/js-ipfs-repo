@@ -1,3 +1,13 @@
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.28.1...v0.29.0) (2019-11-06)
+
+
+### Features
+
+* automatic repo migrations ([#202](https://github.com/ipfs/js-ipfs-repo/issues/202)) ([a0b6f95](https://github.com/ipfs/js-ipfs-repo/commit/a0b6f95))
+
+
+
 <a name="0.28.1"></a>
 ## [0.28.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.28.0...v0.28.1) (2019-10-29)
 
