@@ -6,7 +6,9 @@ const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
+const migrator = require('ipfs-repo-migrations')
 
+const constants = require('./constants')
 const backends = require('./backends')
 const version = require('./version')
 const config = require('./config')
@@ -20,13 +22,12 @@ const ERRORS = require('./errors')
 const log = debug('repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
+const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
 
 const lockers = {
   memory: require('./lock-memory'),
   fs: require('./lock')
 }
-
-const repoVersion = require('./constants').repoVersion
 
 /**
  * IpfsRepo implements all required functionality to read and write to an ipfs repo.
@@ -64,7 +65,7 @@ class IpfsRepo {
     await this._openRoot()
     await this.config.set(buildConfig(config))
     await this.spec.set(buildDatastoreSpec(config))
-    await this.version.set(repoVersion)
+    await this.version.set(constants.repoVersion)
   }
 
   /**
@@ -92,6 +93,16 @@ class IpfsRepo {
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
       log('creating keystore')
       this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
+
+      const isCompatible = await this.version.check(constants.repoVersion)
+      if (!isCompatible) {
+        if (await this._isAutoMigrationEnabled()) {
+          await this._migrate(constants.repoVersion)
+        } else {
+          throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
+        }
+      }
+
       this.closed = false
       log('all opened')
     } catch (err) {
@@ -176,7 +187,7 @@ class IpfsRepo {
       [config] = await Promise.all([
         this.config.exists(),
         this.spec.exists(),
-        this.version.check(repoVersion)
+        this.version.exists()
       ])
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
@@ -240,8 +251,7 @@ class IpfsRepo {
    */
   async stat (options) {
     options = Object.assign({}, { human: false }, options)
-    let storageMax, blocks, version, datastore, keys
-    [storageMax, blocks, version, datastore, keys] = await Promise.all([
+    const [storageMax, blocks, version, datastore, keys] = await Promise.all([
       this._storageMaxStat(),
       this._blockStat(),
       this.version.get(),
@@ -261,6 +271,37 @@ class IpfsRepo {
       version: version,
       numObjects: blocks.count,
       repoSize: size
+    }
+  }
+
+  async _isAutoMigrationEnabled () {
+    if (this.options.autoMigrate !== undefined) {
+      return this.options.autoMigrate
+    }
+
+    let autoMigrateConfig
+    try {
+      autoMigrateConfig = await this.config.get(AUTO_MIGRATE_CONFIG_KEY)
+    } catch (e) {
+      if (e.code === ERRORS.NotFoundError.code) {
+        autoMigrateConfig = true // Config's default value is True
+      } else {
+        throw e
+      }
+    }
+
+    return autoMigrateConfig
+  }
+
+  async _migrate (toVersion) {
+    const currentRepoVersion = await this.version.get()
+
+    if (currentRepoVersion > toVersion) {
+      log('reverting to version ' + toVersion)
+      return migrator.revert(this.path, toVersion, { ignoreLock: true, repoOptions: this.options })
+    } else {
+      log('migrating to version ' + toVersion)
+      return migrator.migrate(this.path, toVersion, { ignoreLock: true, repoOptions: this.options })
     }
   }
 
@@ -289,7 +330,7 @@ class IpfsRepo {
 }
 
 async function getSize (queryFn) {
-  let sum = new Big(0)
+  const sum = new Big(0)
   for await (const block of queryFn.query({})) {
     sum.plus(block.value.byteLength)
       .plus(block.key._buf.byteLength)
@@ -299,7 +340,7 @@ async function getSize (queryFn) {
 
 module.exports = IpfsRepo
 module.exports.utils = { blockstore: require('./blockstore-utils') }
-module.exports.repoVersion = repoVersion
+module.exports.repoVersion = constants.repoVersion
 module.exports.errors = ERRORS
 
 function buildOptions (_options) {

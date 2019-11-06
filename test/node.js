@@ -6,6 +6,7 @@ const rimraf = require('rimraf')
 const fs = require('fs')
 const path = require('path')
 const promisify = require('util').promisify
+const os = require('os')
 
 const chai = require('chai')
 chai.use(require('dirty-chai'))
@@ -16,8 +17,18 @@ const fsstat = promisify(fs.stat)
 
 const IPFSRepo = require('../src')
 
+async function createTempRepo (options = {}) {
+  const date = Date.now().toString()
+  const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
+  await asyncNcp(path.join(__dirname, 'test-repo'), repoPath)
+  const repo = new IPFSRepo(repoPath, options)
+  await repo.open()
+  return repo
+}
+
 describe('IPFS Repo Tests onNode.js', () => {
   require('./options-test')
+  require('./migrations-test')(createTempRepo)
 
   const customLock = {
     lockName: 'test.lock',
@@ -73,7 +84,7 @@ describe('IPFS Repo Tests onNode.js', () => {
   repos.forEach((r) => describe(r.name, () => {
     const testRepoPath = path.join(__dirname, 'test-repo')
     const date = Date.now().toString()
-    const repoPath = testRepoPath + '-for-' + date
+    const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
 
     const repo = new IPFSRepo(repoPath, r.opts)
 

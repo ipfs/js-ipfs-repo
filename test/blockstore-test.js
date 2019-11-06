@@ -85,9 +85,11 @@ module.exports = (repo) => {
               close () {
 
               }
+
               has () {
                 return true
               }
+
               batch () {
                 return {
                   put () {
@@ -217,6 +219,7 @@ module.exports = (repo) => {
               close () {
 
               }
+
               get (c) {
                 if (c.toString() === key.toString()) {
                   throw err

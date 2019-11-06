@@ -3,7 +3,6 @@
 const Key = require('interface-datastore').Key
 const debug = require('debug')
 const log = debug('repo:version')
-const errcode = require('err-code')
 
 const versionKey = new Key('version')
 
@@ -36,9 +35,9 @@ module.exports = (store) => {
       return store.put(versionKey, Buffer.from(String(version)))
     },
     /**
-     * Check the current version, and return an error on missmatch
+     * Check the current version, and returns true if versions matches
      * @param {number} expected
-     * @returns {void}
+     * @returns {boolean}
      */
     async check (expected) {
       const version = await this.get()
@@ -47,9 +46,7 @@ module.exports = (store) => {
       // TODO: Clean up the compatibility logic. Repo feature detection would be ideal, or a better version schema
       const compatibleVersion = (version === 6 && expected === 7) || (expected === 6 && version === 7)
 
-      if (version !== expected && !compatibleVersion) {
-        throw errcode(new Error(`ipfs repo needs migration: expected version v${expected}, found version v${version}`), 'ERR_INVALID_REPO_VERSION')
-      }
+      return version === expected || compatibleVersion
     }
   }
 }
