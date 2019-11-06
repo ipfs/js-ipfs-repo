@@ -43,16 +43,16 @@
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^19.0.3",
+    "aegir": "^20.4.1",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
     "lodash": "^4.17.11",
     "memdown": "^4.0.0",
-    "multihashes": "~0.4.14",
-    "multihashing-async": "~0.7.0",
+    "multihashes": "~0.4.15",
+    "multihashing-async": "~0.8.0",
     "ncp": "^2.0.0",
-    "rimraf": "^2.6.3",
-    "sinon": "^7.3.1"
+    "rimraf": "^3.0.0",
+    "sinon": "^7.5.0"
   },
   "dependencies": {
     "base32.js": "~0.1.0",
