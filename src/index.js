@@ -7,6 +7,8 @@ const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
+const filesize = require('filesize')
+const bytes = require('bytes')
 
 const constants = require('./constants')
 const backends = require('./backends')
@@ -258,19 +260,22 @@ class IpfsRepo {
       getSize(this.datastore),
       getSize(this.keys)
     ])
-    let size = blocks.size
+    const size = blocks.size
       .plus(datastore)
       .plus(keys)
 
-    if (options.human) {
-      size = size.div(1048576)
-    }
     return {
       repoPath: this.path,
-      storageMax: storageMax,
+      storageMax: options.human
+        ? filesize(storageMax, { exponent: 3 }) // exponent 3 specifies the symbol GB for base 2
+        : storageMax,
       version: version,
-      numObjects: blocks.count,
-      repoSize: size
+      numObjects: options.human
+        ? blocks.count.toNumber()
+        : blocks.count,
+      repoSize: options.human
+        ? filesize(size, { exponent: 2 }) // exponent 2 specifies the symbol MB for base 2
+        : size
     }
   }
 
@@ -308,7 +313,7 @@ class IpfsRepo {
   async _storageMaxStat () {
     try {
       const max = await this.config.get('Datastore.StorageMax')
-      return new Big(max)
+      return new Big(bytes(max))
     } catch (err) {
       return new Big(noLimit)
     }
