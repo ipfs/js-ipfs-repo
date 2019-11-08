@@ -7,7 +7,7 @@ const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
-const filesize = require('filesize')
+const prettyBytes = require('pretty-bytes')
 const bytes = require('bytes')
 
 const constants = require('./constants')
@@ -267,14 +267,14 @@ class IpfsRepo {
     return {
       repoPath: this.path,
       storageMax: options.human
-        ? filesize(storageMax, { exponent: 3 }) // exponent 3 specifies the symbol GB for base 2
+        ? prettyBytes(storageMax.toNumber())
         : storageMax,
       version: version,
       numObjects: options.human
         ? blocks.count.toNumber()
         : blocks.count,
       repoSize: options.human
-        ? filesize(size, { exponent: 2 }) // exponent 2 specifies the symbol MB for base 2
+        ? prettyBytes(size.toNumber())
         : size
     }
   }
