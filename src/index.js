@@ -267,14 +267,14 @@ class IpfsRepo {
     return {
       repoPath: this.path,
       storageMax: options.human
-        ? prettyBytes(storageMax.toNumber())
+        ? prettyBytes(storageMax.toNumber()).toUpperCase()
         : storageMax,
       version: version,
       numObjects: options.human
         ? blocks.count.toNumber()
         : blocks.count,
       repoSize: options.human
-        ? prettyBytes(size.toNumber())
+        ? prettyBytes(size.toNumber()).toUpperCase()
         : size
     }
   }

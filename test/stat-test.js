@@ -36,8 +36,8 @@ module.exports = (repo) => {
     it('get human stats', async () => {
       const { repoSize, storageMax } = await repo.stat()
 
-      const humanizedRepoSize = prettyBytes(repoSize.toNumber())
-      const humanizedStorageMax = prettyBytes(storageMax.toNumber())
+      const humanizedRepoSize = prettyBytes(repoSize.toNumber()).toUpperCase()
+      const humanizedStorageMax = prettyBytes(storageMax.toNumber()).toUpperCase()
 
       const humanizedStats = await repo.stat({ human: true })
 
