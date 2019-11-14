@@ -8,6 +8,7 @@ const path = require('path')
 const IPFSRepo = require('../')
 const Errors = require('../src/errors')
 const os = require('os')
+const bytes = require('bytes')
 
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
@@ -247,14 +248,17 @@ module.exports = (repo) => {
       })
 
       it('should return the max storage stat when set', async () => {
+        const maxStorage = '1GB'
+
         otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
         await otherRepo.init({})
         await otherRepo.open()
-        await otherRepo.config.set('Datastore.StorageMax', 100)
+        await otherRepo.config.set('Datastore.StorageMax', maxStorage)
 
         const stat = await otherRepo.stat({})
 
-        expect(stat.storageMax.toNumber()).to.equal(100)
+        expect(stat).to.have.property('storageMax')
+        expect(stat.storageMax.toNumber()).to.equal(bytes(maxStorage))
       })
 
       it('should throw unexpected errors when closing', async () => {
