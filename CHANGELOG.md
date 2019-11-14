@@ -1,3 +1,13 @@
+<a name="0.29.1"></a>
+## [0.29.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.29.0...v0.29.1) (2019-11-14)
+
+
+### Bug Fixes
+
+* human readable option ([#213](https://github.com/ipfs/js-ipfs-repo/issues/213)) ([bf0f170](https://github.com/ipfs/js-ipfs-repo/commit/bf0f170))
+
+
+
 <a name="0.29.0"></a>
 # [0.29.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.28.1...v0.29.0) (2019-11-06)
 
