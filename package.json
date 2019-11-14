@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.29.0",
+  "version": "0.29.1",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
@@ -98,6 +98,7 @@
     "Linus Unnebäck <linus@folkdatorn.se>",
     "Marcus Bernales <mboperator@gmail.com>",
     "Pau Ramon Revilla <masylum@gmail.com>",
+    "Pedro Santos <pedromiguelsousasantos@hotmail.com>",
     "Pedro Teixeira <i@pgte.me>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Richard Schneider <makaretu@gmail.com>",
