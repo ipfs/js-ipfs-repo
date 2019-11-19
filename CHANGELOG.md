@@ -1,3 +1,13 @@
+<a name="0.29.2"></a>
+## [0.29.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.29.1...v0.29.2) (2019-11-19)
+
+
+### Bug Fixes
+
+* close root datastore ([#214](https://github.com/ipfs/js-ipfs-repo/issues/214)) ([72bae9d](https://github.com/ipfs/js-ipfs-repo/commit/72bae9d))
+
+
+
 <a name="0.29.1"></a>
 ## [0.29.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.29.0...v0.29.1) (2019-11-14)
 
