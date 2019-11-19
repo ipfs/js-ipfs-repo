@@ -126,26 +126,34 @@ module.exports = (repo) => {
           constructor () {
             this.data = {}
           }
+
           async open () {}
+
           // eslint-disable-next-line require-await
           async put (key, val) {
             this.data[key.toString()] = val
           }
+
           async get (key) {
             const exists = await this.has(key)
             if (!exists) throw Errors.notFoundError()
             return this.data[key.toString()]
           }
+
           // eslint-disable-next-line require-await
           async has (key) {
             return this.data[key.toString()] !== undefined
           }
+
           // eslint-disable-next-line require-await
           async delete (key) {
             delete this.data[key.toString()]
           }
+
           batch () {}
+
           query (q) {}
+
           // eslint-disable-next-line require-await
           async close () {
             count++
