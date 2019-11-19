@@ -228,7 +228,7 @@ class IpfsRepo {
       }
     }
 
-    await Promise.all([this.blocks, this.keys, this.datastore].map((store) => store.close()))
+    await Promise.all([this.root, this.blocks, this.keys, this.datastore].map((store) => store.close()))
     log('unlocking')
     this.closed = true
     await this._closeLock()
