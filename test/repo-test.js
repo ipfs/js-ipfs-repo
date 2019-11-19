@@ -120,6 +120,52 @@ module.exports = (repo) => {
         expect.fail('Did not throw')
       })
 
+      it.only('should close all the datastores', async () => {
+        let count = 0
+        class FakeDatastore {
+          constructor () {
+            this.data = {}
+          }
+          async open () {}
+          // eslint-disable-next-line require-await
+          async put (key, val) {
+            this.data[key.toString()] = val
+          }
+          async get (key) {
+            const exists = await this.has(key)
+            if (!exists) throw Errors.notFoundError()
+            return this.data[key.toString()]
+          }
+          // eslint-disable-next-line require-await
+          async has (key) {
+            return this.data[key.toString()] !== undefined
+          }
+          // eslint-disable-next-line require-await
+          async delete (key) {
+            delete this.data[key.toString()]
+          }
+          batch () {}
+          query (q) {}
+          // eslint-disable-next-line require-await
+          async close () {
+            count++
+          }
+        }
+        const repo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()), {
+          lock: 'memory',
+          storageBackends: {
+            root: FakeDatastore,
+            blocks: FakeDatastore,
+            keys: FakeDatastore,
+            datastore: FakeDatastore
+          }
+        })
+        await repo.init({})
+        await repo.open()
+        await repo.close()
+        expect(count).to.be.eq(4)
+      })
+
       it('open twice throws error', async () => {
         await repo.open()
         try {
