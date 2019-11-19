@@ -120,7 +120,7 @@ module.exports = (repo) => {
         expect.fail('Did not throw')
       })
 
-      it.only('should close all the datastores', async () => {
+      it('should close all the datastores', async () => {
         let count = 0
         class FakeDatastore {
           constructor () {
