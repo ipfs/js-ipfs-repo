@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.29.1",
+  "version": "0.29.2",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
@@ -87,8 +87,8 @@
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
     "Greenkeeper <support@greenkeeper.io>",
     "Henrique Dias <hacdias@gmail.com>",
-    "Hugo Dias <mail@hugodias.me>",
     "Hugo Dias <hugomrdias@gmail.com>",
+    "Hugo Dias <mail@hugodias.me>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jacob Heun <jake@andyet.net>",
     "Jonah Weissman <jonahrweissman@gmail.com>",
