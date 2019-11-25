@@ -65,32 +65,9 @@ describe('custom options tests', () => {
 function noop () {}
 
 function expectedRepoOptions () {
-  const options = {
-    lock: process.browser ? 'memory' : 'fs',
-    storageBackends: {
-      // packages are exchanged to browser-compatible
-      // equivalents via package.browser
-      root: require('datastore-fs'),
-      blocks: require('datastore-fs'),
-      keys: require('datastore-fs'),
-      datastore: require('datastore-level')
-    },
-    storageBackendOptions: {
-      root: {
-        extension: ''
-      },
-      keys: {},
-      blocks: {
-        sharding: true,
-        extension: '.data'
-      }
-    }
+  if (process.browser) {
+    return require('../src/default-options-browser')
   }
 
-  if (process.browser) {
-    options.storageBackendOptions.keys.sharding = false
-    delete options.storageBackendOptions.blocks.extension
-    options.storageBackendOptions.blocks.sharding = false
-  }
-  return options
+  return require('../src/default-options')
 }
