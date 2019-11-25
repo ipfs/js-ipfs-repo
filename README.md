@@ -269,11 +269,9 @@ Sets the API address.
 
 * `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
 
-### `Promise<Object> repo.stat ([options])`
+### `Promise<Object> repo.stat ()`
 
 Gets the repo status.
-
-`options` is an object which might contain the key `human`, which is a boolean indicating whether or not the `repoSize` should be displayed in MiB or not.
 
 Returned promise resolves to an `Object` with the following keys:
 
@@ -322,7 +320,7 @@ Returned promise resolves to a `boolean` indicating the existence of the lock.
 
 ### Migrations
 
-When there is a new repo migration and the version of repo is increased, don't 
+When there is a new repo migration and the version of repo is increased, don't
 forget to propagate the changes into the test repo (`test/test-repo`).
 
 **For tools that run mainly in the browser environment, be aware that disabling automatic
