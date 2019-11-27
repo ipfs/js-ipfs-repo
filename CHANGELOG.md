@@ -1,3 +1,13 @@
+<a name="0.30.0"></a>
+# [0.30.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.29.2...v0.30.0) (2019-11-27)
+
+
+### Features
+
+* remove options object from stat method ([#216](https://github.com/ipfs/js-ipfs-repo/issues/216)) ([0fb521c](https://github.com/ipfs/js-ipfs-repo/commit/0fb521c))
+
+
+
 <a name="0.29.2"></a>
 ## [0.29.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.29.1...v0.29.2) (2019-11-19)
 
