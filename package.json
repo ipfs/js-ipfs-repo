@@ -2,7 +2,7 @@
   "name": "ipfs-repo",
   "version": "0.30.0",
   "description": "IPFS Repo implementation",
-  "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
+  "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
   "files": [
     "src",
