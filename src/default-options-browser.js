@@ -11,13 +11,24 @@ module.exports = {
   },
   storageBackendOptions: {
     root: {
-      extension: ''
+      extension: '',
+      prefix: '',
+      version: 2
     },
     blocks: {
-      sharding: false
+      sharding: false,
+      prefix: '',
+      version: 2
     },
     keys: {
-      sharding: false
+      sharding: false,
+      prefix: '',
+      version: 2
+    },
+    datastore: {
+      sharding: false,
+      prefix: '',
+      version: 2
     }
   }
 }
