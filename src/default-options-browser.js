@@ -24,6 +24,11 @@ module.exports = {
       sharding: false,
       prefix: '',
       version: 2
+    },
+    datastore: {
+      sharding: false,
+      prefix: '',
+      version: 2
     }
   }
 }
