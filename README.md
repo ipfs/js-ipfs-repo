@@ -16,7 +16,7 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 
 ## Lead Maintainer
 
-[Jacob Heun](https://github.com/jacobheun)
+[Alex Potsides](https://github.com/achingbrain)
 
 ## Table of Contents
 
