@@ -1,3 +1,13 @@
+<a name="0.28.2"></a>
+## [0.28.2](https://github.com/ipfs/js-ipfs-repo/compare/v0.28.1...v0.28.2) (2019-11-29)
+
+
+### Bug Fixes
+
+* pass backwards-compatible level-js options ([#215](https://github.com/ipfs/js-ipfs-repo/issues/215)) ([4bc4e8a](https://github.com/ipfs/js-ipfs-repo/commit/4bc4e8a))
+
+
+
 <a name="0.28.1"></a>
 ## [0.28.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.28.0...v0.28.1) (2019-10-29)
 
