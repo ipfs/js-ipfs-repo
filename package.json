@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.30.0",
+  "version": "0.30.1",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
