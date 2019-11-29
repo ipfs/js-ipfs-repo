@@ -7,7 +7,6 @@ const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
-const prettyBytes = require('pretty-bytes')
 const bytes = require('bytes')
 
 const constants = require('./constants')
@@ -247,12 +246,9 @@ class IpfsRepo {
   /**
    * Get repo status.
    *
-   * @param {Object}  options
-   * @param {Boolean} options.human
-   * @return {Object}
+   * @returns {Object}
    */
-  async stat (options) {
-    options = Object.assign({}, { human: false }, options)
+  async stat () {
     const [storageMax, blocks, version, datastore, keys] = await Promise.all([
       this._storageMaxStat(),
       this._blockStat(),
@@ -266,16 +262,10 @@ class IpfsRepo {
 
     return {
       repoPath: this.path,
-      storageMax: options.human
-        ? prettyBytes(storageMax.toNumber()).toUpperCase()
-        : storageMax,
+      storageMax,
       version: version,
-      numObjects: options.human
-        ? blocks.count.toNumber()
-        : blocks.count,
-      repoSize: options.human
-        ? prettyBytes(size.toNumber()).toUpperCase()
-        : size
+      numObjects: blocks.count,
+      repoSize: size
     }
   }
 
