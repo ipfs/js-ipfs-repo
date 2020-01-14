@@ -7,7 +7,8 @@ module.exports = {
     root: require('datastore-fs'),
     blocks: require('datastore-fs'),
     keys: require('datastore-fs'),
-    datastore: require('datastore-level')
+    datastore: require('datastore-level'),
+    pins: require('datastore-level')
   },
   storageBackendOptions: {
     root: {

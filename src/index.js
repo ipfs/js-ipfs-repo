@@ -32,7 +32,6 @@ const lockers = {
 
 /**
  * IpfsRepo implements all required functionality to read and write to an ipfs repo.
- *
  */
 class IpfsRepo {
   /**
@@ -118,6 +117,8 @@ class IpfsRepo {
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
       log('creating keystore')
       this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
+      log('creating pins')
+      this.pins = backends.create('pins', path.join(this.path, 'pins'), this.options)
 
       const isCompatible = await this.version.check(constants.repoVersion)
       if (!isCompatible) {
@@ -251,7 +252,7 @@ class IpfsRepo {
       }
     }
 
-    await Promise.all([this.root, this.blocks, this.keys, this.datastore].map((store) => store.close()))
+    await Promise.all([this.root, this.blocks, this.keys, this.datastore, this.pins].map((store) => store.close()))
     log('unlocking')
     this.closed = true
     await this._closeLock()
