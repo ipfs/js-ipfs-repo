@@ -70,6 +70,22 @@ class IpfsRepo {
   }
 
   /**
+   * Check if the repo is already initialized.
+   * @returns {Promise<Boolean>}
+   */
+  async isInitialized () {
+    try {
+      await this._openRoot()
+      await this._checkInitialized()
+      // necessary? await this.root.close()
+
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  /**
    * Open the repo. If the repo is already open an error will be thrown.
    * If the repo is not initialized it will throw an error.
    *

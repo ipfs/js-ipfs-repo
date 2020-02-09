@@ -38,4 +38,5 @@ describe('IPFS Repo Tests on the Browser', () => {
   require('./config-test')(repo)
   require('./api-addr-test')(repo)
   require('./lock-test')(repo)
+  require('./is-initialized')
 })

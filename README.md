@@ -183,6 +183,10 @@ Get a value at the root of the repo.
 
 [Blocks](https://github.com/ipfs/js-ipfs-block#readme):
 
+#### `Promise<Boolean> repo.isInitialized ()`
+
+The returned promise resolves to `false` if the repo has not been initialized and `true` if it has.
+
 #### `Promise repo.blocks.put (block:Block)`
 
 * `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
