@@ -25,4 +25,17 @@ describe('isInitialized', () => {
     await repo.init({})
     expect(await repo.isInitialized()).to.be.true()
   })
+
+  it('should be true after initialization and opening', async () => {
+    await repo.init({})
+    await repo.open()
+    expect(await repo.isInitialized()).to.be.true()
+  })
+
+  it('should be true after initialization, opening and closing', async () => {
+    await repo.init({})
+    await repo.open()
+    await repo.close()
+    expect(await repo.isInitialized()).to.be.true()
+  })
 })
