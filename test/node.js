@@ -113,6 +113,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     if (!r.init) {
       require('./interop-test')(repo)
     }
+    require('./is-initialized')
   }))
 
   require('./blockstore-utils-test')()
