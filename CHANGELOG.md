@@ -1,3 +1,17 @@
+# [1.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.30.1...v1.0.0) (2020-02-10)
+
+
+### Bug Fixes
+
+* close root datastore after initialized check ([65f60d3](https://github.com/ipfs/js-ipfs-repo/commit/65f60d387aeee63d4787c91483d9ef0b02a31f9d))
+
+
+### Features
+
+* add isInitialized method ([0c016c5](https://github.com/ipfs/js-ipfs-repo/commit/0c016c5591b572f4ba86f861fcbbfb47dc5cb21e))
+
+
+
 <a name="0.30.1"></a>
 ## [0.30.1](https://github.com/ipfs/js-ipfs-repo/compare/v0.30.0...v0.30.1) (2019-11-29)
 
