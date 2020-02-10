@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "0.30.1",
+  "version": "1.0.0",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -78,7 +78,6 @@
   "contributors": [
     "Adam Uhlíř <adam@uhlir.dev>",
     "Alan Shaw <alan.shaw@protocol.ai>",
-    "Alex Potsides <alex@achingbrain.net>",
     "Brian Hoffman <hoffmabc@users.noreply.github.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
@@ -107,6 +106,7 @@
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Vasco Santos <vasco.santos@ua.pt>",
     "Volker Mische <volker.mische@gmail.com>",
+    "achingbrain <alex@achingbrain.net>",
     "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>",
     "nginnever <ginneversource@gmail.com>",
     "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>",
