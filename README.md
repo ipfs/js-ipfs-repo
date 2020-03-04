@@ -10,9 +10,9 @@
 ![](https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
 
-> Implementation of the IPFS repo spec (https://github.com/ipfs/specs/tree/master/repo) in JavaScript
+> Implementation of the IPFS repo spec (https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript
 
-This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/tree/master/repo) in JavaScript.
+This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript.
 
 ## Lead Maintainer
 
