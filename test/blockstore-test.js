@@ -13,7 +13,7 @@ const _ = require('lodash')
 const multihashing = require('multihashing-async')
 const Key = require('interface-datastore').Key
 const tempDir = require('ipfs-utils/src/temp-dir')
-const base32 = require('base32.js')
+const multibase = require('multibase')
 const IPFSRepo = require('../')
 
 module.exports = (repo) => {
@@ -214,8 +214,7 @@ module.exports = (repo) => {
         const data = Buffer.from(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
-        const enc = new base32.Encoder()
-        const key = new Key('/' + enc.write(cid.buffer).finalize(), false)
+        const key = new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1), false)
 
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {

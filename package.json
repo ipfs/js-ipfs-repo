@@ -55,7 +55,6 @@
     "sinon": "^9.0.1"
   },
   "dependencies": {
-    "base32.js": "~0.1.0",
     "bignumber.js": "^9.0.0",
     "buffer": "^5.5.0",
     "bytes": "^3.1.0",
@@ -72,7 +71,7 @@
     "ipld-block": "^0.9.1",
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
-    "lodash.has": "^4.5.2",
+    "multibase": "^0.7.0",
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0"
