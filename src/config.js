@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const { default: Queue } = require('p-queue')
 const _get = require('just-safe-get')

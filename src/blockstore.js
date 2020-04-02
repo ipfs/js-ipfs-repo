@@ -2,7 +2,7 @@
 
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const errcode = require('err-code')
 const { cidToKey } = require('./blockstore-utils')

@@ -2,16 +2,17 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const assert = chai.assert
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 const _ = require('lodash')
 const multihashing = require('multihashing-async')
-const path = require('path')
 const Key = require('interface-datastore').Key
+const tempDir = require('ipfs-utils/src/temp-dir')
 const base32 = require('base32.js')
 const IPFSRepo = require('../')
 
@@ -79,9 +80,12 @@ module.exports = (repo) => {
         const cid = new CID(hash)
         let putInvoked = false
         let commitInvoked = false
-        otherRepo = new IPFSRepo(path.join(path.basename(repo.path), '/repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             blocks: class ExplodingBlockStore {
+              open () {
+              }
+
               close () {
 
               }
@@ -213,9 +217,10 @@ module.exports = (repo) => {
         const enc = new base32.Encoder()
         const key = new Key('/' + enc.write(cid.buffer).finalize(), false)
 
-        otherRepo = new IPFSRepo(path.join(path.basename(repo.path), '/repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             blocks: class ExplodingBlockStore {
+              open () {}
               close () {
 
               }

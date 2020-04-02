@@ -1,5 +1,5 @@
 
-ìcäc# IPFS Repo JavaScript Implementation
+ï¿½cï¿½c# IPFS Repo JavaScript Implementation
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
@@ -191,17 +191,17 @@ Get a value at the root of the repo.
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 * `callback` is a callback function `function (err, result:Buffer)`
 
-[Blocks](https://github.com/ipfs/js-ipfs-block#readme):
+[Blocks](https://github.com/ipfs/js-ipld-block#readme):
 
 #### `repo.blocks.put (block:Block, callback)`
 
-* `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+* `block` should be of type [Block](https://github.com/ipfs/js-ipld-block#readme).
 
 #### `repo.blocks.putMany (blocks, callback)`
 
 Put many blocks.
 
-* `block` should be an array of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+* `block` should be an array of type [Block](https://github.com/ipfs/js-ipld-block#readme).
 
 #### `repo.blocks.get (cid, callback)`
 
@@ -305,4 +305,4 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 ## License
 
 [MIT](LICENSE)
-äc
+ï¿½c
