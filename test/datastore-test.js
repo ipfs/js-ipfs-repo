@@ -6,12 +6,12 @@ const { Buffer } = require('buffer')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const _ = require('lodash')
+const range = require('just-range')
 const Key = require('interface-datastore').Key
 
 module.exports = (repo) => {
   describe('datastore', () => {
-    const dataList = _.range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
+    const dataList = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
     const data = Buffer.from('hello world')
     const b = new Key('hello')
 
@@ -26,7 +26,7 @@ module.exports = (repo) => {
 
       it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        await Promise.all(_.range(100).map((i) => {
+        await Promise.all(range(100).map((i) => {
           return repo.datastore.put(new Key('hello' + i), dataList[i])
         }))
       })
@@ -40,7 +40,7 @@ module.exports = (repo) => {
 
       it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        await Promise.all(_.range(20 * 100).map(async (i) => {
+        await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % dataList.length
           const val = await repo.datastore.get(new Key('hello' + j))
           expect(val).to.be.eql(dataList[j])

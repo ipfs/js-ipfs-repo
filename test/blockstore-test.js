@@ -9,7 +9,7 @@ const expect = chai.expect
 const assert = chai.assert
 const Block = require('ipld-block')
 const CID = require('cids')
-const _ = require('lodash')
+const range = require('just-range')
 const multihashing = require('multihashing-async')
 const Key = require('interface-datastore').Key
 const tempDir = require('ipfs-utils/src/temp-dir')
@@ -18,7 +18,7 @@ const IPFSRepo = require('../')
 
 module.exports = (repo) => {
   describe('blockstore', () => {
-    const blockData = _.range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
+    const blockData = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
     const bData = Buffer.from('hello world')
     let b
 
@@ -53,8 +53,8 @@ module.exports = (repo) => {
 
       it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        const hashes = await Promise.all(_.range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
-        await Promise.all(_.range(100).map((i) => {
+        const hashes = await Promise.all(range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
+        await Promise.all(range(100).map((i) => {
           const block = new Block(blockData[i], new CID(hashes[i]))
           return repo.blocks.put(block)
         }))
@@ -62,7 +62,7 @@ module.exports = (repo) => {
 
       it('.putMany', async function () {
         this.timeout(15000) // add time for ci
-        const blocks = await Promise.all(_.range(50).map(async (i) => {
+        const blocks = await Promise.all(range(50).map(async (i) => {
           const d = Buffer.from('many' + Math.random())
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
@@ -151,7 +151,7 @@ module.exports = (repo) => {
 
       it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        await Promise.all(_.range(20 * 100).map(async (i) => {
+        await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % blockData.length
           const hash = await multihashing(blockData[j], 'sha2-256')
           const block = await repo.blocks.get(new CID(hash))
