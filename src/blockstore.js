@@ -59,7 +59,7 @@ function createBaseStore (store) {
           }
 
           const otherKey = cidToKey(otherCid)
-          console.log('get -> otherKey', otherKey)
+          console.log('get -> otherKey', otherKey.toString())
           const blockData = await store.get(otherKey)
           await store.put(key, blockData)
           return new Block(blockData, cid)
