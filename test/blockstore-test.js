@@ -11,9 +11,8 @@ const Block = require('ipld-block')
 const CID = require('cids')
 const range = require('just-range')
 const multihashing = require('multihashing-async')
-const Key = require('interface-datastore').Key
 const tempDir = require('ipfs-utils/src/temp-dir')
-const multibase = require('multibase')
+const { cidToKey } = require('../src/blockstore-utils')
 const IPFSRepo = require('../')
 
 module.exports = (repo) => {
@@ -214,7 +213,7 @@ module.exports = (repo) => {
         const data = Buffer.from(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
-        const key = new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1), false)
+        const key = cidToKey(cid)
 
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {

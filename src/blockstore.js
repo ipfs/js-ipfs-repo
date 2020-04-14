@@ -40,18 +40,15 @@ function createBaseStore (store) {
      * @returns {Promise<Block>}
      */
     async get (cid) {
-      console.log('get -> cid', cid)
       if (!CID.isCID(cid)) {
         throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
       }
       const key = cidToKey(cid)
-      console.log('get -> key', key.toString())
       let blockData
       try {
         blockData = await store.get(key)
         return new Block(blockData, cid)
       } catch (err) {
-        console.log('get -> error', err)
         if (err.code === 'ERR_NOT_FOUND') {
           const otherCid = cidToOtherVersion(cid)
 
@@ -60,7 +57,6 @@ function createBaseStore (store) {
           }
 
           const otherKey = cidToKey(otherCid)
-          console.log('get -> otherKey', otherKey.toString())
           const blockData = await store.get(otherKey)
           await store.put(key, blockData)
           return new Block(blockData, cid)
