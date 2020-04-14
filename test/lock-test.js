@@ -23,7 +23,7 @@ module.exports = (repo) => {
         await repoClone.open()
       } catch (err) {
         expect(err.code)
-          .to.be.eq(LockExistsError.code)
+          .to.equal(LockExistsError.code)
       }
     })
   })
