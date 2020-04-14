@@ -51,6 +51,7 @@ function createBaseStore (store) {
         blockData = await store.get(key)
         return new Block(blockData, cid)
       } catch (err) {
+        console.log('get -> err', err)
         if (err.code === 'ERR_NOT_FOUND') {
           const otherCid = cidToOtherVersion(cid)
 

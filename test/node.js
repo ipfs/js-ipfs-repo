@@ -96,6 +96,7 @@ describe('IPFS Repo Tests onNode.js', () => {
         await asyncNcp(testRepoPath, repoPath)
       }
       await repo.open()
+      console.log('repooooooooooo', fs.existsSync(path.join(repoPath, 'blocks', 'R3')))
     })
 
     after(async () => {
