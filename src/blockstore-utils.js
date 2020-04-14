@@ -11,7 +11,7 @@ const multibase = require('multibase')
  * @returns {Key}
  */
 exports.cidToKey = cid => {
-  return new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1), false)
+  return new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1).toUpperCase(), false)
 }
 
 /**
@@ -21,5 +21,5 @@ exports.cidToKey = cid => {
  * @returns {CID}
  */
 exports.keyToCid = key => {
-  return new CID(multibase.decode('b' + key.toString().slice(1)))
+  return new CID(multibase.decode('b' + key.toString().slice(1).toLowerCase()))
 }
