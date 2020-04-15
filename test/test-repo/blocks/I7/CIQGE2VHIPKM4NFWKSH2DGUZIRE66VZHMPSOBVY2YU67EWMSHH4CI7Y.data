@@ -1,5 +1,5 @@
 
-ï¿½ï¿½{
+àØ{
   "name": "ipfs-repo",
   "version": "0.14.0",
   "description": "IPFS Repo implementation",
@@ -62,7 +62,7 @@
     "datastore-level": "^0.4.2",
     "debug": "^2.6.8",
     "interface-datastore": "^0.2.2",
-    "ipld-block": "~0.6.0",
+    "ipfs-block": "~0.6.0",
     "level-js": "timkuijsten/level.js#idbunwrapper",
     "leveldown": "^1.7.2",
     "lock-me": "^1.0.2",
@@ -90,4 +90,4 @@
     "npmcdn-to-unpkg-bot <npmcdn-to-unpkg-bot@users.noreply.github.com>"
   ]
 }
-ï¿½
+Ø

@@ -27,7 +27,7 @@ module.exports = (repo) => {
 
       const values = await Promise.all(cids.map((cid) => repo.blocks.get(cid)))
       expect(values.length).to.equal(2)
-      expect(values.map((value) => value.data.length)).to.eql([2665, 12789])
+      expect(values.map((value) => value.data.length)).to.eql([2659, 12783])
     })
 
     it('reads pin set from the datastore', async () => {
