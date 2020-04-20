@@ -1,3 +1,13 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.1...v2.0.0) (2020-04-20)
+
+
+### Features
+
+* use new datastore-idb ([#225](https://github.com/ipfs/js-ipfs-repo/issues/225)) ([99df42b](https://github.com/ipfs/js-ipfs-repo/commit/99df42b))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.0...v1.0.1) (2020-03-30)
 
