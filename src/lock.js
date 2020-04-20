@@ -1,5 +1,6 @@
 'use strict'
 
+const { LockExistsError } = require('./errors')
 const path = require('path')
 const debug = require('debug')
 const { lock } = require('proper-lockfile')
@@ -27,7 +28,16 @@ const STALE_TIME = 20000
 exports.lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
-  const release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+  let release
+  try {
+    release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+  } catch (err) {
+    if (err.code === 'ELOCKED') {
+      throw new LockExistsError(`Lock already being held for file: ${file}`)
+    } else {
+      throw err
+    }
+  }
   return {
     close: async () => { // eslint-disable-line require-await
       release()

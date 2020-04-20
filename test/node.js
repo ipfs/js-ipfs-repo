@@ -7,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const promisify = require('util').promisify
 const os = require('os')
+const { LockExistsError } = require('../src/errors')
 
 const chai = require('chai')
 chai.use(require('dirty-chai'))
@@ -35,7 +36,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     lock: async (dir) => {
       const isLocked = await customLock.locked(dir)
       if (isLocked) {
-        throw new Error('already locked')
+        throw new LockExistsError('already locked')
       }
       const lockPath = path.join(dir, customLock.lockName)
       fs.writeFileSync(lockPath, '')

@@ -2,22 +2,22 @@
 /* eslint-env mocha */
 'use strict'
 
+const { Buffer } = require('buffer')
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const assert = chai.assert
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
-const _ = require('lodash')
+const range = require('just-range')
 const multihashing = require('multihashing-async')
-const path = require('path')
-const Key = require('interface-datastore').Key
-const base32 = require('base32.js')
+const tempDir = require('ipfs-utils/src/temp-dir')
+const { cidToKey } = require('../src/blockstore-utils')
 const IPFSRepo = require('../')
 
 module.exports = (repo) => {
   describe('blockstore', () => {
-    const blockData = _.range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
+    const blockData = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
     const bData = Buffer.from('hello world')
     let b
 
@@ -52,8 +52,8 @@ module.exports = (repo) => {
 
       it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        const hashes = await Promise.all(_.range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
-        await Promise.all(_.range(100).map((i) => {
+        const hashes = await Promise.all(range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
+        await Promise.all(range(100).map((i) => {
           const block = new Block(blockData[i], new CID(hashes[i]))
           return repo.blocks.put(block)
         }))
@@ -61,7 +61,7 @@ module.exports = (repo) => {
 
       it('.putMany', async function () {
         this.timeout(15000) // add time for ci
-        const blocks = await Promise.all(_.range(50).map(async (i) => {
+        const blocks = await Promise.all(range(50).map(async (i) => {
           const d = Buffer.from('many' + Math.random())
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
@@ -79,9 +79,12 @@ module.exports = (repo) => {
         const cid = new CID(hash)
         let putInvoked = false
         let commitInvoked = false
-        otherRepo = new IPFSRepo(path.join(path.basename(repo.path), '/repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             blocks: class ExplodingBlockStore {
+              open () {
+              }
+
               close () {
 
               }
@@ -147,7 +150,7 @@ module.exports = (repo) => {
 
       it('massive read', async function () {
         this.timeout(15000) // add time for ci
-        await Promise.all(_.range(20 * 100).map(async (i) => {
+        await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % blockData.length
           const hash = await multihashing(blockData[j], 'sha2-256')
           const block = await repo.blocks.get(new CID(hash))
@@ -210,12 +213,12 @@ module.exports = (repo) => {
         const data = Buffer.from(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
-        const enc = new base32.Encoder()
-        const key = new Key('/' + enc.write(cid.buffer).finalize(), false)
+        const key = cidToKey(cid)
 
-        otherRepo = new IPFSRepo(path.join(path.basename(repo.path), '/repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             blocks: class ExplodingBlockStore {
+              open () {}
               close () {
 
               }

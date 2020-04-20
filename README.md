@@ -181,7 +181,7 @@ Get a value at the root of the repo.
 
 * `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
 
-[Blocks](https://github.com/ipfs/js-ipfs-block#readme):
+[Blocks](https://github.com/ipfs/js-ipld-block#readme):
 
 #### `Promise<Boolean> repo.isInitialized ()`
 
@@ -189,13 +189,13 @@ The returned promise resolves to `false` if the repo has not been initialized an
 
 #### `Promise repo.blocks.put (block:Block)`
 
-* `block` should be of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+* `block` should be of type [Block](https://github.com/ipfs/js-ipld-block#readme).
 
 #### `Promise repo.blocks.putMany (blocks)`
 
 Put many blocks.
 
-* `block` should be an Iterable or AsyncIterable that yields entries of type [Block](https://github.com/ipfs/js-ipfs-block#readme).
+* `block` should be an Iterable or AsyncIterable that yields entries of type [Block](https://github.com/ipfs/js-ipld-block#readme).
 
 #### `Promise<Buffer> repo.blocks.get (cid)`
 

@@ -1,13 +1,12 @@
 'use strict'
 
 const _get = require('just-safe-get')
-const assert = require('assert')
-const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
+const pathJoin = require('ipfs-utils/src/path-join')
 
 const constants = require('./constants')
 const backends = require('./backends')
@@ -40,7 +39,9 @@ class IpfsRepo {
    * @param {object} options - Configuration
    */
   constructor (repoPath, options) {
-    assert.strictEqual(typeof repoPath, 'string', 'missing repoPath')
+    if (typeof repoPath !== 'string') {
+      throw new Error('missing repoPath')
+    }
 
     this.options = buildOptions(options)
     this.closed = true
@@ -112,13 +113,15 @@ class IpfsRepo {
       this.lockfile = await this._openLock(this.path)
       log('acquired repo.lock')
       log('creating datastore')
-      this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
+      this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
+      await this.datastore.open()
       log('creating blocks')
-      const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
+      const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
+      await blocksBaseStore.open()
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
       log('creating keystore')
-      this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
-
+      this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
+      await this.keys.open()
       const isCompatible = await this.version.check(constants.repoVersion)
       if (!isCompatible) {
         if (await this._isAutoMigrationEnabled()) {
@@ -152,11 +155,15 @@ class IpfsRepo {
    */
   _getLocker () {
     if (typeof this.options.lock === 'string') {
-      assert(lockers[this.options.lock], 'Unknown lock type: ' + this.options.lock)
+      if (!lockers[this.options.lock]) {
+        throw new Error('Unknown lock type: ' + this.options.lock)
+      }
       return lockers[this.options.lock]
     }
 
-    assert(this.options.lock, 'No lock provided')
+    if (!this.options.lock) {
+      throw new Error('No lock provided')
+    }
     return this.options.lock
   }
 
@@ -251,7 +258,13 @@ class IpfsRepo {
       }
     }
 
-    await Promise.all([this.root, this.blocks, this.keys, this.datastore].map((store) => store.close()))
+    await Promise.all([
+      this.root,
+      this.blocks,
+      this.keys,
+      this.datastore
+    ].map((store) => store.close()))
+
     log('unlocking')
     this.closed = true
     await this._closeLock()

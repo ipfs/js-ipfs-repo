@@ -4,7 +4,7 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const Block = require('ipfs-block')
+const Block = require('ipld-block')
 const CID = require('cids')
 
 module.exports = (repo) => {

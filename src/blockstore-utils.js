@@ -1,8 +1,8 @@
 'use strict'
 
-const base32 = require('base32.js')
 const { Key } = require('interface-datastore')
 const CID = require('cids')
+const multibase = require('multibase')
 
 /**
  * Transform a cid to the appropriate datastore key.
@@ -11,8 +11,7 @@ const CID = require('cids')
  * @returns {Key}
  */
 exports.cidToKey = cid => {
-  const enc = new base32.Encoder()
-  return new Key('/' + enc.write(cid.buffer).finalize(), false)
+  return new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1).toUpperCase(), false)
 }
 
 /**
@@ -22,8 +21,5 @@ exports.cidToKey = cid => {
  * @returns {CID}
  */
 exports.keyToCid = key => {
-  // Block key is of the form /<base32 encoded string>
-  const decoder = new base32.Decoder()
-  const buff = decoder.write(key.toString().slice(1)).finalize()
-  return new CID(Buffer.from(buff))
+  return new CID(multibase.decode('b' + key.toString().slice(1).toLowerCase()))
 }

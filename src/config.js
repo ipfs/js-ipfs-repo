@@ -1,10 +1,10 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const { default: Queue } = require('p-queue')
 const _get = require('just-safe-get')
 const _set = require('just-safe-set')
-const _has = require('lodash.has')
 const errcode = require('err-code')
 const errors = require('./errors')
 
@@ -27,7 +27,7 @@ module.exports = (store) => {
 
       const encodedValue = await store.get(configKey)
       const config = JSON.parse(encodedValue.toString())
-      if (key !== undefined && !_has(config, key)) {
+      if (key !== undefined && _get(config, key) === undefined) {
         throw new errors.NotFoundError(`Key ${key} does not exist in config`)
       }
 

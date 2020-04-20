@@ -4,7 +4,8 @@
 const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
-const path = require('path')
+const tempDir = require('ipfs-utils/src/temp-dir')
+const { isNode } = require('ipfs-utils/src/env')
 const rimraf = require('rimraf')
 if (!rimraf.sync) {
   // browser
@@ -13,7 +14,7 @@ if (!rimraf.sync) {
 const Repo = require('../')
 
 describe('custom options tests', () => {
-  const repoPath = path.join(__dirname, 'slash', 'path')
+  const repoPath = tempDir()
   after(() => {
     rimraf.sync(repoPath)
   })
@@ -65,9 +66,8 @@ describe('custom options tests', () => {
 function noop () {}
 
 function expectedRepoOptions () {
-  if (process.browser) {
-    return require('../src/default-options-browser')
+  if (isNode) {
+    return require('../src/default-options')
   }
-
-  return require('../src/default-options')
+  return require('../src/default-options-browser')
 }
