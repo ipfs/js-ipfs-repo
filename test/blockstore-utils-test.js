@@ -1,9 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const { expect } = chai
+const { expect } = require('./utils/chai')
 const { Key } = require('interface-datastore')
 const CID = require('cids')
 const Repo = require('../src')
