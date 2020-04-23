@@ -2,9 +2,7 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
+const { expect } = require('./utils/chai')
 const apiAddr = require('../src/api-addr')
 
 module.exports = () => {

@@ -3,10 +3,7 @@
 'use strict'
 
 const { Buffer } = require('buffer')
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
-const assert = chai.assert
+const { expect } = require('./utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
 const range = require('just-range')
@@ -124,13 +121,8 @@ module.exports = (repo) => {
         expect(commitInvoked).to.be.true()
       })
 
-      it('returns an error on invalid block', async () => {
-        try {
-          await repo.blocks.put('hello')
-          assert.fail()
-        } catch (err) {
-          expect(err).to.exist()
-        }
+      it('returns an error on invalid block', () => {
+        return expect(repo.blocks.put('hello')).to.eventually.be.rejected()
       })
     })
 
@@ -158,14 +150,8 @@ module.exports = (repo) => {
         }))
       })
 
-      it('returns an error on invalid block', async () => {
-        try {
-          await repo.blocks.get('woot')
-        } catch (err) {
-          expect(err).to.exist()
-          return
-        }
-        assert.fail()
+      it('returns an error on invalid block', () => {
+        return expect(repo.blocks.get('woot')).to.eventually.be.rejected()
       })
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
@@ -187,13 +173,8 @@ module.exports = (repo) => {
         expect(block.data).to.eql(data)
       })
 
-      it('throws when passed an invalid cid', async () => {
-        try {
-          await repo.blocks.get('foo')
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
-        }
+      it('throws when passed an invalid cid', () => {
+        return expect(repo.blocks.get('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
@@ -201,11 +182,7 @@ module.exports = (repo) => {
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-cbor', hash)
 
-        try {
-          await repo.blocks.get(cid)
-        } catch (err) {
-          expect(err.code).to.equal('ERR_NOT_FOUND')
-        }
+        await expect(repo.blocks.get(cid)).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
       })
 
       it('throws unknown error encountered when getting a block', async () => {
@@ -279,13 +256,8 @@ module.exports = (repo) => {
         expect(exists).to.eql(true)
       })
 
-      it('throws when passed an invalid cid', async () => {
-        try {
-          await repo.blocks.has('foo')
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
-        }
+      it('throws when passed an invalid cid', () => {
+        return expect(repo.blocks.has('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
 
       it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
@@ -305,13 +277,8 @@ module.exports = (repo) => {
         expect(exists).to.equal(false)
       })
 
-      it('throws when passed an invalid cid', async () => {
-        try {
-          await repo.blocks.delete('foo')
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_CID')
-        }
+      it('throws when passed an invalid cid', () => {
+        return expect(repo.blocks.delete('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
     })
   })

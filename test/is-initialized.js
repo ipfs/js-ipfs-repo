@@ -2,10 +2,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
+const { expect } = require('./utils/chai')
 const tempDir = require('ipfs-utils/src/temp-dir')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
 const IPFSRepo = require('../src')
 
 describe('isInitialized', () => {
