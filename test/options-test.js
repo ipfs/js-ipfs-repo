@@ -1,9 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
+const { expect } = require('./utils/chai')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const { isNode } = require('ipfs-utils/src/env')
 const rimraf = require('rimraf')

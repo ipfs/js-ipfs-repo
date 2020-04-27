@@ -1,9 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
+const { expect } = require('./utils/chai')
 const mh = require('multihashes')
 const CID = require('cids')
 const Key = require('interface-datastore').Key

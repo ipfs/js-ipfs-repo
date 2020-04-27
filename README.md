@@ -1,4 +1,4 @@
-# IPFS Repo JavaScript Implementation
+# IPFS Repo JavaScript Implementation <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
@@ -14,11 +14,11 @@
 
 This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript.
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
 [Alex Potsides](https://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
 - [Install](#install)
@@ -28,7 +28,40 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
   - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
 - [API](#api)
+  - [Setup](#setup)
+    - [`new Repo(path[, options])`](#new-repopath-options)
+    - [`Promise repo.init ()`](#promise-repoinit-)
+    - [`Promise repo.open ()`](#promise-repoopen-)
+    - [`Promise repo.close ()`](#promise-repoclose-)
+    - [`Promise<boolean> repo.exists ()`](#promiseboolean-repoexists-)
+  - [Repos](#repos)
+    - [`Promise repo.put (key, value:Buffer)`](#promise-repoput-key-valuebuffer)
+    - [`Promise<Buffer> repo.get (key)`](#promisebuffer-repoget-key)
+    - [`Promise<Boolean> repo.isInitialized ()`](#promiseboolean-repoisinitialized-)
+    - [`Promise repo.blocks.put (block:Block)`](#promise-repoblocksput-blockblock)
+    - [`Promise repo.blocks.putMany (blocks)`](#promise-repoblocksputmany-blocks)
+    - [`Promise<Buffer> repo.blocks.get (cid)`](#promisebuffer-repoblocksget-cid)
+    - [`repo.datastore`](#repodatastore)
+  - [Config](#config)
+    - [`Promise repo.config.set(key:string, value)`](#promise-repoconfigsetkeystring-value)
+    - [`Promise repo.config.replace(value)`](#promise-repoconfigreplacevalue)
+    - [`Promise<?> repo.config.get(key:string)`](#promise-repoconfiggetkeystring)
+    - [`Promise<Object> repo.config.getAll()`](#promiseobject-repoconfiggetall)
+    - [`Promise<boolean> repo.config.exists()`](#promiseboolean-repoconfigexists)
+  - [Version](#version)
+    - [`Promise<Number> repo.version.get ()`](#promisenumber-repoversionget-)
+    - [`Promise repo.version.set (version:Number)`](#promise-repoversionset-versionnumber)
+  - [API Addr](#api-addr)
+    - [`Promise<String> repo.apiAddr.get ()`](#promisestring-repoapiaddrget-)
+    - [`Promise repo.apiAddr.set (value)`](#promise-repoapiaddrset-value)
+  - [Status](#status)
+    - [`Promise<Object> repo.stat ()`](#promiseobject-repostat-)
+  - [Lock](#lock)
+    - [`Promise lock.lock (dir)`](#promise-locklock-dir)
+    - [`Promise closer.close ()`](#promise-closerclose-)
+    - [`Promise<boolean> lock.locked (dir)`](#promiseboolean-locklocked-dir)
 - [Notes](#notes)
+  - [Migrations](#migrations)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -210,13 +243,11 @@ Datastore:
 This contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
 
 
-### Utils
-
-#### `repo.config`
+### Config
 
 Instead of using `repo.set('config')` this exposes an API that allows you to set and get a decoded config object, as well as, in a safe manner, change any of the config values individually.
 
-##### `Promise repo.config.set(key:string, value)`
+#### `Promise repo.config.set(key:string, value)`
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
@@ -228,11 +259,11 @@ const config = await repo.config.get()
 assert.equal(config.a.b.c, 'c value')
 ```
 
-##### `Promise repo.config.set(value)`
+#### `Promise repo.config.replace(value)`
 
 Set the whole config value. `value` can be any object that is serializable to JSON.
 
-##### `Promise<?> repo.config.get(key:string)`
+#### `Promise<?> repo.config.get(key:string)`
 
 Get a config value. Returned promise resolves to the same type that was set before.
 
@@ -243,7 +274,7 @@ const value = await repo.config.get('a.b.c')
 console.log('config.a.b.c = ', value)
 ```
 
-##### `Promise<Object> repo.config.get()`
+#### `Promise<Object> repo.config.getAll()`
 
 Get the entire config value.
 
@@ -251,17 +282,17 @@ Get the entire config value.
 
 Whether the config sub-repo exists.
 
-#### `repo.version`
+### Version
 
-##### `Promise<Number> repo.version.get ()`
+#### `Promise<Number> repo.version.get ()`
 
 Gets the repo version (an integer).
 
-##### `Promise repo.version.set (version:Number)`
+#### `Promise repo.version.set (version:Number)`
 
 Sets the repo version
 
-#### `repo.apiAddr`
+### API Addr
 
 #### `Promise<String> repo.apiAddr.get ()`
 
@@ -273,7 +304,9 @@ Sets the API address.
 
 * `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
 
-### `Promise<Object> repo.stat ()`
+### Status
+
+#### `Promise<Object> repo.stat ()`
 
 Gets the repo status.
 
@@ -304,7 +337,7 @@ Sets the lock if one does not already exist. If a lock already exists, should th
 
 Returns `closer`, where `closer` has a `close` method for removing the lock.
 
-##### `Promise closer.close ()`
+#### `Promise closer.close ()`
 
 Closes the lock created by `lock.open`
 
