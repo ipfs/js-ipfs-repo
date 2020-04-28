@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -90,12 +90,14 @@
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Richard Schneider <makaretu@gmail.com>",
     "Pau Ramon Revilla <masylum@gmail.com>",
-    "Francisco Baio Dias <xicombd@gmail.com>",
-    "Lars-Magnus Skog <ralphtheninja@riseup.net>",
     "Dmitriy Ryajov <dryajov@gmail.com>",
+    "Lars-Magnus Skog <ralphtheninja@riseup.net>",
+    "Francisco Baio Dias <xicombd@gmail.com>",
     "Pedro Santos <pedro.santos@moxy.studio>",
+    "nginnever <ginneversource@gmail.com>",
     "ᴠɪᴄᴛᴏʀ ʙᴊᴇʟᴋʜᴏʟᴍ <victorbjelkholm@gmail.com>",
     "Andrew Nesbitt <andrewnez@gmail.com>",
+    "Hector Sanjuan <code@hector.link>",
     "Henrique Dias <hacdias@gmail.com>",
     "Jonah Weissman <jonahrweissman@gmail.com>",
     "Jonathan <jkrone@vt.edu>",
@@ -105,7 +107,6 @@
     "Pedro Teixeira <i@pgte.me>",
     "Richard Littauer <richard.littauer@gmail.com>",
     "Steef Min <steefmin@gmail.com>",
-    "Volker Mische <volker.mische@gmail.com>",
-    "nginnever <ginneversource@gmail.com>"
+    "Volker Mische <volker.mische@gmail.com>"
   ]
 }
