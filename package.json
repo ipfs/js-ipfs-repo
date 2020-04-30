@@ -45,6 +45,7 @@
   "devDependencies": {
     "aegir": "^21.4.5",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
     "lodash": "^4.17.11",
     "memdown": "^5.1.0",
