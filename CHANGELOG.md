@@ -1,3 +1,13 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.1...v1.1.0) (2020-04-30)
+
+
+### Features
+
+* adds .replace and .getAll methods to config ([#229](https://github.com/ipfs/js-ipfs-repo/issues/229)) ([1f4328f](https://github.com/ipfs/js-ipfs-repo/commit/1f4328f))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.0...v1.0.1) (2020-03-30)
 
