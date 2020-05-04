@@ -41,6 +41,8 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
     - [`Promise repo.blocks.put (block:Block)`](#promise-repoblocksput-blockblock)
     - [`Promise repo.blocks.putMany (blocks)`](#promise-repoblocksputmany-blocks)
     - [`Promise<Buffer> repo.blocks.get (cid)`](#promisebuffer-repoblocksget-cid)
+    - [`Promise repo.blocks.delete (cid:CID)`](#promise-repoblocksdelete-cidcid)
+    - [`Promise repo.blocks.deleteMany (cids)`](#promise-repoblocksdeletemany-cids)
     - [`repo.datastore`](#repodatastore)
   - [Config](#config)
     - [`Promise repo.config.set(key:string, value)`](#promise-repoconfigsetkeystring-value)
@@ -235,6 +237,18 @@ Put many blocks.
 Get block.
 
 * `cid` is the content id of [type CID](https://github.com/ipld/js-cid#readme).
+
+#### `Promise repo.blocks.delete (cid:CID)`
+
+* `cid` should be of the [type CID](https://github.com/ipld/js-cid#readme).
+
+Delete a block
+
+#### `Promise repo.blocks.deleteMany (cids)`
+
+* `cids` should be an Iterable or AsyncIterable that yields entries of the [type CID](https://github.com/ipld/js-cid#readme).
+
+Delete many blocks
 
 Datastore:
 
