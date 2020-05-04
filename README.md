@@ -91,13 +91,13 @@ Here is the architectural reasoning for this repo:
             ┌─────────────────┐                                 ┌─────────────────┐
             │        /        │                                 │        /        │
             ├─────────────────┤                                 ├─────────────────┤
-            │   FsDatastore   │                                 │LevelJSDatastore │
+            │   FsDatastore   │                                 │  IdbDatastore   │
             └─────────────────┘                                 └─────────────────┘
          ┌───────────┴───────────┐                           ┌───────────┴───────────┐
 ┌─────────────────┐     ┌─────────────────┐         ┌─────────────────┐     ┌─────────────────┐
 │     /blocks     │     │   /datastore    │         │     /blocks     │     │   /datastore    │
 ├─────────────────┤     ├─────────────────┤         ├─────────────────┤     ├─────────────────┤
-│ FlatfsDatastore │     │LevelDBDatastore │         │LevelJSDatastore │     │LevelJSDatastore │
+│ FlatfsDatastore │     │LevelDBDatastore │         │  IdbDatastore   │     │  IdbDatastore   │
 └─────────────────┘     └─────────────────┘         └─────────────────┘     └─────────────────┘
 ```
 
