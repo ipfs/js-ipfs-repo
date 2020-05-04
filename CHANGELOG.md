@@ -1,3 +1,18 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/ipfs/js-ipfs-repo/compare/v2.0.1...v2.1.0) (2020-05-04)
+
+
+### Bug Fixes
+
+* **ci:** add empty commit to fix lint checks on master ([d1773b1](https://github.com/ipfs/js-ipfs-repo/commit/d1773b1))
+
+
+### Features
+
+* add deleteMany method ([#230](https://github.com/ipfs/js-ipfs-repo/issues/230)) ([3210db9](https://github.com/ipfs/js-ipfs-repo/commit/3210db9))
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v2.0.0...v2.0.1) (2020-04-28)
 
