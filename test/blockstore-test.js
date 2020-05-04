@@ -281,5 +281,17 @@ module.exports = (repo) => {
         return expect(repo.blocks.delete('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
     })
+
+    describe('.deleteMany', () => {
+      it('simple', async () => {
+        await repo.blocks.deleteMany([b.cid])
+        const exists = await repo.blocks.has(b.cid)
+        expect(exists).to.equal(false)
+      })
+
+      it('throws when passed an invalid cid', () => {
+        return expect(repo.blocks.deleteMany(['foo'])).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+      })
+    })
   })
 }

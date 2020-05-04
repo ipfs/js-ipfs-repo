@@ -3,8 +3,6 @@
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 const Block = require('ipld-block')
-const CID = require('cids')
-const errcode = require('err-code')
 const { cidToKey } = require('./blockstore-utils')
 
 module.exports = async (filestore, options) => {
@@ -40,9 +38,6 @@ function createBaseStore (store) {
      * @returns {Promise<Block>}
      */
     async get (cid) {
-      if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
-      }
       const key = cidToKey(cid)
       let blockData
       try {
@@ -110,10 +105,6 @@ function createBaseStore (store) {
      * @returns {Promise<bool>}
      */
     async has (cid) {
-      if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
-      }
-
       const exists = await store.has(cidToKey(cid))
       if (exists) return exists
       const otherCid = cidToOtherVersion(cid)
@@ -127,10 +118,22 @@ function createBaseStore (store) {
      * @returns {Promise<void>}
      */
     async delete (cid) { // eslint-disable-line require-await
-      if (!CID.isCID(cid)) {
-        throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
-      }
       return store.delete(cidToKey(cid))
+    },
+    /**
+     * Delete a block from the store
+     *
+     * @param {AsyncIterable<CID>} cids
+     * @returns {Promise<void>}
+     */
+    async deleteMany (cids) {
+      const batch = store.batch()
+
+      for await (const cid of cids) {
+        batch.delete(cidToKey(cid))
+      }
+
+      return batch.commit()
     },
     /**
      * Close the store
