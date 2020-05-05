@@ -43,7 +43,7 @@
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^21.9.0",
+    "aegir": "^21.10.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
