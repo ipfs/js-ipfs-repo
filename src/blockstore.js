@@ -86,8 +86,14 @@ function createBaseStore (store) {
 
       const k = cidToKey(block.cid)
       const exists = await store.has(k, options)
-      if (exists) return
-      return store.put(k, block.data, options)
+
+      if (exists) {
+        return
+      }
+
+      await store.put(k, block.data, options)
+
+      return block
     },
 
     /**

@@ -30,19 +30,22 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 - [API](#api)
   - [Setup](#setup)
     - [`new Repo(path[, options])`](#new-repopath-options)
-    - [`Promise repo.init ()`](#promise-repoinit-)
-    - [`Promise repo.open ()`](#promise-repoopen-)
-    - [`Promise repo.close ()`](#promise-repoclose-)
-    - [`Promise<boolean> repo.exists ()`](#promiseboolean-repoexists-)
+    - [`Promise repo.init()`](#promise-repoinit)
+    - [`Promise repo.open()`](#promise-repoopen)
+    - [`Promise repo.close()`](#promise-repoclose)
+    - [`Promise<boolean> repo.exists()`](#promiseboolean-repoexists)
+    - [`Promise<Boolean> repo.isInitialized()`](#promiseboolean-repoisinitialized)
   - [Repos](#repos)
-    - [`Promise repo.put (key, value:Buffer)`](#promise-repoput-key-valuebuffer)
-    - [`Promise<Buffer> repo.get (key)`](#promisebuffer-repoget-key)
-    - [`Promise<Boolean> repo.isInitialized ()`](#promiseboolean-repoisinitialized-)
-    - [`Promise repo.blocks.put (block:Block)`](#promise-repoblocksput-blockblock)
-    - [`Promise repo.blocks.putMany (blocks)`](#promise-repoblocksputmany-blocks)
-    - [`Promise<Buffer> repo.blocks.get (cid)`](#promisebuffer-repoblocksget-cid)
-    - [`Promise repo.blocks.delete (cid:CID)`](#promise-repoblocksdelete-cidcid)
-    - [`Promise repo.blocks.deleteMany (cids)`](#promise-repoblocksdeletemany-cids)
+    - [`Promise repo.put(key, value:Buffer)`](#promise-repoputkey-valuebuffer)
+    - [`Promise<Buffer> repo.get(key)`](#promisebuffer-repogetkey)
+  - [Blocks](#blocks)
+    - [`Promise<Block> repo.blocks.put(block:Block)`](#promiseblock-repoblocksputblockblock)
+    - [`AsyncIterator<Block> repo.blocks.putMany(source)`](#asynciteratorblock-repoblocksputmanysource)
+    - [`Promise<Buffer> repo.blocks.get(cid)`](#promisebuffer-repoblocksgetcid)
+    - [`AsyncIterable<Buffer> repo.blocks.getMany(source)`](#asynciterablebuffer-repoblocksgetmanysource)
+    - [`Promise<CID> repo.blocks.delete(cid:CID)`](#promisecid-repoblocksdeletecidcid)
+    - [`AsyncIterator<CID> repo.blocks.deleteMany(source)`](#asynciteratorcid-repoblocksdeletemanysource)
+  - [Datastore](#datastore)
     - [`repo.datastore`](#repodatastore)
   - [Config](#config)
     - [`Promise repo.config.set(key:string, value)`](#promise-repoconfigsetkeystring-value)
@@ -51,17 +54,17 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
     - [`Promise<Object> repo.config.getAll()`](#promiseobject-repoconfiggetall)
     - [`Promise<boolean> repo.config.exists()`](#promiseboolean-repoconfigexists)
   - [Version](#version)
-    - [`Promise<Number> repo.version.get ()`](#promisenumber-repoversionget-)
+    - [`Promise<Number> repo.version.get()`](#promisenumber-repoversionget)
     - [`Promise repo.version.set (version:Number)`](#promise-repoversionset-versionnumber)
   - [API Addr](#api-addr)
-    - [`Promise<String> repo.apiAddr.get ()`](#promisestring-repoapiaddrget-)
-    - [`Promise repo.apiAddr.set (value)`](#promise-repoapiaddrset-value)
+    - [`Promise<String> repo.apiAddr.get()`](#promisestring-repoapiaddrget)
+    - [`Promise repo.apiAddr.set(value)`](#promise-repoapiaddrsetvalue)
   - [Status](#status)
-    - [`Promise<Object> repo.stat ()`](#promiseobject-repostat-)
+    - [`Promise<Object> repo.stat()`](#promiseobject-repostat)
   - [Lock](#lock)
-    - [`Promise lock.lock (dir)`](#promise-locklock-dir)
-    - [`Promise closer.close ()`](#promise-closerclose-)
-    - [`Promise<boolean> lock.locked (dir)`](#promiseboolean-locklocked-dir)
+    - [`Promise lock.lock(dir)`](#promise-locklockdir)
+    - [`Promise closer.close()`](#promise-closerclose)
+    - [`Promise<boolean> lock.locked(dir)`](#promiseboolean-locklockeddir)
 - [Notes](#notes)
   - [Migrations](#migrations)
 - [Contribute](#contribute)
@@ -184,78 +187,83 @@ Arguments:
 const repo = new Repo('path/to/repo')
 ```
 
-#### `Promise repo.init ()`
+#### `Promise repo.init()`
 
-Creates the necessary folder structure inside the repo.
+Creates the necessary folder structure inside the repo
 
-#### `Promise repo.open ()`
+#### `Promise repo.open()`
 
-[Locks](https://en.wikipedia.org/wiki/Record_locking) the repo to prevent conflicts arising from simultaneous access.
+[Locks](https://en.wikipedia.org/wiki/Record_locking) the repo to prevent conflicts arising from simultaneous access
 
-#### `Promise repo.close ()`
+#### `Promise repo.close()`
 
 Unlocks the repo.
 
-#### `Promise<boolean> repo.exists ()`
+#### `Promise<boolean> repo.exists()`
 
-Tells whether this repo exists or not. Returned promise resolves to a `boolean`.
+Tells whether this repo exists or not. Returned promise resolves to a `boolean`
+
+#### `Promise<Boolean> repo.isInitialized()`
+
+The returned promise resolves to `false` if the repo has not been initialized and `true` if it has
 
 ### Repos
 
 Root repo:
 
-#### `Promise repo.put (key, value:Buffer)`
+#### `Promise repo.put(key, value:Buffer)`
 
-Put a value at the root of the repo.
+Put a value at the root of the repo
 
-* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `key` can be a buffer, a string or a [Key][]
 
-#### `Promise<Buffer> repo.get (key)`
+#### `Promise<Buffer> repo.get(key)`
 
-Get a value at the root of the repo.
+Get a value at the root of the repo
 
-* `key` can be a buffer, a string or a [Key](https://github.com/ipfs/interface-datastore#keys).
+* `key` can be a buffer, a string or a [Key][]
 
-[Blocks](https://github.com/ipfs/js-ipld-block#readme):
+### Blocks
 
-#### `Promise<Boolean> repo.isInitialized ()`
+#### `Promise<Block> repo.blocks.put(block:Block)`
 
-The returned promise resolves to `false` if the repo has not been initialized and `true` if it has.
+* `block` should be of type [Block][]
 
-#### `Promise repo.blocks.put (block:Block)`
-
-* `block` should be of type [Block](https://github.com/ipfs/js-ipld-block#readme).
-
-#### `Promise repo.blocks.putMany (blocks)`
+#### `AsyncIterator<Block> repo.blocks.putMany(source)`
 
 Put many blocks.
 
-* `block` should be an Iterable or AsyncIterable that yields entries of type [Block](https://github.com/ipfs/js-ipld-block#readme).
+* `source` should be an AsyncIterable that yields entries of type [Block][]
 
-#### `Promise<Buffer> repo.blocks.get (cid)`
+#### `Promise<Buffer> repo.blocks.get(cid)`
 
 Get block.
 
-* `cid` is the content id of [type CID](https://github.com/ipld/js-cid#readme).
+* `cid` is the content id of type [CID][]
 
-#### `Promise repo.blocks.delete (cid:CID)`
+#### `AsyncIterable<Buffer> repo.blocks.getMany(source)`
 
-* `cid` should be of the [type CID](https://github.com/ipld/js-cid#readme).
+Get block.
+
+* `source` should be an AsyncIterable that yields entries of type [CID][]
+
+#### `Promise<CID> repo.blocks.delete(cid:CID)`
+
+* `cid` should be of the type [CID][]
 
 Delete a block
 
-#### `Promise repo.blocks.deleteMany (cids)`
+#### `AsyncIterator<CID> repo.blocks.deleteMany(source)`
 
-* `cids` should be an Iterable or AsyncIterable that yields entries of the [type CID](https://github.com/ipld/js-cid#readme).
+* `source` should be an Iterable or AsyncIterable that yields entries of the type [CID][]
 
 Delete many blocks
 
-Datastore:
+### Datastore
 
 #### `repo.datastore`
 
 This contains a full implementation of [the `interface-datastore` API](https://github.com/ipfs/interface-datastore#api).
-
 
 ### Config
 
@@ -298,7 +306,7 @@ Whether the config sub-repo exists.
 
 ### Version
 
-#### `Promise<Number> repo.version.get ()`
+#### `Promise<Number> repo.version.get()`
 
 Gets the repo version (an integer).
 
@@ -308,19 +316,19 @@ Sets the repo version
 
 ### API Addr
 
-#### `Promise<String> repo.apiAddr.get ()`
+#### `Promise<String> repo.apiAddr.get()`
 
 Gets the API address.
 
-#### `Promise repo.apiAddr.set (value)`
+#### `Promise repo.apiAddr.set(value)`
 
 Sets the API address.
 
-* `value` should be a [Multiaddr](https://github.com/multiformats/js-multiaddr) or a String representing a valid one.
+* `value` should be a [Multiaddr][] or a String representing a valid one.
 
 ### Status
 
-#### `Promise<Object> repo.stat ()`
+#### `Promise<Object> repo.stat()`
 
 Gets the repo status.
 
@@ -343,7 +351,7 @@ const memoryLock = require('ipfs-repo/src/lock-memory')  // Default in browser
 
 You can also provide your own custom Lock. It must be an object with the following interface:
 
-#### `Promise lock.lock (dir)`
+#### `Promise lock.lock(dir)`
 
 Sets the lock if one does not already exist. If a lock already exists, should throw an error.
 
@@ -351,13 +359,13 @@ Sets the lock if one does not already exist. If a lock already exists, should th
 
 Returns `closer`, where `closer` has a `close` method for removing the lock.
 
-#### `Promise closer.close ()`
+#### `Promise closer.close()`
 
 Closes the lock created by `lock.open`
 
 If no error was thrown, the lock was successfully removed.
 
-#### `Promise<boolean> lock.locked (dir)`
+#### `Promise<boolean> lock.locked(dir)`
 
 Checks the existence of the lock.
 
@@ -392,3 +400,8 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 ## License
 
 [MIT](LICENSE)
+
+[CID]: https://github.com/multiformats/js-cid
+[Key]: https://github.com/ipfs/interface-datastore#keys
+[Block]: https://github.com/ipld/js-ipld-block
+[Multiaddr]: https://github.com/multiformats/js-multiaddr
