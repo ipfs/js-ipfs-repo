@@ -84,14 +84,13 @@ function createBaseStore (store) {
         throw new Error('invalid block')
       }
 
-      const k = cidToKey(block.cid)
-      const exists = await store.has(k, options)
+      const exists = await this.has(block.cid)
 
       if (exists) {
-        return
+        return this.get(block.cid, options)
       }
 
-      await store.put(k, block.data, options)
+      await store.put(cidToKey(block.cid), block.data, options)
 
       return block
     },
