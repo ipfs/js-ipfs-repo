@@ -1,3 +1,19 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v2.1.1...v3.0.0) (2020-05-14)
+
+
+### Features
+
+* use streaming API for blockstore access ([#232](https://github.com/ipfs/js-ipfs-repo/issues/232)) ([65d7596](https://github.com/ipfs/js-ipfs-repo/commit/65d7596))
+
+
+### BREAKING CHANGES
+
+* * `repo.blockstore.putMany()` used to return a promise that resolved when all the deletes were done, now it returns an AsyncIterator that yields `{key, value}` objects as the put progresses
+* `repo.blockstore.deleteMany()` used to return a promise that resolved when all the deletes were done, now it returns an AsyncIterator that yields CID objects as the delete progresses
+
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/ipfs/js-ipfs-repo/compare/v2.1.0...v2.1.1) (2020-05-05)
 
