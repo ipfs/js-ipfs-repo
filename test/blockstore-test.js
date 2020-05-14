@@ -11,6 +11,9 @@ const multihashing = require('multihashing-async')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const { cidToKey } = require('../src/blockstore-utils')
 const IPFSRepo = require('../')
+const drain = require('it-drain')
+const all = require('it-all')
+const first = require('it-first')
 
 module.exports = (repo) => {
   describe('blockstore', () => {
@@ -63,7 +66,7 @@ module.exports = (repo) => {
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
         }))
-        await repo.blocks.putMany(blocks)
+        await drain(repo.blocks.putMany(blocks))
         for (const block of blocks) {
           const block1 = await repo.blocks.get(block.cid)
           expect(block1).to.be.eql(block)
@@ -74,8 +77,7 @@ module.exports = (repo) => {
         const data = Buffer.from(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
-        let putInvoked = false
-        let commitInvoked = false
+        const sent = []
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             blocks: class ExplodingBlockStore {
@@ -90,14 +92,11 @@ module.exports = (repo) => {
                 return true
               }
 
-              batch () {
-                return {
-                  put () {
-                    putInvoked = true
-                  },
-                  commit () {
-                    commitInvoked = true
-                  }
+              async * putMany (source) {
+                for await (const thing of source) {
+                  sent.push(thing)
+
+                  yield thing
                 }
               }
             }
@@ -112,13 +111,12 @@ module.exports = (repo) => {
         await otherRepo.init({})
         await otherRepo.open()
 
-        await otherRepo.blocks.putMany([{
+        await drain(otherRepo.blocks.putMany([{
           cid,
           data
-        }])
+        }]))
 
-        expect(putInvoked).to.be.false()
-        expect(commitInvoked).to.be.true()
+        expect(sent).to.have.lengthOf(0)
       })
 
       it('returns an error on invalid block', () => {
@@ -226,6 +224,123 @@ module.exports = (repo) => {
       })
     })
 
+    describe('.getMany', () => {
+      let otherRepo
+
+      after(async () => {
+        if (otherRepo) {
+          await otherRepo.close()
+        }
+      })
+
+      it('simple', async () => {
+        const blocks = await all(repo.blocks.getMany([b.cid]))
+        expect(blocks).to.deep.include(b)
+      })
+
+      it('massive read', async function () {
+        this.timeout(15000) // add time for ci
+        const num = 20 * 100
+
+        const blocks = await all(repo.blocks.getMany(async function * () {
+          for (let i = 0; i < num; i++) {
+            const j = i % blockData.length
+            const hash = await multihashing(blockData[j], 'sha2-256')
+
+            yield new CID(hash)
+          }
+        }()))
+
+        expect(blocks).to.have.lengthOf(num)
+
+        for (let i = 0; i < num; i++) {
+          const j = i % blockData.length
+          expect(blocks[i]).to.have.deep.property('data', blockData[j])
+        }
+      })
+
+      it('returns an error on invalid block', () => {
+        return expect(drain(repo.blocks.getMany(['woot']))).to.eventually.be.rejected()
+      })
+
+      it('should get block stored under v0 CID with a v1 CID', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await first(repo.blocks.getMany([cid.toV1()]))
+        expect(block.data).to.eql(data)
+      })
+
+      it('should get block stored under v1 CID with a v0 CID', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-pb', hash)
+        await repo.blocks.put(new Block(data, cid))
+        const block = await first(repo.blocks.getMany([cid.toV0()]))
+        expect(block.data).to.eql(data)
+      })
+
+      it('throws when passed an invalid cid', () => {
+        return expect(drain(repo.blocks.getMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+      })
+
+      it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(1, 'dag-cbor', hash)
+
+        await expect(drain(repo.blocks.getMany([cid]))).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
+      })
+
+      it('throws unknown error encountered when getting a block', async () => {
+        const err = new Error('wat')
+        const data = Buffer.from(`TEST${Date.now()}`)
+        const hash = await multihashing(data, 'sha2-256')
+        const cid = new CID(hash)
+        const key = cidToKey(cid)
+
+        otherRepo = new IPFSRepo(tempDir(), {
+          storageBackends: {
+            blocks: class ExplodingBlockStore {
+              open () {}
+              close () {
+
+              }
+
+              get (c) {
+                if (c.toString() === key.toString()) {
+                  throw err
+                }
+              }
+
+              async * getMany (source) {
+                for await (const c of source) {
+                  yield this.get(c)
+                }
+              }
+            }
+          },
+          storageBackendOptions: {
+            blocks: {
+              sharding: false
+            }
+          }
+        })
+
+        await otherRepo.init({})
+        await otherRepo.open()
+
+        try {
+          await drain(otherRepo.blocks.getMany([cid]))
+          throw new Error('Should have thrown')
+        } catch (err2) {
+          expect(err2).to.deep.equal(err)
+        }
+      })
+    })
+
     describe('.has', () => {
       it('existing block', async () => {
         const exists = await repo.blocks.has(b.cid)
@@ -284,13 +399,13 @@ module.exports = (repo) => {
 
     describe('.deleteMany', () => {
       it('simple', async () => {
-        await repo.blocks.deleteMany([b.cid])
+        await drain(repo.blocks.deleteMany([b.cid]))
         const exists = await repo.blocks.has(b.cid)
         expect(exists).to.equal(false)
       })
 
       it('throws when passed an invalid cid', () => {
-        return expect(repo.blocks.deleteMany(['foo'])).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+        return expect(drain(repo.blocks.deleteMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
     })
   })
