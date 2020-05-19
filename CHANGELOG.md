@@ -1,3 +1,13 @@
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.0...v3.0.1) (2020-05-19)
+
+
+### Bug Fixes
+
+* return blocks from putmany as blocks are passed in ([8c386c7](https://github.com/ipfs/js-ipfs-repo/commit/8c386c7))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v2.1.1...v3.0.0) (2020-05-14)
 
