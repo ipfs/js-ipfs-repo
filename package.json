@@ -73,6 +73,8 @@
     "ipfs-repo-migrations": "^0.2.1",
     "ipfs-utils": "^2.2.0",
     "ipld-block": "^0.9.1",
+    "it-map": "^1.0.2",
+    "it-pipe": "^1.1.0",
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
     "multibase": "^0.7.0",

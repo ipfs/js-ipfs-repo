@@ -3,7 +3,9 @@
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 const Block = require('ipld-block')
-const { cidToKey } = require('./blockstore-utils')
+const { cidToKey, keyToCid } = require('./blockstore-utils')
+const map = require('it-map')
+const pipe = require('it-pipe')
 
 module.exports = async (filestore, options) => {
   const store = await maybeWithSharding(filestore, options)
@@ -77,7 +79,7 @@ function createBaseStore (store) {
      *
      * @param {Block} block
      * @param {Object} options
-     * @returns {Promise<void>}
+     * @returns {Promise<Block>}
      */
     async put (block, options) {
       if (!Block.isBlock(block)) {
@@ -100,20 +102,28 @@ function createBaseStore (store) {
      *
      * @param {AsyncIterable<Block>|Iterable<Block>} blocks
      * @param {Object} options
-     * @returns {Promise<void>}
+     * @returns {AsyncIterable<Block>}
      */
     async * putMany (blocks, options) { // eslint-disable-line require-await
-      yield * store.putMany((async function * () {
-        for await (const block of blocks) {
-          const key = cidToKey(block.cid)
-
-          if (await store.has(key, options)) {
-            continue
-          }
-
-          yield { key, value: block.data }
+      yield * pipe(
+        blocks,
+        (source) => {
+          // turn them into a key/value pair
+          return map(source, (block) => {
+            return { key: cidToKey(block.cid), value: block.data }
+          })
+        },
+        (source) => {
+          // put them into the datastore
+          return store.putMany(source, options)
+        },
+        (source) => {
+          // map the returned key/value back into a block
+          return map(source, ({ key, value }) => {
+            return new Block(value, keyToCid(key))
+          })
         }
-      }()), options)
+      )
     },
     /**
      * Does the store contain block with this cid?

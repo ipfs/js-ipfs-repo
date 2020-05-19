@@ -73,52 +73,6 @@ module.exports = (repo) => {
         }
       })
 
-      it('should not .putMany when block is already present', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
-        const sent = []
-        otherRepo = new IPFSRepo(tempDir(), {
-          storageBackends: {
-            blocks: class ExplodingBlockStore {
-              open () {
-              }
-
-              close () {
-
-              }
-
-              has () {
-                return true
-              }
-
-              async * putMany (source) {
-                for await (const thing of source) {
-                  sent.push(thing)
-
-                  yield thing
-                }
-              }
-            }
-          },
-          storageBackendOptions: {
-            blocks: {
-              sharding: false
-            }
-          }
-        })
-
-        await otherRepo.init({})
-        await otherRepo.open()
-
-        await drain(otherRepo.blocks.putMany([{
-          cid,
-          data
-        }]))
-
-        expect(sent).to.have.lengthOf(0)
-      })
-
       it('returns an error on invalid block', () => {
         return expect(repo.blocks.put('hello')).to.eventually.be.rejected()
       })
