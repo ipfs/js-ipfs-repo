@@ -68,7 +68,7 @@
     "datastore-idb": "ipfs/js-datastore-idb#fix/wrap-operations-in-transaction",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
-    "err-code": "IndigoUnited/js-err-code#fix/do-not-set-unwritable-fields",
+    "err-code": "^2.0.0",
     "interface-datastore": "^1.0.2",
     "ipfs-repo-migrations": "^0.2.1",
     "ipfs-utils": "^2.2.0",
