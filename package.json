@@ -65,7 +65,7 @@
     "cids": "^0.8.0",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.1.0",
-    "datastore-idb": "^1.1.0",
+    "datastore-idb": "ipfs/js-datastore-idb#fix/wrap-operations-in-transaction",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
