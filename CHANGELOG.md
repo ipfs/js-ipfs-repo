@@ -1,3 +1,13 @@
+<a name="3.0.2"></a>
+## [3.0.2](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.1...v3.0.2) (2020-06-15)
+
+
+### Features
+
+* use datastore-level in the browser again ([#236](https://github.com/ipfs/js-ipfs-repo/issues/236)) ([33663b3](https://github.com/ipfs/js-ipfs-repo/commit/33663b3))
+
+
+
 <a name="3.0.1"></a>
 ## [3.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.0...v3.0.1) (2020-05-19)
 
