@@ -10,7 +10,7 @@
   ],
   "browser": {
     "rimraf": false,
-    "datastore-fs": "datastore-idb",
+    "datastore-fs": "datastore-level",
     "./src/lock.js": "./src/lock-memory.js",
     "./src/default-options.js": "./src/default-options-browser.js"
   },
@@ -65,7 +65,6 @@
     "cids": "^0.8.0",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.1.0",
-    "datastore-idb": "^1.1.0",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
