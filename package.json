@@ -76,7 +76,7 @@
     "it-pipe": "^1.1.0",
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
-    "multibase": "^0.7.0",
+    "multibase": "^1.0.1",
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0"
