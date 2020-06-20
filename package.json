@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -85,8 +85,8 @@
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
     "Jacob Heun <jacobheun@gmail.com>",
-    "dignifiedquire <dignifiedquire@gmail.com>",
     "achingbrain <alex@achingbrain.net>",
+    "dignifiedquire <dignifiedquire@gmail.com>",
     "Hugo Dias <hugomrdias@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
     "Alan Shaw <alan.shaw@protocol.ai>",
