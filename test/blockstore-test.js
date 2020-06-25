@@ -9,11 +9,18 @@ const CID = require('cids')
 const range = require('just-range')
 const multihashing = require('multihashing-async')
 const tempDir = require('ipfs-utils/src/temp-dir')
-const { cidToKey } = require('../src/blockstore-utils')
+const { cidToKey, keyToCid } = require('../src/blockstore-utils')
 const IPFSRepo = require('../')
 const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
+
+async function makeBlock () {
+  const bData = Buffer.from(`hello-${Math.random()}`)
+
+  const hash = await multihashing(bData, 'sha2-256')
+  return new Block(bData, new CID(hash))
+}
 
 module.exports = (repo) => {
   describe('blockstore', () => {
@@ -363,6 +370,55 @@ module.exports = (repo) => {
 
       it('throws when passed an invalid cid', () => {
         return expect(drain(repo.blocks.deleteMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+      })
+    })
+
+    describe('.query', () => {
+      let block1
+      let block2
+
+      before(async () => {
+        block1 = await makeBlock()
+        block2 = await makeBlock()
+
+        await repo.blocks.put(block1)
+        await repo.blocks.put(block2)
+      })
+
+      it('returns key/values for block data', async () => {
+        const results = await all(repo.blocks.query({}))
+        const result = results.find(result => result.value.toString('base64') === block1.data.toString('base64'))
+
+        expect(result).to.be.ok()
+        expect(keyToCid(result.key).multihash).to.deep.equal(block1.cid.multihash)
+        expect(result.value).to.deep.equal(block1.data)
+      })
+
+      it('returns some of the blocks', async () => {
+        const resultsWithPrefix = await all(repo.blocks.query({
+          prefix: cidToKey(block1.cid).toString().substring(0, 10)
+        }))
+        const result = resultsWithPrefix.find(result => result.value.toString('base64') === block1.data.toString('base64'))
+
+        expect(result).to.be.ok()
+        expect(keyToCid(result.key).multihash).to.deep.equal(block1.cid.multihash)
+        expect(result.value).to.deep.equal(block1.data)
+
+        const allResults = await all(repo.blocks.query({}))
+        expect(resultsWithPrefix.length).to.be.lessThan(allResults.length)
+      })
+
+      it('returns only keys', async () => {
+        const results = await all(repo.blocks.query({
+          keysOnly: true
+        }))
+
+        expect(results.length).to.be.greaterThan(0)
+
+        for (const result of results) {
+          expect(result).to.have.property('key')
+          expect(result).to.not.have.property('value')
+        }
       })
     })
   })
