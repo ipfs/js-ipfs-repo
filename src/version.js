@@ -3,7 +3,7 @@
 const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const debug = require('debug')
-const log = debug('repo:version')
+const log = debug('ipfs:repo:version')
 
 const versionKey = new Key('version')
 

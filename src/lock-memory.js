@@ -3,7 +3,7 @@
 const errors = require('./errors')
 const debug = require('debug')
 
-const log = debug('repo:lock')
+const log = debug('ipfs:repo:lock')
 
 const lockFile = 'repo.lock'
 

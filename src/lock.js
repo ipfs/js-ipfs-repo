@@ -5,7 +5,7 @@ const path = require('path')
 const debug = require('debug')
 const { lock } = require('proper-lockfile')
 
-const log = debug('repo:lock')
+const log = debug('ipfs:repo:lock')
 const lockFile = 'repo.lock'
 
 /**

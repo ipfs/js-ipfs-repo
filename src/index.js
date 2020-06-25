@@ -19,7 +19,7 @@ const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 
-const log = debug('repo')
+const log = debug('ipfs:repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
 const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
