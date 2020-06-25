@@ -1,3 +1,8 @@
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.2...v3.0.3) (2020-06-20)
+
+
+
 <a name="3.0.2"></a>
 ## [3.0.2](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.1...v3.0.2) (2020-06-15)
 
