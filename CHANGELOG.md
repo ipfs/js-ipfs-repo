@@ -1,3 +1,24 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.3...v4.0.0) (2020-06-25)
+
+
+### Features
+
+* store blocks under multihash key ([#211](https://github.com/ipfs/js-ipfs-repo/issues/211)) ([06a9e27](https://github.com/ipfs/js-ipfs-repo/commit/06a9e27))
+
+
+### BREAKING CHANGES
+
+* - Repo version incremented to `8`, requires a migration
+- Blocks are now stored using the multihash, not the full CID
+- `repo.blocks.query({})` now returns an async iterator that yields blocks
+- `repo.blocks.query({ keysOnly: true })` now returns an async iterator that yields CIDs
+  - Those CIDs are v1 with the raw codec
+
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
 <a name="3.0.3"></a>
 ## [3.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.2...v3.0.3) (2020-06-20)
 
