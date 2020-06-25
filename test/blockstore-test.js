@@ -15,6 +15,13 @@ const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
 
+async function makeBlock () {
+  const bData = Buffer.from(`hello-${Math.random()}`)
+
+  const hash = await multihashing(bData, 'sha2-256')
+  return new Block(bData, new CID(hash))
+}
+
 module.exports = (repo) => {
   describe('blockstore', () => {
     const blockData = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
@@ -66,7 +73,10 @@ module.exports = (repo) => {
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
         }))
-        await drain(repo.blocks.putMany(blocks))
+
+        const put = await all(repo.blocks.putMany(blocks))
+        expect(put).to.deep.equal(blocks)
+
         for (const block of blocks) {
           const block1 = await repo.blocks.get(block.cid)
           expect(block1).to.be.eql(block)
@@ -360,6 +370,54 @@ module.exports = (repo) => {
 
       it('throws when passed an invalid cid', () => {
         return expect(drain(repo.blocks.deleteMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+      })
+    })
+
+    describe('.query', () => {
+      let block1
+      let block2
+
+      before(async () => {
+        block1 = await makeBlock()
+        block2 = await makeBlock()
+
+        await repo.blocks.put(block1)
+        await repo.blocks.put(block2)
+      })
+
+      it('returns key/values for block data', async () => {
+        const blocks = await all(repo.blocks.query({}))
+        const block = blocks.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+
+        expect(block).to.be.ok()
+        expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
+        expect(block.data).to.deep.equal(block1.data)
+      })
+
+      it('returns some of the blocks', async () => {
+        const blocksWithPrefix = await all(repo.blocks.query({
+          prefix: cidToKey(block1.cid).toString().substring(0, 10)
+        }))
+        const block = blocksWithPrefix.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+
+        expect(block).to.be.ok()
+        expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
+        expect(block.data).to.deep.equal(block1.data)
+
+        const allBlocks = await all(repo.blocks.query({}))
+        expect(blocksWithPrefix.length).to.be.lessThan(allBlocks.length)
+      })
+
+      it('returns only keys', async () => {
+        const cids = await all(repo.blocks.query({
+          keysOnly: true
+        }))
+
+        expect(cids.length).to.be.greaterThan(0)
+
+        for (const cid of cids) {
+          expect(CID.isCID(cid)).to.be.true()
+        }
       })
     })
   })

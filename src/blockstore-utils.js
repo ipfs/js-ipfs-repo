@@ -16,15 +16,18 @@ exports.cidToKey = cid => {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
-  return new Key('/' + multibase.encode('base32', cid.buffer).toString().slice(1).toUpperCase(), false)
+  return new Key('/' + multibase.encode('base32', cid.multihash).toString().slice(1).toUpperCase(), false)
 }
 
 /**
  * Transform a datastore Key instance to a CID
+ * As Key is a multihash of the CID, it is reconstructed using IPLD's RAW codec.
+ * Hence it is highly probable that stored CID will differ from a CID retrieved from blockstore.
  *
  * @param {Key} key
  * @returns {CID}
  */
 exports.keyToCid = key => {
-  return new CID(multibase.decode('b' + key.toString().slice(1).toLowerCase()))
+  // Block key is of the form /<base32 encoded string>
+  return new CID(1, 'raw', multibase.decode('b' + key.toString().slice(1).toLowerCase()))
 }

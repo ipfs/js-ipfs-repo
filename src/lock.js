@@ -22,7 +22,7 @@ const STALE_TIME = 20000
 /**
  * Lock the repo in the given dir.
  *
- * @param {string} dir
+ * @param {String} dir
  * @returns {Promise<Object>}
  */
 exports.lock = async (dir) => {

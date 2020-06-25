@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('./utils/chai')
-const mh = require('multihashes')
+const mh = require('multihashing-async').multihash
 const CID = require('cids')
 const Key = require('interface-datastore').Key
 

@@ -35,8 +35,8 @@ const lockers = {
  */
 class IpfsRepo {
   /**
-   * @param {string} repoPath - path where the repo is stored
-   * @param {object} options - Configuration
+   * @param {String} repoPath - path where the repo is stored
+   * @param {Object} options - Configuration
    */
   constructor (repoPath, options) {
     if (typeof repoPath !== 'string') {
@@ -185,7 +185,7 @@ class IpfsRepo {
    * Creates a lock on the repo if a locker is specified. The lockfile object will
    * be returned in the callback if one has been created.
    *
-   * @param {string} path
+   * @param {String} path
    * @returns {Promise<lockfile>}
    */
   async _openLock (path) {
@@ -353,8 +353,8 @@ class IpfsRepo {
     for await (const block of this.blocks.query({})) {
       count = count.plus(1)
       size = size
-        .plus(block.value.byteLength)
-        .plus(block.key._buf.byteLength)
+        .plus(block.data.byteLength)
+        .plus(block.cid.buffer.byteLength)
     }
 
     return { count, size }
@@ -365,7 +365,7 @@ async function getSize (queryFn) {
   const sum = new Big(0)
   for await (const block of queryFn.query({})) {
     sum.plus(block.value.byteLength)
-      .plus(block.key._buf.byteLength)
+      .plus(block.key.toBuffer().byteLength)
   }
   return sum
 }
