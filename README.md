@@ -45,7 +45,7 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
     - [`AsyncIterable<Block> repo.blocks.getMany(source:AsyncIterable<CID>)`](#asynciterableblock-repoblocksgetmanysourceasynciterablecid)
     - [`Promise<boolean> repo.blocks.has (cid:CID)`](#promiseboolean-repoblockshas-cidcid)
     - [`Promise<boolean> repo.blocks.delete (cid:CID)`](#promiseboolean-repoblocksdelete-cidcid)
-    - [`Promise<Array<Object>> repo.blocks.query (query)`](#promisearrayobject-repoblocksquery-query)
+    - [`AsyncIterator<Block|CID> repo.blocks.query (query)`](#asynciteratorblockcid-repoblocksquery-query)
     - [`Promise<CID> repo.blocks.delete(cid:CID)`](#promisecid-repoblocksdeletecidcid)
     - [`AsyncIterator<CID> repo.blocks.deleteMany(source:AsyncIterable<CID>)`](#asynciteratorcid-repoblocksdeletemanysourceasynciterablecid)
   - [Datastore](#datastore)
@@ -262,9 +262,11 @@ Deletes a block
 
 * `cid` should be of the type [CID][]
 
-#### `Promise<Array<Object>> repo.blocks.query (query)`
+#### `AsyncIterator<Block|CID> repo.blocks.query (query)`
 
 Query what blocks are available in blockstore.
+
+If `query.keysOnly` is true, the returned iterator will yield [CID][]s, otherwise it will yield [Block][]s
 
 * `query` is a object as specified in [interface-datastore](https://github.com/ipfs/interface-datastore#query).
 

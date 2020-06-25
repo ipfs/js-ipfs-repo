@@ -3,7 +3,7 @@
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 const Block = require('ipld-block')
-const { cidToKey } = require('./blockstore-utils')
+const { cidToKey, keyToCid } = require('./blockstore-utils')
 const map = require('it-map')
 const drain = require('it-drain')
 const pushable = require('it-pushable')
@@ -28,10 +28,17 @@ function createBaseStore (store) {
      *
      * @param {Object} query
      * @param {Object} options
-     * @returns {AsyncIterator<Block>}
+     * @returns {AsyncIterator<Block|CID>}
      */
-    async * query (query, options) { // eslint-disable-line require-await
-      yield * store.query(query, options)
+    async * query (query, options) {
+      for await (const { key, value } of store.query(query, options)) {
+        if (query.keysOnly) {
+          yield keyToCid(key)
+          continue
+        }
+
+        yield new Block(value, keyToCid(key))
+      }
     },
 
     /**

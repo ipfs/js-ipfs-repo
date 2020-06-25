@@ -353,8 +353,8 @@ class IpfsRepo {
     for await (const block of this.blocks.query({})) {
       count = count.plus(1)
       size = size
-        .plus(block.value.byteLength)
-        .plus(block.key.toBuffer().byteLength)
+        .plus(block.data.byteLength)
+        .plus(block.cid.buffer.byteLength)
     }
 
     return { count, size }
