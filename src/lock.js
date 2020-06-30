@@ -1,10 +1,11 @@
 'use strict'
 
+const { LockExistsError } = require('./errors')
 const path = require('path')
 const debug = require('debug')
 const { lock } = require('proper-lockfile')
 
-const log = debug('repo:lock')
+const log = debug('ipfs:repo:lock')
 const lockFile = 'repo.lock'
 
 /**
@@ -21,13 +22,22 @@ const STALE_TIME = 20000
 /**
  * Lock the repo in the given dir.
  *
- * @param {string} dir
+ * @param {String} dir
  * @returns {Promise<Object>}
  */
 exports.lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
-  const release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+  let release
+  try {
+    release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+  } catch (err) {
+    if (err.code === 'ELOCKED') {
+      throw new LockExistsError(`Lock already being held for file: ${file}`)
+    } else {
+      throw err
+    }
+  }
   return {
     close: async () => { // eslint-disable-line require-await
       release()

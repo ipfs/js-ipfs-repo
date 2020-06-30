@@ -1,13 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
-const path = require('path')
+const { expect } = require('./utils/chai')
+const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../')
 const Errors = require('../src/errors')
-const os = require('os')
 const bytes = require('bytes')
 
 module.exports = (repo) => {
@@ -59,12 +56,12 @@ module.exports = (repo) => {
 
     describe('version', () => {
       afterEach(async () => {
-        await repo.version.set(7)
+        await repo.version.set(8)
       })
 
       it('get version', async () => {
         const version = await repo.version.get()
-        expect(version).to.equal(7)
+        expect(version).to.equal(8)
       })
 
       it('set version', async () => {
@@ -159,7 +156,7 @@ module.exports = (repo) => {
             count++
           }
         }
-        const repo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()), {
+        const repo = new IPFSRepo(tempDir(), {
           lock: 'memory',
           storageBackends: {
             root: FakeDatastore,
@@ -187,7 +184,7 @@ module.exports = (repo) => {
       })
 
       it('should throw non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        const otherRepo = new IPFSRepo(tempDir())
         const err = new Error('wat')
 
         otherRepo.root.open = () => {
@@ -201,8 +198,8 @@ module.exports = (repo) => {
         }
       })
 
-      it('should ingore non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+      it('should ignore non-already-open errors when opening the root', async () => {
+        const otherRepo = new IPFSRepo(tempDir())
 
         const err = new Error('Already open')
         let threwError = false
@@ -212,7 +209,7 @@ module.exports = (repo) => {
           throw err
         }
 
-        await otherRepo.init({})
+        await otherRepo._openRoot()
 
         expect(threwError).to.be.true()
       })
@@ -236,7 +233,7 @@ module.exports = (repo) => {
       })
 
       it('should remove the lockfile when opening the repo fails', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             datastore: ExplodingDatastore
           }
@@ -251,7 +248,7 @@ module.exports = (repo) => {
       })
 
       it('should re-throw the original error even when removing the lockfile fails', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             datastore: ExplodingDatastore
           }
@@ -270,7 +267,7 @@ module.exports = (repo) => {
       })
 
       it('should throw when repos are not initialised', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()), {
+        otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
             datastore: ExplodingDatastore
           }
@@ -284,7 +281,7 @@ module.exports = (repo) => {
       })
 
       it('should throw when config is not set', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        otherRepo = new IPFSRepo(tempDir())
         otherRepo.config.exists = () => {
           return false
         }
@@ -305,7 +302,7 @@ module.exports = (repo) => {
       it('should return the max storage stat when set', async () => {
         const maxStorage = '1GB'
 
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        otherRepo = new IPFSRepo(tempDir())
         await otherRepo.init({})
         await otherRepo.open()
         await otherRepo.config.set('Datastore.StorageMax', maxStorage)
@@ -317,7 +314,7 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when closing', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        otherRepo = new IPFSRepo(tempDir())
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -336,7 +333,7 @@ module.exports = (repo) => {
       })
 
       it('should swallow expected errors when closing', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        otherRepo = new IPFSRepo(tempDir())
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -350,7 +347,7 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when checking if the repo has been initialised', async () => {
-        otherRepo = new IPFSRepo(path.join(os.tmpdir(), 'repo-' + Date.now()))
+        otherRepo = new IPFSRepo(tempDir())
 
         otherRepo.config.exists = () => {
           return true

@@ -2,10 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+const { expect } = require('./utils/chai')
 const sinon = require('sinon')
 
 const migrator = require('ipfs-repo-migrations')

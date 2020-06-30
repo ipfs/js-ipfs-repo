@@ -2,19 +2,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
-const os = require('os')
-const path = require('path')
+const { expect } = require('./utils/chai')
+const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../src')
 
 describe('isInitialized', () => {
   let repo
 
   beforeEach(() => {
-    const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + Math.random())
-    repo = new IPFSRepo(repoPath)
+    repo = new IPFSRepo(tempDir(b => 'test-repo-for-' + b))
   })
 
   it('should be false before initialization', async () => {

@@ -1,3 +1,110 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.3...v4.0.0) (2020-06-25)
+
+
+### Features
+
+* store blocks under multihash key ([#211](https://github.com/ipfs/js-ipfs-repo/issues/211)) ([06a9e27](https://github.com/ipfs/js-ipfs-repo/commit/06a9e27))
+
+
+### BREAKING CHANGES
+
+* - Repo version incremented to `8`, requires a migration
+- Blocks are now stored using the multihash, not the full CID
+- `repo.blocks.query({})` now returns an async iterator that yields blocks
+- `repo.blocks.query({ keysOnly: true })` now returns an async iterator that yields CIDs
+  - Those CIDs are v1 with the raw codec
+
+Co-authored-by: achingbrain <alex@achingbrain.net>
+
+
+
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.2...v3.0.3) (2020-06-20)
+
+
+
+<a name="3.0.2"></a>
+## [3.0.2](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.1...v3.0.2) (2020-06-15)
+
+
+### Features
+
+* use datastore-level in the browser again ([#236](https://github.com/ipfs/js-ipfs-repo/issues/236)) ([33663b3](https://github.com/ipfs/js-ipfs-repo/commit/33663b3))
+
+
+
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.0...v3.0.1) (2020-05-19)
+
+
+### Bug Fixes
+
+* return blocks from putmany as blocks are passed in ([8c386c7](https://github.com/ipfs/js-ipfs-repo/commit/8c386c7))
+
+
+
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v2.1.1...v3.0.0) (2020-05-14)
+
+
+### Features
+
+* use streaming API for blockstore access ([#232](https://github.com/ipfs/js-ipfs-repo/issues/232)) ([65d7596](https://github.com/ipfs/js-ipfs-repo/commit/65d7596))
+
+
+### BREAKING CHANGES
+
+* * `repo.blockstore.putMany()` used to return a promise that resolved when all the deletes were done, now it returns an AsyncIterator that yields `{key, value}` objects as the put progresses
+* `repo.blockstore.deleteMany()` used to return a promise that resolved when all the deletes were done, now it returns an AsyncIterator that yields CID objects as the delete progresses
+
+
+
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/ipfs/js-ipfs-repo/compare/v2.1.0...v2.1.1) (2020-05-05)
+
+
+
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/ipfs/js-ipfs-repo/compare/v2.0.1...v2.1.0) (2020-05-04)
+
+
+### Bug Fixes
+
+* **ci:** add empty commit to fix lint checks on master ([d1773b1](https://github.com/ipfs/js-ipfs-repo/commit/d1773b1))
+
+
+### Features
+
+* add deleteMany method ([#230](https://github.com/ipfs/js-ipfs-repo/issues/230)) ([3210db9](https://github.com/ipfs/js-ipfs-repo/commit/3210db9))
+
+
+
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v2.0.0...v2.0.1) (2020-04-28)
+
+
+### Features
+
+* adds .replace and .getAll methods to config ([#227](https://github.com/ipfs/js-ipfs-repo/issues/227)) ([0122537](https://github.com/ipfs/js-ipfs-repo/commit/0122537))
+
+
+
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.1...v2.0.0) (2020-04-20)
+
+
+### Features
+
+* use new datastore-idb ([#225](https://github.com/ipfs/js-ipfs-repo/issues/225)) ([99df42b](https://github.com/ipfs/js-ipfs-repo/commit/99df42b))
+
+
+
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v1.0.0...v1.0.1) (2020-03-30)
+
+
+
 # [1.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v0.30.1...v1.0.0) (2020-02-10)
 
 

@@ -1,13 +1,12 @@
 'use strict'
 
 const _get = require('just-safe-get')
-const assert = require('assert')
-const path = require('path')
 const debug = require('debug')
 const Big = require('bignumber.js')
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
+const pathJoin = require('ipfs-utils/src/path-join')
 
 const constants = require('./constants')
 const backends = require('./backends')
@@ -20,7 +19,7 @@ const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 
-const log = debug('repo')
+const log = debug('ipfs:repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
 const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
@@ -35,11 +34,13 @@ const lockers = {
  */
 class IpfsRepo {
   /**
-   * @param {string} repoPath - path where the repo is stored
-   * @param {object} options - Configuration
+   * @param {String} repoPath - path where the repo is stored
+   * @param {Object} options - Configuration
    */
   constructor (repoPath, options) {
-    assert.strictEqual(typeof repoPath, 'string', 'missing repoPath')
+    if (typeof repoPath !== 'string') {
+      throw new Error('missing repoPath')
+    }
 
     this.options = buildOptions(options)
     this.closed = true
@@ -111,14 +112,18 @@ class IpfsRepo {
       this.lockfile = await this._openLock(this.path)
       log('acquired repo.lock')
       log('creating datastore')
-      this.datastore = backends.create('datastore', path.join(this.path, 'datastore'), this.options)
+      this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
+      await this.datastore.open()
       log('creating blocks')
-      const blocksBaseStore = backends.create('blocks', path.join(this.path, 'blocks'), this.options)
+      const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
+      await blocksBaseStore.open()
       this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
       log('creating keystore')
-      this.keys = backends.create('keys', path.join(this.path, 'keys'), this.options)
+      this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
+      await this.keys.open()
       log('creating pins')
-      this.pins = backends.create('pins', path.join(this.path, 'pins'), this.options)
+      this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
+      await this.pins.open()
 
       const isCompatible = await this.version.check(constants.repoVersion)
       if (!isCompatible) {
@@ -153,11 +158,15 @@ class IpfsRepo {
    */
   _getLocker () {
     if (typeof this.options.lock === 'string') {
-      assert(lockers[this.options.lock], 'Unknown lock type: ' + this.options.lock)
+      if (!lockers[this.options.lock]) {
+        throw new Error('Unknown lock type: ' + this.options.lock)
+      }
       return lockers[this.options.lock]
     }
 
-    assert(this.options.lock, 'No lock provided')
+    if (!this.options.lock) {
+      throw new Error('No lock provided')
+    }
     return this.options.lock
   }
 
@@ -179,7 +188,7 @@ class IpfsRepo {
    * Creates a lock on the repo if a locker is specified. The lockfile object will
    * be returned in the callback if one has been created.
    *
-   * @param {string} path
+   * @param {String} path
    * @returns {Promise<lockfile>}
    */
   async _openLock (path) {
@@ -252,7 +261,14 @@ class IpfsRepo {
       }
     }
 
-    await Promise.all([this.root, this.blocks, this.keys, this.datastore, this.pins].map((store) => store.close()))
+    await Promise.all([
+      this.root,
+      this.blocks,
+      this.keys,
+      this.datastore,
+      this.pins
+    ].map((store) => store.close()))
+
     log('unlocking')
     this.closed = true
     await this._closeLock()
@@ -341,8 +357,8 @@ class IpfsRepo {
     for await (const block of this.blocks.query({})) {
       count = count.plus(1)
       size = size
-        .plus(block.value.byteLength)
-        .plus(block.key._buf.byteLength)
+        .plus(block.data.byteLength)
+        .plus(block.cid.buffer.byteLength)
     }
 
     return { count, size }
@@ -353,7 +369,7 @@ async function getSize (queryFn) {
   const sum = new Big(0)
   for await (const block of queryFn.query({})) {
     sum.plus(block.value.byteLength)
-      .plus(block.key._buf.byteLength)
+      .plus(block.key.toBuffer().byteLength)
   }
   return sum
 }

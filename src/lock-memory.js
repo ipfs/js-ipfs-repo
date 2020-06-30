@@ -3,7 +3,7 @@
 const errors = require('./errors')
 const debug = require('debug')
 
-const log = debug('repo:lock')
+const log = debug('ipfs:repo:lock')
 
 const lockFile = 'repo.lock'
 
@@ -12,7 +12,7 @@ const LOCKS = {}
 /**
  * Lock the repo in the given dir.
  *
- * @param {string} dir
+ * @param {String} dir
  * @returns {Promise<Object>}
  */
 exports.lock = async (dir) => { // eslint-disable-line require-await
@@ -37,7 +37,7 @@ exports.lock = async (dir) => { // eslint-disable-line require-await
 /**
  * Check if the repo in the given directory is locked.
  *
- * @param {string} dir
+ * @param {String} dir
  * @returns {bool}
  */
 exports.locked = async (dir) => { // eslint-disable-line require-await

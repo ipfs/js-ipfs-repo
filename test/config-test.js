@@ -1,39 +1,39 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const expect = chai.expect
+const { Buffer } = require('buffer')
+const { expect } = require('./utils/chai')
 
 module.exports = (repo) => {
   describe('config', () => {
     describe('.set', () => {
-      it('should throw when invalid key is passed', async () => {
-        try {
-          await repo.config.set(5, 'value')
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_KEY')
-        }
+      it('should throw when invalid key is passed', () => {
+        return expect(repo.config.set(5, 'value')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_KEY')
       })
 
-      it('should throw when invalid value is passed', async () => {
-        try {
-          await repo.config.set('foo', Buffer.from([0, 1, 2]))
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_INVALID_VALUE')
-        }
+      it('should throw when invalid value is passed', () => {
+        return expect(repo.config.set('foo', Buffer.from([0, 1, 2]))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_VALUE')
       })
     })
     describe('.get', () => {
-      it('should throw NotFoundError when key does not exist', async () => {
-        try {
-          await repo.config.get('someRandomKey')
-          throw new Error('Should have thrown')
-        } catch (err) {
-          expect(err.code).to.equal('ERR_NOT_FOUND')
-        }
+      it('should throw NotFoundError when key does not exist', () => {
+        return expect(repo.config.get('someRandomKey')).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
+      })
+    })
+    describe('.getAll', () => {
+      it('should return the whole conifg', async () => {
+        const thing = await repo.config.getAll()
+
+        expect(thing).to.deep.equal(await repo.config.get())
+      })
+    })
+    describe('.replace', () => {
+      it('should replace the whole conifg', async () => {
+        expect({}).to.not.deep.equal(await repo.config.get())
+
+        await repo.config.replace({})
+
+        expect({}).to.deep.equal(await repo.config.get())
       })
     })
   })
