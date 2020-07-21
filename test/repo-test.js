@@ -162,13 +162,14 @@ module.exports = (repo) => {
             root: FakeDatastore,
             blocks: FakeDatastore,
             keys: FakeDatastore,
-            datastore: FakeDatastore
+            datastore: FakeDatastore,
+            pins: FakeDatastore
           }
         })
         await repo.init({})
         await repo.open()
         await repo.close()
-        expect(count).to.be.eq(4)
+        expect(count).to.be.eq(5)
       })
 
       it('open twice throws error', async () => {

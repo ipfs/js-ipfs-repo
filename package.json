@@ -43,7 +43,7 @@
     "npm": ">=3.0.0"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
+    "aegir": "^25.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
@@ -68,7 +68,7 @@
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
     "interface-datastore": "^1.0.2",
-    "ipfs-repo-migrations": "^1.0.0",
+    "ipfs-repo-migrations": "^2.0.0",
     "ipfs-utils": "^2.2.0",
     "ipld-block": "^0.9.1",
     "it-map": "^1.0.2",
