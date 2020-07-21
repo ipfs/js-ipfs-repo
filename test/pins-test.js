@@ -17,12 +17,6 @@ module.exports = (repo) => {
       expect(repo).to.have.property('pins')
     })
 
-    it('implements interface-datastore', () => {
-      const pins = repo.pins
-      expect(pins.batch).to.exist()
-      expect(pins.query).to.exist()
-    })
-
     describe('.put', () => {
       it('simple', async () => {
         await repo.pins.put(b, data)
