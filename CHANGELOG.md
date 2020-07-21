@@ -1,3 +1,13 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v4.0.0...v5.0.0) (2020-07-21)
+
+
+### Features
+
+* store pins in datastore ([#221](https://github.com/ipfs/js-ipfs-repo/issues/221)) ([467c430](https://github.com/ipfs/js-ipfs-repo/commit/467c430))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v3.0.3...v4.0.0) (2020-06-25)
 
