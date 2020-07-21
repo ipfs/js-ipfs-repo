@@ -114,6 +114,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     if (!r.init) {
       require('./interop-test')(repo)
     }
+    require('./pins-test')(repo)
     require('./is-initialized')
   }))
 
