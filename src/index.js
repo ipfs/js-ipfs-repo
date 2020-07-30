@@ -369,7 +369,7 @@ async function getSize (queryFn) {
   const sum = new Big(0)
   for await (const block of queryFn.query({})) {
     sum.plus(block.value.byteLength)
-      .plus(block.key.toBuffer().byteLength)
+      .plus(block.key.uint8Array().byteLength)
   }
   return sum
 }

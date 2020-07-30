@@ -1,12 +1,13 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const { default: Queue } = require('p-queue')
 const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const errcode = require('err-code')
 const errors = require('./errors')
+const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 const configKey = new Key('config')
 
@@ -44,7 +45,7 @@ module.exports = (store) => {
         return
       }
 
-      const config = JSON.parse(encodedValue.toString())
+      const config = JSON.parse(uint8ArrayToString(encodedValue))
       if (key !== undefined && _get(config, key) === undefined) {
         throw new errors.NotFoundError(`Key ${key} does not exist in config`)
       }
@@ -70,7 +71,7 @@ module.exports = (store) => {
         throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
       }
 
-      if (value === undefined || Buffer.isBuffer(value)) {
+      if (value === undefined || (value instanceof Uint8Array)) {
         throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
@@ -89,7 +90,7 @@ module.exports = (store) => {
      * @returns {void}
      */
     async replace (value, options = {}) { // eslint-disable-line require-await
-      if (!value || Buffer.isBuffer(value)) {
+      if (!value || (value instanceof Uint8Array)) {
         throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
@@ -127,7 +128,7 @@ module.exports = (store) => {
   }
 
   function _saveAll (config) {
-    const buf = Buffer.from(JSON.stringify(config, null, 2))
+    const buf = uint8ArrayFromString(JSON.stringify(config, null, 2))
     return store.put(configKey, buf)
   }
 }

@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./utils/chai')
 const apiAddr = require('../src/api-addr')
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 module.exports = () => {
   describe('api-addr', () => {
@@ -31,7 +31,7 @@ module.exports = () => {
 
         await api.set('0')
 
-        expect(val).to.deep.equal(Buffer.from('0'))
+        expect(val).to.deep.equal(uint8ArrayFromString('0'))
       })
     })
   })

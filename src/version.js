@@ -1,9 +1,10 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const debug = require('debug')
 const log = debug('ipfs:repo:version')
+const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 const versionKey = new Key('version')
 
@@ -24,7 +25,7 @@ module.exports = (store) => {
      */
     async get () {
       const buf = await store.get(versionKey)
-      return parseInt(buf.toString().trim(), 10)
+      return parseInt(uint8ArrayToString(buf), 10)
     },
     /**
      * Set the version of the repo, writing it to the underlying store.
@@ -33,7 +34,7 @@ module.exports = (store) => {
      * @returns {Promise<void>}
      */
     async set (version) { // eslint-disable-line require-await
-      return store.put(versionKey, Buffer.from(String(version)))
+      return store.put(versionKey, uint8ArrayFromString(String(version)))
     },
     /**
      * Check the current version, and returns true if versions matches

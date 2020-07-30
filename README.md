@@ -36,8 +36,8 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
     - [`Promise<boolean> repo.exists()`](#promiseboolean-repoexists)
     - [`Promise<Boolean> repo.isInitialized()`](#promiseboolean-repoisinitialized)
   - [Repos](#repos)
-    - [`Promise repo.put(key, value:Buffer)`](#promise-repoputkey-valuebuffer)
-    - [`Promise<Buffer> repo.get(key)`](#promisebuffer-repogetkey)
+    - [`Promise repo.put(key, value:Uint8Array)`](#promise-repoputkey-valueuint8array)
+    - [`Promise<Uint8Array> repo.get(key)`](#promiseuint8array-repogetkey)
   - [Blocks](#blocks)
     - [`Promise<Block> repo.blocks.put(block:Block)`](#promiseblock-repoblocksputblockblock)
     - [`AsyncIterator<Block> repo.blocks.putMany(source:AsyncIterable<Block>)`](#asynciteratorblock-repoblocksputmanysourceasynciterableblock)
@@ -214,17 +214,17 @@ The returned promise resolves to `false` if the repo has not been initialized an
 
 Root repo:
 
-#### `Promise repo.put(key, value:Buffer)`
+#### `Promise repo.put(key, value:Uint8Array)`
 
 Put a value at the root of the repo
 
-* `key` can be a buffer, a string or a [Key][]
+* `key` can be a Uint8Array, a string or a [Key][]
 
-#### `Promise<Buffer> repo.get(key)`
+#### `Promise<Uint8Array> repo.get(key)`
 
 Get a value at the root of the repo
 
-* `key` can be a buffer, a string or a [Key][]
+* `key` can be a Uint8Array, a string or a [Key][]
 
 ### Blocks
 

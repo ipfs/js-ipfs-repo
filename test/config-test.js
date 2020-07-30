@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./utils/chai')
 
 module.exports = (repo) => {
@@ -12,7 +11,7 @@ module.exports = (repo) => {
       })
 
       it('should throw when invalid value is passed', () => {
-        return expect(repo.config.set('foo', Buffer.from([0, 1, 2]))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_VALUE')
+        return expect(repo.config.set('foo', Uint8Array.from([0, 1, 2]))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_VALUE')
       })
     })
     describe('.get', () => {

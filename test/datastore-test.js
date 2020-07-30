@@ -2,15 +2,15 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./utils/chai')
 const range = require('just-range')
 const Key = require('interface-datastore').Key
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 module.exports = (repo) => {
   describe('datastore', () => {
-    const dataList = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
-    const data = Buffer.from('hello world')
+    const dataList = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
+    const data = uint8ArrayFromString('hello world')
     const b = new Key('hello')
 
     describe('.put', () => {
