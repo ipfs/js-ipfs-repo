@@ -63,7 +63,7 @@
     "bytes": "^3.1.0",
     "cids": "^0.8.0",
     "datastore-core": "^1.1.0",
-    "datastore-fs": "^1.1.0",
+    "datastore-fs": "^2.0.0",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
