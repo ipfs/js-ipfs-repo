@@ -75,7 +75,7 @@
     "it-pushable": "^1.4.0",
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
-    "multibase": "^1.0.1",
+    "multibase": "^3.0.0",
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0"
