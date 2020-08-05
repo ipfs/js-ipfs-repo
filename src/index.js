@@ -358,7 +358,7 @@ class IpfsRepo {
       count = count.plus(1)
       size = size
         .plus(block.data.byteLength)
-        .plus(block.cid.buffer.byteLength)
+        .plus(block.cid.bytes.byteLength)
     }
 
     return { count, size }

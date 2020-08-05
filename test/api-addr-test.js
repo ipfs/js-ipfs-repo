@@ -3,7 +3,7 @@
 
 const { expect } = require('./utils/chai')
 const apiAddr = require('../src/api-addr')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = () => {
   describe('api-addr', () => {

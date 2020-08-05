@@ -4,7 +4,7 @@
 const { expect } = require('./utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = (repo) => {
   describe('stat', () => {

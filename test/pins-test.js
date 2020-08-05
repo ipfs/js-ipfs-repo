@@ -5,7 +5,7 @@
 const { expect } = require('./utils/chai')
 const range = require('just-range')
 const Key = require('interface-datastore').Key
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = (repo) => {
   describe('pins', () => {

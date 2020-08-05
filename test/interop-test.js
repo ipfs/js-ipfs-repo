@@ -5,6 +5,7 @@ const { expect } = require('./utils/chai')
 const mh = require('multihashing-async').multihash
 const CID = require('cids')
 const Key = require('interface-datastore').Key
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 module.exports = (repo) => {
   describe('interop', () => {
@@ -14,7 +15,7 @@ module.exports = (repo) => {
       )
 
       const val = await repo.blocks.get(new CID(welcomeHash))
-      expect(val.data.toString()).to.match(/Hello and Welcome to IPFS/)
+      expect(uint8ArrayToString(val.data)).to.match(/Hello and Welcome to IPFS/)
     })
 
     it('reads a bunch of blocks', async () => {
@@ -35,7 +36,7 @@ module.exports = (repo) => {
 
     it('reads DHT records from the datastore', async () => {
       const val = await repo.datastore.get(new Key('/AHE5I5B7TY'))
-      expect(val.toString('hex')).to.eql('0a0601c9d4743f9e12097465737476616c75651a2212201d22e2a5e140e5cd20d88fc59cd560f4887c7d9acf938ddb24d7207eac40fd2f')
+      expect(uint8ArrayToString(val, 'base16')).to.eql('0a0601c9d4743f9e12097465737476616c75651a2212201d22e2a5e140e5cd20d88fc59cd560f4887c7d9acf938ddb24d7207eac40fd2f')
     })
   })
 }

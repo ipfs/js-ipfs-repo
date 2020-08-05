@@ -1,7 +1,7 @@
 'use strict'
 
 const Key = require('interface-datastore').Key
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const apiFile = new Key('api')
 

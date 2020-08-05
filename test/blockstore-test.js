@@ -13,7 +13,8 @@ const IPFSRepo = require('../')
 const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function makeBlock () {
   const bData = uint8ArrayFromString(`hello-${Math.random()}`)
@@ -387,7 +388,7 @@ module.exports = (repo) => {
 
       it('returns key/values for block data', async () => {
         const blocks = await all(repo.blocks.query({}))
-        const block = blocks.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+        const block = blocks.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
         expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
@@ -398,7 +399,7 @@ module.exports = (repo) => {
         const blocksWithPrefix = await all(repo.blocks.query({
           prefix: cidToKey(block1.cid).toString().substring(0, 10)
         }))
-        const block = blocksWithPrefix.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+        const block = blocksWithPrefix.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
         expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)

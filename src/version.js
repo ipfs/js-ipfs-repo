@@ -3,8 +3,8 @@
 const Key = require('interface-datastore').Key
 const debug = require('debug')
 const log = debug('ipfs:repo:version')
-const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const versionKey = new Key('version')
 

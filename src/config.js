@@ -6,8 +6,8 @@ const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const errcode = require('err-code')
 const errors = require('./errors')
-const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const configKey = new Key('config')
 
