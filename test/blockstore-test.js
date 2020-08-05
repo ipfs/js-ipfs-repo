@@ -2,7 +2,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
@@ -14,9 +13,11 @@ const IPFSRepo = require('../')
 const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function makeBlock () {
-  const bData = Buffer.from(`hello-${Math.random()}`)
+  const bData = uint8ArrayFromString(`hello-${Math.random()}`)
 
   const hash = await multihashing(bData, 'sha2-256')
   return new Block(bData, new CID(hash))
@@ -24,8 +25,8 @@ async function makeBlock () {
 
 module.exports = (repo) => {
   describe('blockstore', () => {
-    const blockData = range(100).map((i) => Buffer.from(`hello-${i}-${Math.random()}`))
-    const bData = Buffer.from('hello world')
+    const blockData = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
+    const bData = uint8ArrayFromString('hello world')
     let b
 
     before(async () => {
@@ -51,7 +52,7 @@ module.exports = (repo) => {
       })
 
       it('empty value', async () => {
-        const d = Buffer.alloc(0)
+        const d = new Uint8Array(0)
         const multihash = await multihashing(d, 'sha2-256')
         const empty = new Block(d, new CID(multihash))
         await repo.blocks.put(empty)
@@ -69,7 +70,7 @@ module.exports = (repo) => {
       it('.putMany', async function () {
         this.timeout(15000) // add time for ci
         const blocks = await Promise.all(range(50).map(async (i) => {
-          const d = Buffer.from('many' + Math.random())
+          const d = uint8ArrayFromString('many' + Math.random())
           const hash = await multihashing(d, 'sha2-256')
           return new Block(d, new CID(hash))
         }))
@@ -117,7 +118,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
         await repo.blocks.put(new Block(data, cid))
@@ -126,7 +127,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-pb', hash)
@@ -140,7 +141,7 @@ module.exports = (repo) => {
       })
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-cbor', hash)
 
@@ -149,7 +150,7 @@ module.exports = (repo) => {
 
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
         const key = cidToKey(cid)
@@ -228,7 +229,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
         await repo.blocks.put(new Block(data, cid))
@@ -237,7 +238,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-pb', hash)
@@ -251,7 +252,7 @@ module.exports = (repo) => {
       })
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-cbor', hash)
 
@@ -260,7 +261,7 @@ module.exports = (repo) => {
 
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
         const key = cidToKey(cid)
@@ -317,7 +318,7 @@ module.exports = (repo) => {
       })
 
       it('should have block stored under v0 CID with a v1 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(hash)
         await repo.blocks.put(new Block(data, cid))
@@ -326,7 +327,7 @@ module.exports = (repo) => {
       })
 
       it('should have block stored under v1 CID with a v0 CID', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-pb', hash)
@@ -340,7 +341,7 @@ module.exports = (repo) => {
       })
 
       it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = Buffer.from(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const hash = await multihashing(data, 'sha2-256')
         const cid = new CID(1, 'dag-cbor', hash)
         const result = await repo.blocks.has(cid)
@@ -387,7 +388,7 @@ module.exports = (repo) => {
 
       it('returns key/values for block data', async () => {
         const blocks = await all(repo.blocks.query({}))
-        const block = blocks.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+        const block = blocks.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
         expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
@@ -398,7 +399,7 @@ module.exports = (repo) => {
         const blocksWithPrefix = await all(repo.blocks.query({
           prefix: cidToKey(block1.cid).toString().substring(0, 10)
         }))
-        const block = blocksWithPrefix.find(block => block.data.toString('base64') === block1.data.toString('base64'))
+        const block = blocksWithPrefix.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
         expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)

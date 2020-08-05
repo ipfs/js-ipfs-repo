@@ -1,7 +1,7 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const apiFile = new Key('api')
 
@@ -23,7 +23,7 @@ module.exports = (store) => {
      * @returns {Promise<?>}
      */
     async set (value) { // eslint-disable-line require-await
-      return store.put(apiFile, Buffer.from(value.toString()))
+      return store.put(apiFile, uint8ArrayFromString(value.toString()))
     },
     /**
      * Deletes api file

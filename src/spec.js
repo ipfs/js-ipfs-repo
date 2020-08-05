@@ -1,8 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const Key = require('interface-datastore').Key
 const sortKeys = require('sort-keys')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const specKey = new Key('datastore_spec')
 
@@ -19,11 +20,11 @@ module.exports = (store) => {
     /**
      * Get the current datastore spec.
      *
-     * @returns {Promise<Buffer>}
+     * @returns {Promise<Uint8Array>}
      */
     async get () {
       const buf = await store.get(specKey)
-      return JSON.parse(buf.toString())
+      return JSON.parse(uint8ArrayToString(buf))
     },
     /**
      * Set the datastore spec of the repo, writing it to the underlying store.
@@ -32,7 +33,7 @@ module.exports = (store) => {
      * @returns {Promise<void>}
      */
     async set (spec) { // eslint-disable-line require-await
-      return store.put(specKey, Buffer.from(JSON.stringify(sortKeys(spec, { deep: true }))))
+      return store.put(specKey, uint8ArrayFromString(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }
 }
