@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./utils/chai')
+const { expect } = require('aegir/utils/chai')
 const range = require('just-range')
 const Key = require('interface-datastore').Key
 const uint8ArrayFromString = require('uint8arrays/from-string')
