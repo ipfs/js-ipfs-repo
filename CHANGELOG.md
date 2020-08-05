@@ -1,3 +1,18 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v5.0.0...v6.0.0) (2020-08-05)
+
+
+### Bug Fixes
+
+* swap node buffers for uint8arrays ([#249](https://github.com/ipfs/js-ipfs-repo/issues/249)) ([ea405b5](https://github.com/ipfs/js-ipfs-repo/commit/ea405b5))
+
+
+### BREAKING CHANGES
+
+* - Swaps out node `Buffer`s for `Uint8Array`s
+
+
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v4.0.0...v5.0.0) (2020-07-21)
 
