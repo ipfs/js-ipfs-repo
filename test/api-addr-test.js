@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./utils/chai')
+const { expect } = require('aegir/utils/chai')
 const apiAddr = require('../src/api-addr')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 

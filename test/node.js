@@ -9,9 +9,6 @@ const promisify = require('util').promisify
 const os = require('os')
 const { LockExistsError } = require('../src/errors')
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-
 const asyncRimraf = promisify(rimraf)
 const asyncNcp = promisify(ncp)
 const fsstat = promisify(fs.stat)

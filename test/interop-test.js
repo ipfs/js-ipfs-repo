@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./utils/chai')
+const { expect } = require('aegir/utils/chai')
 const mh = require('multihashing-async').multihash
 const CID = require('cids')
 const Key = require('interface-datastore').Key

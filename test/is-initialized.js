@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./utils/chai')
+const { expect } = require('aegir/utils/chai')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../src')
 

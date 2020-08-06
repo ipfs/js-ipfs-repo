@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./utils/chai')
+const { expect } = require('aegir/utils/chai')
 
 module.exports = (repo) => {
   describe('config', () => {
