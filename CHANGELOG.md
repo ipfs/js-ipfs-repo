@@ -1,3 +1,8 @@
+<a name="6.0.3"></a>
+## [6.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.2...v6.0.3) (2020-08-15)
+
+
+
 <a name="6.0.2"></a>
 ## [6.0.2](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.1...v6.0.2) (2020-08-15)
 
