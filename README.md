@@ -179,7 +179,7 @@ Arguments:
 * `path` (string, mandatory): the path for this repo
 * `options` (object, optional): may contain the following values
   * `autoMigrate` (bool, defaults to `true`): controls automatic migrations of repository.
-  * `onMigrationProgress` (function(fromVersion, toVersion, percentComplete, message)): callback function to be notified of migration progress
+  * `onMigrationProgress` (function(version, percentComplete, message)): callback function to be notified of migration progress
   * `lock` ([Lock](#lock) or string *Deprecated*): what type of lock to use. Lock has to be acquired when opening. string can be `"fs"` or `"memory"`.
   * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
     * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at the root (`repo.set()`, `repo.get()`)
