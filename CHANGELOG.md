@@ -1,3 +1,18 @@
+<a name="6.0.2"></a>
+## [6.0.2](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.1...v6.0.2) (2020-08-15)
+
+
+### Bug Fixes
+
+* open datastores after migration ([#255](https://github.com/ipfs/js-ipfs-repo/issues/255)) ([712ed2a](https://github.com/ipfs/js-ipfs-repo/commit/712ed2a))
+
+
+### Features
+
+* expose onMigrationProgress option ([#254](https://github.com/ipfs/js-ipfs-repo/issues/254)) ([6166e1f](https://github.com/ipfs/js-ipfs-repo/commit/6166e1f))
+
+
+
 <a name="6.0.1"></a>
 ## [6.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.0...v6.0.1) (2020-08-06)
 
