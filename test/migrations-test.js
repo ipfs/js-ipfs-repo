@@ -94,6 +94,24 @@ module.exports = (createTempRepo) => {
       expect(migrateStub.called).to.be.true()
     })
 
+    it('should migrate with progress', async () => {
+      migrateStub.resolves()
+      repoVersionStub.value(8)
+      getLatestMigrationVersionStub.returns(9)
+
+      await repo.version.set(7)
+      await repo.close()
+
+      expect(migrateStub.called).to.be.false()
+
+      repo.options.onMigrationProgress = sinon.stub()
+
+      await repo.open()
+
+      expect(migrateStub.called).to.be.true()
+      expect(migrateStub.getCall(0).args[3]).to.have.property('onProgress', repo.options.onMigrationProgress)
+    })
+
     it('should not migrate when versions matches', async () => {
       migrateStub.resolves()
       repoVersionStub.value(8)
@@ -124,6 +142,23 @@ module.exports = (createTempRepo) => {
 
       expect(revertStub.called).to.be.true()
       expect(migrateStub.called).to.be.false()
+    })
+
+    it('should revert with progress', async () => {
+      revertStub.resolves()
+      repoVersionStub.value(8)
+
+      await repo.version.set(9)
+      await repo.close()
+
+      expect(revertStub.called).to.be.false()
+
+      repo.options.onMigrationProgress = sinon.stub()
+
+      await repo.open()
+
+      expect(revertStub.called).to.be.true()
+      expect(revertStub.getCall(0).args[3]).to.have.property('onProgress', repo.options.onMigrationProgress)
     })
   })
 }

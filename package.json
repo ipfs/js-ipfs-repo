@@ -64,7 +64,7 @@
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
     "interface-datastore": "^2.0.0",
-    "ipfs-repo-migrations": "^4.0.0",
+    "ipfs-repo-migrations": "^5.0.1",
     "ipfs-utils": "^2.3.1",
     "ipld-block": "^0.10.0",
     "it-map": "^1.0.2",
