@@ -111,6 +111,17 @@ class IpfsRepo {
       await this._checkInitialized()
       this.lockfile = await this._openLock(this.path)
       log('acquired repo.lock')
+
+      const isCompatible = await this.version.check(constants.repoVersion)
+
+      if (!isCompatible) {
+        if (await this._isAutoMigrationEnabled()) {
+          await this._migrate(constants.repoVersion)
+        } else {
+          throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
+        }
+      }
+
       log('creating datastore')
       this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
       await this.datastore.open()
@@ -124,15 +135,6 @@ class IpfsRepo {
       log('creating pins')
       this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
       await this.pins.open()
-
-      const isCompatible = await this.version.check(constants.repoVersion)
-      if (!isCompatible) {
-        if (await this._isAutoMigrationEnabled()) {
-          await this._migrate(constants.repoVersion)
-        } else {
-          throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
-        }
-      }
 
       this.closed = false
       log('all opened')
