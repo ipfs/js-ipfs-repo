@@ -334,10 +334,16 @@ class IpfsRepo {
 
     if (currentRepoVersion > toVersion) {
       log('reverting to version ' + toVersion)
-      return migrator.revert(this.path, this.options, toVersion, { ignoreLock: true })
+      return migrator.revert(this.path, this.options, toVersion, {
+        ignoreLock: true,
+        onProgress: this.options.onMigrationProgress
+      })
     } else {
       log('migrating to version ' + toVersion)
-      return migrator.migrate(this.path, this.options, toVersion, { ignoreLock: true })
+      return migrator.migrate(this.path, this.options, toVersion, {
+        ignoreLock: true,
+        onProgress: this.options.onMigrationProgress
+      })
     }
   }
 
