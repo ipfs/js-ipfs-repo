@@ -65,7 +65,7 @@
     "err-code": "^2.0.0",
     "interface-datastore": "^2.0.0",
     "ipfs-repo-migrations": "^5.0.3",
-    "ipfs-utils": "^2.3.1",
+    "ipfs-utils": "^3.0.0",
     "ipld-block": "^0.10.0",
     "it-map": "^1.0.2",
     "it-pushable": "^1.4.0",
