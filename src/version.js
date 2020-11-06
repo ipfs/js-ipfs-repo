@@ -38,6 +38,7 @@ module.exports = (store) => {
     },
     /**
      * Check the current version, and returns true if versions matches
+     *
      * @param {number} expected
      * @returns {boolean}
      */
