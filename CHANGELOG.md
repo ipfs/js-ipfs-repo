@@ -1,3 +1,17 @@
+# [7.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.3...v7.0.0) (2020-11-06)
+
+
+### chore
+
+* update deps ([#263](https://github.com/ipfs/js-ipfs-repo/issues/263)) ([b61cfda](https://github.com/ipfs/js-ipfs-repo/commit/b61cfda5af5a3524472f2cbb4f7461a59defcf2f))
+
+
+### BREAKING CHANGES
+
+* updates ipld-block to 0.11.0 which is not compatible with earlier versions (fails `expect(v11Block).to.deep.equal(v10Block)` for example)
+
+
+
 <a name="6.0.3"></a>
 ## [6.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v6.0.2...v6.0.3) (2020-08-15)
 
