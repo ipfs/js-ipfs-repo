@@ -29,7 +29,7 @@ module.exports = (store) => {
     /**
      * Get the value for the passed configuration key from the repo.
      *
-     * @param {String} key - the config key to get
+     * @param {string} key - the config key to get
      * @param {Object} options - options
      * @param {AbortSignal} options.signal - abort this config read
      * @returns {Promise<Object>}
@@ -57,7 +57,7 @@ module.exports = (store) => {
     /**
      * Set the current configuration for this repo.
      *
-     * @param {String} key - the config key to be written
+     * @param {string} key - the config key to be written
      * @param {Object} value - the config value to be written
      * @param {Object} options - options
      * @param {AbortSignal} options.signal - abort this config write

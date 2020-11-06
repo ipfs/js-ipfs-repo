@@ -29,6 +29,7 @@ module.exports = (store) => {
     /**
      * Set the datastore spec of the repo, writing it to the underlying store.
      * TODO unclear on what the type should be or if it's required
+     *
      * @param {number} spec
      * @returns {Promise<void>}
      */

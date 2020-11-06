@@ -10,7 +10,7 @@ module.exports = (store) => {
     /**
      * Get the current configuration from the repo.
      *
-     * @returns {Promise<String>}
+     * @returns {Promise<string>}
      */
     async get () {
       const value = await store.get(apiFile)

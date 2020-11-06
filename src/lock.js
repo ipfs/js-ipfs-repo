@@ -10,6 +10,7 @@ const lockFile = 'repo.lock'
 
 /**
  * Duration in milliseconds in which the lock is considered stale
+ *
  * @see https://github.com/moxystudio/node-proper-lockfile#lockfile-options
  * The default value of 10000 was too low for ipfs and sometimes `proper-lockfile`
  * would throw an exception because it couldn't update the lock file mtime within
@@ -22,7 +23,7 @@ const STALE_TIME = 20000
 /**
  * Lock the repo in the given dir.
  *
- * @param {String} dir
+ * @param {string} dir
  * @returns {Promise<Object>}
  */
 exports.lock = async (dir) => {

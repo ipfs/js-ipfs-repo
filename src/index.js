@@ -34,7 +34,7 @@ const lockers = {
  */
 class IpfsRepo {
   /**
-   * @param {String} repoPath - path where the repo is stored
+   * @param {string} repoPath - path where the repo is stored
    * @param {Object} options - Configuration
    */
   constructor (repoPath, options) {
@@ -71,7 +71,8 @@ class IpfsRepo {
 
   /**
    * Check if the repo is already initialized.
-   * @returns {Promise<Boolean>}
+   *
+   * @returns {Promise<boolean>}
    */
   async isInitialized () {
     if (!this.closed) {
@@ -174,6 +175,7 @@ class IpfsRepo {
 
   /**
    * Opens the root backend, catching and ignoring an 'Already open' error
+   *
    * @returns {Promise}
    */
   async _openRoot () {
@@ -190,7 +192,7 @@ class IpfsRepo {
    * Creates a lock on the repo if a locker is specified. The lockfile object will
    * be returned in the callback if one has been created.
    *
-   * @param {String} path
+   * @param {string} path
    * @returns {Promise<lockfile>}
    */
   async _openLock (path) {
@@ -214,6 +216,7 @@ class IpfsRepo {
 
   /**
    * Check if the repo is already initialized.
+   *
    * @private
    * @returns {Promise}
    */
