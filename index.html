@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>ipfs-repo 6.0.3 | Documentation</title>
+  <title>ipfs-repo 7.0.0 | Documentation</title>
   <meta name='description' content='IPFS Repo implementation'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>ipfs-repo</h3>
-          <div class='mb1'><code>6.0.3</code></div>
+          <div class='mb1'><code>7.0.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -453,7 +453,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L35-L374'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L35-L377'>
       <span>src/index.js</span>
       </a>
     
@@ -462,7 +462,7 @@
 
   <p>IpfsRepo implements all required functionality to read and write to an ipfs repo.</p>
 
-    <div class='pre p1 fill-light mt0'>new IpfsRepo(repoPath: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
+    <div class='pre p1 fill-light mt0'>new IpfsRepo(repoPath: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
   
   
 
@@ -479,7 +479,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>repoPath</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>repoPath</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    path where the repo is stored
 
           </div>
@@ -528,7 +528,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L64-L70'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L64-L70'>
       <span>src/index.js</span>
       </a>
     
@@ -610,7 +610,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L76-L94'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L77-L95'>
       <span>src/index.js</span>
       </a>
     
@@ -619,7 +619,7 @@
 
   <p>Check if the repo is already initialized.</p>
 
-    <div class='pre p1 fill-light mt0'>isInitialized(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>></div>
+    <div class='pre p1 fill-light mt0'>isInitialized(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>></div>
   
   
 
@@ -637,7 +637,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>></code>:
         
 
       
@@ -676,7 +676,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L102-L153'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L103-L154'>
       <span>src/index.js</span>
       </a>
     
@@ -743,7 +743,7 @@ If the repo is not initialized it will throw an error.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L179-L187'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L181-L189'>
       <span>src/index.js</span>
       </a>
     
@@ -809,7 +809,7 @@ If the repo is not initialized it will throw an error.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L196-L204'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L198-L206'>
       <span>src/index.js</span>
       </a>
     
@@ -819,7 +819,7 @@ If the repo is not initialized it will throw an error.</p>
   <p>Creates a lock on the repo if a locker is specified. The lockfile object will
 be returned in the callback if one has been created.</p>
 
-    <div class='pre p1 fill-light mt0'>_openLock(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;lockfile></div>
+    <div class='pre p1 fill-light mt0'>_openLock(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;lockfile></div>
   
   
 
@@ -836,7 +836,7 @@ be returned in the callback if one has been created.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -889,7 +889,7 @@ be returned in the callback if one has been created.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L211-L213'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L213-L215'>
       <span>src/index.js</span>
       </a>
     
@@ -955,7 +955,7 @@ be returned in the callback if one has been created.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L251-L278'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L254-L281'>
       <span>src/index.js</span>
       </a>
     
@@ -1021,7 +1021,7 @@ be returned in the callback if one has been created.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L285-L287'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L288-L290'>
       <span>src/index.js</span>
       </a>
     
@@ -1087,7 +1087,7 @@ be returned in the callback if one has been created.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/index.js#L294-L313'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/index.js#L297-L316'>
       <span>src/index.js</span>
       </a>
     
@@ -1161,7 +1161,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/version.js#L18-L20'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/version.js#L18-L20'>
       <span>src/version.js</span>
       </a>
     
@@ -1223,7 +1223,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/spec.js#L17-L19'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/spec.js#L17-L19'>
       <span>src/spec.js</span>
       </a>
     
@@ -1285,7 +1285,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/version.js#L26-L29'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/version.js#L26-L29'>
       <span>src/version.js</span>
       </a>
     
@@ -1347,7 +1347,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/spec.js#L25-L28'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/spec.js#L25-L28'>
       <span>src/spec.js</span>
       </a>
     
@@ -1409,7 +1409,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/api-addr.js#L15-L18'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/api-addr.js#L15-L18'>
       <span>src/api-addr.js</span>
       </a>
     
@@ -1418,7 +1418,7 @@ be returned in the callback if one has been created.</p>
 
   <p>Get the current configuration from the repo.</p>
 
-    <div class='pre p1 fill-light mt0'>get(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>></div>
+    <div class='pre p1 fill-light mt0'>get(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
   
   
 
@@ -1436,7 +1436,7 @@ be returned in the callback if one has been created.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>:
         
 
       
@@ -1471,7 +1471,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L51-L56'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L51-L56'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -1554,7 +1554,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/version.js#L36-L38'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/version.js#L36-L38'>
       <span>src/version.js</span>
       </a>
     
@@ -1629,7 +1629,7 @@ be returned in the callback if one has been created.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/spec.js#L35-L37'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/spec.js#L36-L38'>
       <span>src/spec.js</span>
       </a>
     
@@ -1705,7 +1705,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/api-addr.js#L25-L27'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/api-addr.js#L25-L27'>
       <span>src/api-addr.js</span>
       </a>
     
@@ -1781,7 +1781,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/version.js#L44-L52'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/version.js#L45-L53'>
       <span>src/version.js</span>
       </a>
     
@@ -1856,7 +1856,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/config.js#L25-L27'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/config.js#L25-L27'>
       <span>src/config.js</span>
       </a>
     
@@ -1958,7 +1958,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/config.js#L37-L55'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/config.js#L37-L55'>
       <span>src/config.js</span>
       </a>
     
@@ -1967,7 +1967,7 @@ TODO unclear on what the type should be or if it's required</p>
 
   <p>Get the value for the passed configuration key from the repo.</p>
 
-    <div class='pre p1 fill-light mt0'>get(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
+    <div class='pre p1 fill-light mt0'>get(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
   
   
 
@@ -1984,7 +1984,7 @@ TODO unclear on what the type should be or if it's required</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    the config key to get
 
           </div>
@@ -2069,7 +2069,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/config.js#L66-L82'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/config.js#L66-L82'>
       <span>src/config.js</span>
       </a>
     
@@ -2078,7 +2078,7 @@ TODO unclear on what the type should be or if it's required</p>
 
   <p>Set the current configuration for this repo.</p>
 
-    <div class='pre p1 fill-light mt0'>set(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): void</div>
+    <div class='pre p1 fill-light mt0'>set(key: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): void</div>
   
   
 
@@ -2095,7 +2095,7 @@ TODO unclear on what the type should be or if it's required</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>key</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    the config key to be written
 
           </div>
@@ -2189,7 +2189,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/config.js#L92-L101'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/config.js#L92-L101'>
       <span>src/config.js</span>
       </a>
     
@@ -2300,7 +2300,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/config.js#L108-L110'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/config.js#L108-L110'>
       <span>src/config.js</span>
       </a>
     
@@ -2362,7 +2362,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/api-addr.js#L33-L35'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/api-addr.js#L33-L35'>
       <span>src/api-addr.js</span>
       </a>
     
@@ -2424,7 +2424,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L159-L161'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L159-L161'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2507,7 +2507,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L33-L42'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L33-L42'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2590,7 +2590,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L65-L69'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L65-L69'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2673,7 +2673,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L78-L91'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L78-L91'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2756,7 +2756,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L100-L139'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L100-L139'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2839,7 +2839,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L148-L150'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L148-L150'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -2922,7 +2922,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L170-L172'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L170-L172'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -3005,7 +3005,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore.js#L179-L181'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore.js#L179-L181'>
       <span>src/blockstore.js</span>
       </a>
     
@@ -3067,7 +3067,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/errors/index.js#L6-L12'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/errors/index.js#L6-L12'>
       <span>src/errors/index.js</span>
       </a>
     
@@ -3141,7 +3141,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/errors/index.js#L20-L26'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/errors/index.js#L20-L26'>
       <span>src/errors/index.js</span>
       </a>
     
@@ -3215,7 +3215,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/errors/index.js#L34-L40'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/errors/index.js#L34-L40'>
       <span>src/errors/index.js</span>
       </a>
     
@@ -3289,7 +3289,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/lock-memory.js#L18-L35'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/lock-memory.js#L18-L35'>
       <span>src/lock-memory.js</span>
       </a>
     
@@ -3298,7 +3298,7 @@ TODO unclear on what the type should be or if it's required</p>
 
   <p>Lock the repo in the given dir.</p>
 
-    <div class='pre p1 fill-light mt0'>lock(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
+    <div class='pre p1 fill-light mt0'>lock(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
   
   
 
@@ -3315,7 +3315,7 @@ TODO unclear on what the type should be or if it's required</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -3364,7 +3364,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/lock-memory.js#L43-L48'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/lock-memory.js#L43-L48'>
       <span>src/lock-memory.js</span>
       </a>
     
@@ -3373,7 +3373,7 @@ TODO unclear on what the type should be or if it's required</p>
 
   <p>Check if the repo in the given directory is locked.</p>
 
-    <div class='pre p1 fill-light mt0'>locked(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): bool</div>
+    <div class='pre p1 fill-light mt0'>locked(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): bool</div>
   
   
 
@@ -3390,7 +3390,7 @@ TODO unclear on what the type should be or if it's required</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -3439,7 +3439,7 @@ TODO unclear on what the type should be or if it's required</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/lock.js#L20-L20'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/lock.js#L21-L21'>
       <span>src/lock.js</span>
       </a>
     
@@ -3516,7 +3516,7 @@ the future.
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/lock.js#L28-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/lock.js#L29-L47'>
       <span>src/lock.js</span>
       </a>
     
@@ -3525,7 +3525,7 @@ the future.
 
   <p>Lock the repo in the given dir.</p>
 
-    <div class='pre p1 fill-light mt0'>lock(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
+    <div class='pre p1 fill-light mt0'>lock(dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
   
   
 
@@ -3542,7 +3542,7 @@ the future.
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -3591,7 +3591,7 @@ the future.
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore-utils.js#L15-L21'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore-utils.js#L15-L21'>
       <span>src/blockstore-utils.js</span>
       </a>
     
@@ -3666,7 +3666,7 @@ the future.
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/e1f4de64598ef8462a10c396099d224c27dae9dc/src/blockstore-utils.js#L31-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo/blob/c124f44017fdff7e70879c6b788487e53954f76f/src/blockstore-utils.js#L31-L34'>
       <span>src/blockstore-utils.js</span>
       </a>
     
