@@ -75,7 +75,7 @@
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0",
-    "uint8arrays": "^1.0.0"
+    "uint8arrays": "^2.0.5"
   },
   "license": "MIT",
   "contributors": [
