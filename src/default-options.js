@@ -1,6 +1,10 @@
 'use strict'
 
 // Default configuration for a repo in node.js
+
+/**
+ * @type {import("./types").InternalOptions}
+ */
 module.exports = {
   lock: 'fs',
   storageBackends: {

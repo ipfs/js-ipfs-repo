@@ -5,7 +5,9 @@ const { expect } = require('aegir/utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-
+/**
+ * @param {import("../src/index")} repo
+ */
 module.exports = (repo) => {
   describe('stat', () => {
     before(async () => {
@@ -13,7 +15,7 @@ module.exports = (repo) => {
         uint8ArrayFromString('foo'),
         new CID('bafyreighz6vdlkdsvp4nu3lxhsofnk2eqxn6o57ag3mfxkqa7c327djhra')
       )
-      await repo.blocks.put(data)
+      await repo.blocks?.put(data)
     })
 
     it('get stats', async () => {
@@ -25,10 +27,10 @@ module.exports = (repo) => {
       expect(stats).to.have.property('repoSize')
       expect(stats).to.have.property('storageMax')
 
-      expect(stats.numObjects > '0').to.eql(true)
-      expect(stats.version > '0').to.eql(true)
-      expect(stats.repoSize > '0').to.eql(true)
-      expect(stats.storageMax > '0').to.eql(true)
+      expect(stats.numObjects.isGreaterThan(0)).to.eql(true)
+      expect(stats.version > 0).to.eql(true)
+      expect(stats.repoSize.isGreaterThan(0)).to.eql(true)
+      expect(stats.storageMax.isGreaterThan(0)).to.eql(true)
     })
   })
 }

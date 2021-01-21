@@ -12,12 +12,15 @@ const {
 
 const versionKey = new Key('version')
 
+/**
+ *
+ * @param {import("interface-datastore").Datastore} store
+ */
 module.exports = (store) => {
   return {
     /**
      * Check if a version file exists.
      *
-     * @returns {Promise<bool>}
      */
     async exists () { // eslint-disable-line require-await
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
@@ -28,7 +31,7 @@ module.exports = (store) => {
     /**
      * Get the current version.
      *
-     * @returns {Promise<Integer>}
+     * @returns {Promise<number>}
      */
     async get () {
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
@@ -43,14 +46,13 @@ module.exports = (store) => {
      * @param {number} version
      * @returns {Promise<void>}
      */
-    async set (version) { // eslint-disable-line require-await
+    set (version) {
       return store.put(versionKey, uint8ArrayFromString(String(version)))
     },
     /**
      * Check the current version, and returns true if versions matches
      *
      * @param {number} expected
-     * @returns {boolean}
      */
     async check (expected) {
       const version = await this.get()

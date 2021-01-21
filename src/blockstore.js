@@ -1,34 +1,50 @@
 'use strict'
 
-const core = require('datastore-core')
-const ShardingStore = core.ShardingDatastore
+const { shard, ShardingDatastore } = require('datastore-core')
 const Block = require('ipld-block')
 const { cidToKey, keyToCid } = require('./blockstore-utils')
 const map = require('it-map')
 const drain = require('it-drain')
 const pushable = require('it-pushable')
+/**
+ * @typedef {import("interface-datastore").Query} Query
+ * @typedef {import("interface-datastore").Datastore} Datastore
+ * @typedef {import("interface-datastore").Options} DatastoreOptions
+ * @typedef {import("cids")} CID
+ */
 
+/**
+ *
+ * @param {Datastore} filestore
+ * @param {*} options
+ */
 module.exports = async (filestore, options) => {
   const store = await maybeWithSharding(filestore, options)
   return createBaseStore(store)
 }
 
+/**
+ * @param {Datastore} filestore
+ * @param {{ sharding: any; }} options
+ */
 function maybeWithSharding (filestore, options) {
   if (options.sharding) {
-    const shard = new core.shard.NextToLast(2)
-    return ShardingStore.createOrOpen(filestore, shard)
+    return ShardingDatastore.createOrOpen(filestore, new shard.NextToLast(2))
   }
   return filestore
 }
 
+/**
+ * @param {Datastore | ShardingDatastore} store
+ */
 function createBaseStore (store) {
   return {
     /**
      * Query the store
      *
-     * @param {Object} query
-     * @param {Object} options
-     * @returns {AsyncIterator<Block|CID>}
+     * @param {Query} query
+     * @param {DatastoreOptions} [options]
+     * @returns {AsyncIterable<Block|CID>}
      */
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
@@ -45,7 +61,7 @@ function createBaseStore (store) {
      * Get a single block by CID
      *
      * @param {CID} cid
-     * @param {Object} options
+     * @param {DatastoreOptions} [options]
      * @returns {Promise<Block>}
      */
     async get (cid, options) {
@@ -58,9 +74,9 @@ function createBaseStore (store) {
     /**
      * Like get, but for more
      *
-     * @param {AsyncIterator<CID>} cids
-     * @param {Object} options
-     * @returns {AsyncIterator<Block>}
+     * @param {Iterable<CID> | AsyncIterable<CID>} cids
+     * @param {DatastoreOptions} [options]
+     * @returns {AsyncIterable<Block>}
      */
     async * getMany (cids, options) {
       for await (const cid of cids) {
@@ -72,7 +88,7 @@ function createBaseStore (store) {
      * Write a single block to the store
      *
      * @param {Block} block
-     * @param {Object} options
+     * @param {DatastoreOptions} [options]
      * @returns {Promise<Block>}
      */
     async put (block, options) {
@@ -94,7 +110,7 @@ function createBaseStore (store) {
      * Like put, but for more
      *
      * @param {AsyncIterable<Block>|Iterable<Block>} blocks
-     * @param {Object} options
+     * @param {DatastoreOptions} [options]
      * @returns {AsyncIterable<Block>}
      */
     async * putMany (blocks, options) { // eslint-disable-line require-await
@@ -142,10 +158,9 @@ function createBaseStore (store) {
      * Does the store contain block with this CID?
      *
      * @param {CID} cid
-     * @param {Object} options
-     * @returns {Promise<bool>}
+     * @param {DatastoreOptions} [options]
      */
-    async has (cid, options) { // eslint-disable-line require-await
+    has (cid, options) {
       return store.has(cidToKey(cid), options)
     },
 
@@ -153,30 +168,28 @@ function createBaseStore (store) {
      * Delete a block from the store
      *
      * @param {CID} cid
-     * @param {Object} options
+     * @param {DatastoreOptions} [options]
      * @returns {Promise<void>}
      */
-    async delete (cid, options) { // eslint-disable-line require-await
+    delete (cid, options) {
       return store.delete(cidToKey(cid), options)
     },
 
     /**
      * Delete a block from the store
      *
-     * @param {AsyncIterable<CID>} cids
-     * @param {Object} options
-     * @returns {Promise<void>}
+     * @param {AsyncIterable<any> | Iterable<any>} cids
+     * @param {DatastoreOptions} [options]
      */
-    async * deleteMany (cids, options) { // eslint-disable-line require-await
-      yield * store.deleteMany(map(cids, cid => cidToKey(cid)), options)
+    deleteMany (cids, options) {
+      return store.deleteMany(map(cids, cid => cidToKey(cid)), options)
     },
 
     /**
      * Close the store
      *
-     * @returns {Promise<void>}
      */
-    async close () { // eslint-disable-line require-await
+    close () {
       return store.close()
     }
   }

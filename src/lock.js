@@ -3,10 +3,14 @@
 const { LockExistsError } = require('./errors')
 const path = require('path')
 const debug = require('debug')
-const { lock } = require('proper-lockfile')
+const { lock: properLock, check } = require('proper-lockfile')
 
 const log = debug('ipfs:repo:lock')
 const lockFile = 'repo.lock'
+
+/**
+ * @typedef {import("./types").LockCloser} LockCloser
+ */
 
 /**
  * Duration in milliseconds in which the lock is considered stale
@@ -24,14 +28,15 @@ const STALE_TIME = 20000
  * Lock the repo in the given dir.
  *
  * @param {string} dir
- * @returns {Promise<Object>}
+ * @returns {Promise<LockCloser>}
  */
-exports.lock = async (dir) => {
+const lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
+  /** @type {() => void} */
   let release
   try {
-    release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
+    release = await properLock(dir, { lockfilePath: file, stale: STALE_TIME })
   } catch (err) {
     if (err.code === 'ELOCKED') {
       throw new LockExistsError(`Lock already being held for file: ${file}`)
@@ -44,4 +49,21 @@ exports.lock = async (dir) => {
       release()
     }
   }
+}
+
+/**
+ * Check if the repo in the given directory is locked.
+ *
+ * @param {string} dir
+ * @returns {Promise<boolean>}
+ */
+const locked = (dir) => {
+  const file = path.join(dir, lockFile)
+
+  return check(dir, { lockfilePath: file, stale: STALE_TIME })
+}
+
+module.exports = {
+  locked,
+  lock
 }

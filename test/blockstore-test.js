@@ -23,6 +23,10 @@ async function makeBlock () {
   return new Block(bData, new CID(hash))
 }
 
+/**
+ *
+ * @param {import('../src')} repo
+ */
 module.exports = (repo) => {
   describe('blockstore', () => {
     const blockData = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
@@ -337,7 +341,7 @@ module.exports = (repo) => {
       })
 
       it('throws when passed an invalid cid', () => {
-        return expect(repo.blocks.has('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+        return expect(() => repo.blocks.has('foo')).to.throw().with.property('code', 'ERR_INVALID_CID')
       })
 
       it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
@@ -358,7 +362,7 @@ module.exports = (repo) => {
       })
 
       it('throws when passed an invalid cid', () => {
-        return expect(repo.blocks.delete('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
+        return expect(() => repo.blocks.delete('foo')).to.throw().with.property('code', 'ERR_INVALID_CID')
       })
     })
 

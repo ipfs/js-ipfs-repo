@@ -7,15 +7,20 @@ const log = debug('ipfs:repo:lock')
 
 const lockFile = 'repo.lock'
 
+/** @type {Record<string,boolean>} */
 const LOCKS = {}
+
+/**
+ * @typedef {import("./types").LockCloser} LockCloser
+ */
 
 /**
  * Lock the repo in the given dir.
  *
  * @param {string} dir
- * @returns {Promise<Object>}
+ * @returns {Promise<LockCloser>}
  */
-exports.lock = async (dir) => { // eslint-disable-line require-await
+exports.lock = async (dir) => {
   const file = dir + '/' + lockFile
   log('locking %s', file)
 
@@ -25,7 +30,7 @@ exports.lock = async (dir) => { // eslint-disable-line require-await
 
   LOCKS[file] = true
   const closer = {
-    async close () { // eslint-disable-line require-await
+    async close () {
       if (LOCKS[file]) {
         delete LOCKS[file]
       }
@@ -38,9 +43,9 @@ exports.lock = async (dir) => { // eslint-disable-line require-await
  * Check if the repo in the given directory is locked.
  *
  * @param {string} dir
- * @returns {bool}
+ * @returns {Promise<boolean>}
  */
-exports.locked = async (dir) => { // eslint-disable-line require-await
+exports.locked = async (dir) => {
   const file = dir + '/' + lockFile
   log(`checking lock: ${file}`)
 
