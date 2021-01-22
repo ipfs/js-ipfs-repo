@@ -37,7 +37,6 @@ const lockers = {
  * @typedef {import("./types").Lock} Lock
  * @typedef {import("./types").LockCloser} LockCloser
  * @typedef {import("./types").Stat} Stat
- * @typedef {import("./types").OpenRepo} OpenRepo
  * @typedef {import("ipld-block")} Block
  * @typedef {import("interface-datastore").Datastore} Datastore}
  */
@@ -60,8 +59,13 @@ class IpfsRepo {
     this.path = repoPath
 
     this._locker = this._getLocker()
-
     this.root = backends.create('root', this.path, this.options)
+    this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
+    this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
+    this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
+    const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
+    this.blocks = blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
+
     this.version = version(this.root)
     this.config = config(this.root)
     this.spec = spec(this.root)
@@ -137,20 +141,15 @@ class IpfsRepo {
       }
 
       log('creating datastore')
-      this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
       await this.datastore.open()
 
       log('creating blocks')
-      const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
-      await blocksBaseStore.open()
-      this.blocks = await blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
+      this.blocks.open()
 
       log('creating keystore')
-      this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
       await this.keys.open()
 
       log('creating pins')
-      this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
       await this.pins.open()
 
       this.closed = false

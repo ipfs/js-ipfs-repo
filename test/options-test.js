@@ -19,6 +19,7 @@ describe('custom options tests', () => {
 
   it('missing repoPath', () => {
     expect(
+      // @ts-expect-error
       () => new Repo()
     ).to.throw('missing repoPath')
   })
@@ -30,29 +31,55 @@ describe('custom options tests', () => {
 
   it('allows for a custom lock', () => {
     const lock = {
-      lock: async (path) => { },
-      locked: async (path) => { }
-    }
-
-    const repo = new Repo(repoPath, {
-      lock
-    })
-
-    expect(repo._getLocker()).to.deep.equal(lock)
-  })
-
-  it('ensures a custom lock has a .close method', async () => {
-    const lock = {
-      lock: () => {
-        return {}
+      /**
+       * @param {any} path
+       */
+      lock: async (path) => {
+        return Promise.resolve({
+          close () { return Promise.resolve() }
+        })
+      },
+      /**
+       * @param {any} path
+       */
+      locked: async (path) => {
+        return Promise.resolve(true)
       }
     }
 
     const repo = new Repo(repoPath, {
       lock
     })
+
+    // @ts-ignore we should not be using private methods
+    expect(repo._getLocker()).to.deep.equal(lock)
+  })
+
+  it('ensures a custom lock has a .close method', async () => {
+    const lock = {
+      /**
+       * @param {any} path
+       */
+      lock: async (path) => {
+        return Promise.resolve({
+          shouldBeCalledClose () { return Promise.resolve() }
+        })
+      },
+      /**
+       * @param {any} path
+       */
+      locked: async (path) => {
+        return Promise.resolve(true)
+      }
+    }
+
+    const repo = new Repo(repoPath, {
+      // @ts-expect-error
+      lock
+    })
     let error
     try {
+      // @ts-ignore we should not be using private methods
       await repo._openLock(repo.path)
     } catch (err) {
       error = err

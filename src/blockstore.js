@@ -18,8 +18,8 @@ const pushable = require('it-pushable')
  * @param {Datastore} filestore
  * @param {*} options
  */
-module.exports = async (filestore, options) => {
-  const store = await maybeWithSharding(filestore, options)
+module.exports = (filestore, options) => {
+  const store = maybeWithSharding(filestore, options)
   return createBaseStore(store)
 }
 
@@ -29,7 +29,7 @@ module.exports = async (filestore, options) => {
  */
 function maybeWithSharding (filestore, options) {
   if (options.sharding) {
-    return ShardingDatastore.createOrOpen(filestore, new shard.NextToLast(2))
+    return new ShardingDatastore(filestore, new shard.NextToLast(2))
   }
   return filestore
 }
@@ -39,6 +39,9 @@ function maybeWithSharding (filestore, options) {
  */
 function createBaseStore (store) {
   return {
+    open () {
+      return store.open()
+    },
     /**
      * Query the store
      *
@@ -48,6 +51,7 @@ function createBaseStore (store) {
      */
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
+        // TODO: we should make this a different method
         if (query.keysOnly) {
           yield keyToCid(key)
           continue

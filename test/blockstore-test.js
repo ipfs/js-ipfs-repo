@@ -15,6 +15,7 @@ const all = require('it-all')
 const first = require('it-first')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const { Adapter } = require('interface-datastore')
 
 async function makeBlock () {
   const bData = uint8ArrayFromString(`hello-${Math.random()}`)
@@ -24,13 +25,19 @@ async function makeBlock () {
 }
 
 /**
+ * @typedef {import("../src")} Repo
+ * @typedef {import("interface-datastore").Key} Key
+ */
+
+/**
  *
- * @param {import('../src')} repo
+ * @param {Repo} repo
  */
 module.exports = (repo) => {
   describe('blockstore', () => {
     const blockData = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
     const bData = uint8ArrayFromString('hello world')
+    /** @type {Block} */
     let b
 
     before(async () => {
@@ -39,6 +46,7 @@ module.exports = (repo) => {
     })
 
     describe('.put', () => {
+      /** @type {Repo} */
       let otherRepo
 
       after(async () => {
@@ -89,11 +97,13 @@ module.exports = (repo) => {
       })
 
       it('returns an error on invalid block', () => {
+        // @ts-expect-error
         return expect(repo.blocks.put('hello')).to.eventually.be.rejected()
       })
     })
 
     describe('.get', () => {
+      /** @type {Repo} */
       let otherRepo
 
       after(async () => {
@@ -118,6 +128,7 @@ module.exports = (repo) => {
       })
 
       it('returns an error on invalid block', () => {
+        // @ts-expect-error
         return expect(repo.blocks.get('woot')).to.eventually.be.rejected()
       })
 
@@ -141,6 +152,7 @@ module.exports = (repo) => {
       })
 
       it('throws when passed an invalid cid', () => {
+        // @ts-expect-error
         return expect(repo.blocks.get('foo')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
 
@@ -161,17 +173,19 @@ module.exports = (repo) => {
 
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
-            blocks: class ExplodingBlockStore {
-              open () {}
-              close () {
-
-              }
-
-              get (c) {
+            blocks: class ExplodingBlockStore extends Adapter {
+              /**
+               *
+               * @param {Key} c
+               */
+              async get (c) {
                 if (c.toString() === key.toString()) {
                   throw err
                 }
+                return new Uint8Array()
               }
+
+              async close () {}
             }
           },
           storageBackendOptions: {
@@ -194,6 +208,7 @@ module.exports = (repo) => {
     })
 
     describe('.getMany', () => {
+      /** @type {Repo} */
       let otherRepo
 
       after(async () => {
@@ -229,6 +244,7 @@ module.exports = (repo) => {
       })
 
       it('returns an error on invalid block', () => {
+        // @ts-expect-error
         return expect(drain(repo.blocks.getMany(['woot']))).to.eventually.be.rejected()
       })
 
@@ -238,7 +254,7 @@ module.exports = (repo) => {
         const cid = new CID(hash)
         await repo.blocks.put(new Block(data, cid))
         const block = await first(repo.blocks.getMany([cid.toV1()]))
-        expect(block.data).to.eql(data)
+        expect(block && block.data).to.eql(data)
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
@@ -248,10 +264,11 @@ module.exports = (repo) => {
         const cid = new CID(1, 'dag-pb', hash)
         await repo.blocks.put(new Block(data, cid))
         const block = await first(repo.blocks.getMany([cid.toV0()]))
-        expect(block.data).to.eql(data)
+        expect(block && block.data).to.eql(data)
       })
 
       it('throws when passed an invalid cid', () => {
+        // @ts-expect-error
         return expect(drain(repo.blocks.getMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
 
@@ -272,18 +289,22 @@ module.exports = (repo) => {
 
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
-            blocks: class ExplodingBlockStore {
-              open () {}
-              close () {
-
-              }
-
-              get (c) {
+            blocks: class ExplodingBlockStore extends Adapter {
+              /**
+               * @param {Key} c
+               */
+              async get (c) {
                 if (c.toString() === key.toString()) {
                   throw err
                 }
+                return new Uint8Array()
               }
 
+              async close () {}
+
+              /**
+               * @param {any} source
+               */
               async * getMany (source) {
                 for await (const c of source) {
                   yield this.get(c)
@@ -341,6 +362,7 @@ module.exports = (repo) => {
       })
 
       it('throws when passed an invalid cid', () => {
+        // @ts-expect-error
         return expect(() => repo.blocks.has('foo')).to.throw().with.property('code', 'ERR_INVALID_CID')
       })
 
@@ -362,6 +384,7 @@ module.exports = (repo) => {
       })
 
       it('throws when passed an invalid cid', () => {
+        // @ts-expect-error
         return expect(() => repo.blocks.delete('foo')).to.throw().with.property('code', 'ERR_INVALID_CID')
       })
     })
@@ -379,7 +402,9 @@ module.exports = (repo) => {
     })
 
     describe('.query', () => {
+      /** @type {Block} */
       let block1
+      /** @type {Block} */
       let block2
 
       before(async () => {
@@ -391,23 +416,23 @@ module.exports = (repo) => {
       })
 
       it('returns key/values for block data', async () => {
-        const blocks = await all(repo.blocks.query({}))
+        const blocks = /** @type {Block[]} */(await all(repo.blocks.query({})))
         const block = blocks.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
-        expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
-        expect(block.data).to.deep.equal(block1.data)
+        expect(block && block.cid.multihash).to.deep.equal(block1.cid.multihash)
+        expect(block && block.data).to.deep.equal(block1.data)
       })
 
       it('returns some of the blocks', async () => {
-        const blocksWithPrefix = await all(repo.blocks.query({
+        const blocksWithPrefix = /** @type {Block[]} */(await all(repo.blocks.query({
           prefix: cidToKey(block1.cid).toString().substring(0, 10)
-        }))
+        })))
         const block = blocksWithPrefix.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
-        expect(block.cid.multihash).to.deep.equal(block1.cid.multihash)
-        expect(block.data).to.deep.equal(block1.data)
+        expect(block && block.cid.multihash).to.deep.equal(block1.cid.multihash)
+        expect(block && block.data).to.deep.equal(block1.data)
 
         const allBlocks = await all(repo.blocks.query({}))
         expect(blocksWithPrefix.length).to.be.lessThan(allBlocks.length)

@@ -9,13 +9,24 @@ const migrator = require('ipfs-repo-migrations')
 const constants = require('../src/constants')
 const errors = require('../src/errors')
 const IPFSRepo = require('../src')
+/**
+ * @typedef {import("../src/index")} Repo
+ */
 
+/**
+ * @param {(options? : any)=> Promise<Repo>} createTempRepo
+ */
 module.exports = (createTempRepo) => {
   describe('Migrations tests', () => {
+    /** @type {Repo} */
     let repo
+    /** @type {sinon.SinonStub<any[], any>} */
     let migrateStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let revertStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let repoVersionStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let getLatestMigrationVersionStub
 
     before(() => {

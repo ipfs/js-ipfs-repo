@@ -6,7 +6,12 @@ const { expect } = require('aegir/utils/chai')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../src')
 
+/**
+ * @typedef {import("../src/index")} Repo
+ */
+
 describe('isInitialized', () => {
+  /** @type {Repo} */
   let repo
 
   beforeEach(() => {

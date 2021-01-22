@@ -33,7 +33,7 @@ const STALE_TIME = 20000
 const lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
-  /** @type {() => void} */
+  /** @type {import("proper-lockfile")["release"]} */
   let release
   try {
     release = await properLock(dir, { lockfilePath: file, stale: STALE_TIME })
@@ -45,9 +45,7 @@ const lock = async (dir) => {
     }
   }
   return {
-    close: async () => { // eslint-disable-line require-await
-      release()
-    }
+    close: release
   }
 }
 

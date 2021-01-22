@@ -1,7 +1,5 @@
 import type { DatastoreFactory } from 'interface-datastore'
 import type { BigNumber } from 'bignumber.js'
-import type Repo from './index'
-import type { Datastore } from 'interface-datastore/dist/src/types'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
@@ -28,9 +26,9 @@ export interface Options {
    * - `datastore` (defaults to `datastore-level`)
    * - `pins` (defaults to `datastore-level`)
    */
-  storageBackends?: Record<Backends, DatastoreFactory>
+  storageBackends?: Partial<Record<Backends, DatastoreFactory>>
 
-  storageBackendOptions?: Record<Partial<Backends>, unknown>
+  storageBackendOptions?: Partial<Record<Backends, unknown>>
 }
 
 /**
@@ -60,7 +58,7 @@ export interface InternalOptions {
    */
   storageBackends: Record<Backends, DatastoreFactory>
 
-  storageBackendOptions: Record<Partial<Backends>, unknown>
+  storageBackendOptions: Partial<Record<Backends, unknown>>
 }
 
 export type Backends = 'root' | 'blocks' | 'keys' | 'datastore' | 'pins'
