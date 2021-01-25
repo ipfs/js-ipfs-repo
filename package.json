@@ -63,7 +63,7 @@
     "datastore-level": "^2.0.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
-    "interface-datastore": "^2.0.0",
+    "interface-datastore": "^3.0.3",
     "ipfs-repo-migrations": "^5.0.3",
     "ipfs-utils": "^5.0.1",
     "ipld-block": "^0.11.0",
