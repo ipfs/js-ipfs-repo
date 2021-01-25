@@ -33,7 +33,6 @@ const STALE_TIME = 20000
 const lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
-  /** @type {import("proper-lockfile")["release"]} */
   let release
   try {
     release = await properLock(dir, { lockfilePath: file, stale: STALE_TIME })

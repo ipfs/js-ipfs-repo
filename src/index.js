@@ -33,7 +33,6 @@ const lockers = {
 }
 /**
  * @typedef {import("./types").Options} Options
- * @typedef {import("./types").InternalOptions} InternalOptions
  * @typedef {import("./types").Lock} Lock
  * @typedef {import("./types").LockCloser} LockCloser
  * @typedef {import("./types").Stat} Stat
@@ -338,6 +337,7 @@ class IpfsRepo {
       return this.options.autoMigrate
     }
 
+    // TODO we need to figure out the priority here, between repo options and config.
     let autoMigrateConfig
     try {
       autoMigrateConfig = await this.config.get(AUTO_MIGRATE_CONFIG_KEY)

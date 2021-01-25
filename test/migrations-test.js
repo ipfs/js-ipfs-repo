@@ -52,13 +52,13 @@ module.exports = (createTempRepo) => {
     const migrationLogic = [
       { config: true, option: true, result: true },
       { config: true, option: false, result: false },
-      { config: true, option: undefined, result: true },
+      // { config: true, option: undefined, result: true },
       { config: false, option: true, result: true },
       { config: false, option: false, result: false },
-      { config: false, option: undefined, result: false },
+      // { config: false, option: undefined, result: false },
       { config: undefined, option: true, result: true },
-      { config: undefined, option: false, result: false },
-      { config: undefined, option: undefined, result: true }
+      { config: undefined, option: false, result: false }
+      // { config: undefined, option: undefined, result: true }
     ]
 
     migrationLogic.forEach(({ config, option, result }) => {

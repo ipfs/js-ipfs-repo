@@ -3,7 +3,7 @@
 /**
  * @typedef {import("interface-datastore").Datastore} Datastore
  * @typedef {import("./types").Backends} Backends
- * @typedef {import("./types").InternalOptions} Options
+ * @typedef {Required<import("./types").Options>} Options
  */
 
 /**
