@@ -58,14 +58,14 @@
     "bignumber.js": "^9.0.0",
     "bytes": "^3.1.0",
     "cids": "^1.0.0",
-    "datastore-core": "^2.0.0",
-    "datastore-fs": "^2.0.0",
-    "datastore-level": "^2.0.0",
+    "datastore-core": "^3.0.0",
+    "datastore-fs": "^3.0.0",
+    "datastore-level": "^3.0.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
-    "interface-datastore": "^2.0.0",
+    "interface-datastore": "^3.0.3",
     "ipfs-repo-migrations": "^5.0.3",
-    "ipfs-utils": "^5.0.1",
+    "ipfs-utils": "^6.0.0",
     "ipld-block": "^0.11.0",
     "it-map": "^1.0.2",
     "it-pushable": "^1.4.0",
@@ -75,7 +75,7 @@
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0",
-    "uint8arrays": "^1.0.0"
+    "uint8arrays": "^2.0.5"
   },
   "license": "MIT",
   "contributors": [
