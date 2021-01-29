@@ -60,7 +60,7 @@
     "cids": "^1.0.0",
     "datastore-core": "^3.0.0",
     "datastore-fs": "^3.0.0",
-    "datastore-level": "ipfs/js-datastore-level#dependabot/npm_and_yarn/level-6.0.1",
+    "datastore-level": "^4.0.0",
     "debug": "^4.1.0",
     "err-code": "^2.0.0",
     "interface-datastore": "^3.0.3",
