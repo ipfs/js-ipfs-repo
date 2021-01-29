@@ -56,12 +56,12 @@ module.exports = (repo) => {
 
     describe('version', () => {
       afterEach(async () => {
-        await repo.version.set(9)
+        await repo.version.set(10)
       })
 
       it('get version', async () => {
         const version = await repo.version.get()
-        expect(version).to.equal(9)
+        expect(version).to.equal(10)
       })
 
       it('set version', async () => {

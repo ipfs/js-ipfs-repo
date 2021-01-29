@@ -8,6 +8,10 @@ const errcode = require('err-code')
 const errors = require('./errors')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const {
+  hasWithFallback,
+  getWithFallback
+} = require('ipfs-repo-migrations/src/utils')
 
 const configKey = new Key('config')
 
@@ -39,7 +43,10 @@ module.exports = (store) => {
         key = undefined
       }
 
-      const encodedValue = await store.get(configKey)
+      // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
+      // using IndexedDB API with string keys - only necessary until we do
+      // the migratiion to v10 or above
+      const encodedValue = await getWithFallback(configKey, store.get.bind(store), store.has.bind(store), store)
 
       if (options.signal && options.signal.aborted) {
         return
@@ -106,7 +113,10 @@ module.exports = (store) => {
      * @returns {Promise<bool>}
      */
     async exists () { // eslint-disable-line require-await
-      return store.has(configKey)
+      // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
+      // using IndexedDB API with string keys - only necessary until we do
+      // the migratiion to v10 or above
+      return hasWithFallback(configKey, store.has.bind(store), store)
     }
   }
 
