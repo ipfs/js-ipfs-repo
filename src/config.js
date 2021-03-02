@@ -13,6 +13,7 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const {
   hasWithFallback,
   getWithFallback
+// @ts-ignore
 } = require('ipfs-repo-migrations/src/utils')
 
 const configKey = new Key('config')
