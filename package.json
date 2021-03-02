@@ -71,7 +71,7 @@
   "dependencies": {
     "bignumber.js": "^9.0.0",
     "bytes": "^3.1.0",
-    "cids": "^1.0.0",
+    "cids": "multiformats/js-cid#fix/aegir31",
     "datastore-core": "^3.0.0",
     "datastore-fs": "^3.0.0",
     "datastore-level": "^4.0.0",
