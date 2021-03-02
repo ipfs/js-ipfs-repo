@@ -185,6 +185,8 @@ module.exports = (repo) => {
                 return new Uint8Array()
               }
 
+              async open () {}
+
               async close () {}
             }
           },
@@ -299,6 +301,8 @@ module.exports = (repo) => {
                 }
                 return new Uint8Array()
               }
+
+              async open () {}
 
               async close () {}
 

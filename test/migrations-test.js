@@ -5,6 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
 
+// @ts-ignore
 const migrator = require('ipfs-repo-migrations')
 const constants = require('../src/constants')
 const errors = require('../src/errors')

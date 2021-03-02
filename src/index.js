@@ -31,13 +31,14 @@ const lockers = {
   memory: require('./lock-memory'),
   fs: require('./lock')
 }
+
 /**
  * @typedef {import("./types").Options} Options
  * @typedef {import("./types").Lock} Lock
  * @typedef {import("./types").LockCloser} LockCloser
  * @typedef {import("./types").Stat} Stat
  * @typedef {import("ipld-block")} Block
- * @typedef {import("interface-datastore").Datastore} Datastore}
+ * @typedef {import("interface-datastore").Datastore} Datastore
  */
 
 /**
@@ -57,6 +58,9 @@ class IpfsRepo {
     this.closed = true
     this.path = repoPath
 
+    /**
+     * @private
+     */
     this._locker = this._getLocker()
     this.root = backends.create('root', this.path, this.options)
     this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
@@ -332,6 +336,9 @@ class IpfsRepo {
     })
   }
 
+  /**
+   * @private
+   */
   async _isAutoMigrationEnabled () {
     if (this.options.autoMigrate !== undefined) {
       return this.options.autoMigrate
@@ -376,6 +383,9 @@ class IpfsRepo {
     }
   }
 
+  /**
+   * @private
+   */
   async _storageMaxStat () {
     try {
       const max = /** @type {number} */(await this.config.get('Datastore.StorageMax'))
@@ -385,6 +395,9 @@ class IpfsRepo {
     }
   }
 
+  /**
+   * @private
+   */
   async _blockStat () {
     let count = new Big(0)
     let size = new Big(0)

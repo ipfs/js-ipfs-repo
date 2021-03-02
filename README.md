@@ -7,8 +7,6 @@
 [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo)](https://travis-ci.com/ipfs/js-ipfs-repo)
 [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo) [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
-![](https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
 
 > Implementation of the IPFS repo spec (https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript
 
@@ -137,8 +135,6 @@ Loading this module through a script tag will make the `IpfsRepo` obj available 
 
 ```html
 <script src="https://unpkg.com/ipfs-repo/dist/index.min.js"></script>
-<!-- OR -->
-<script src="https://unpkg.com/ipfs-repo/dist/index.js"></script>
 ```
 
 ## Usage

@@ -1,13 +1,32 @@
 'use strict'
+const path = require('path')
 
-module.exports = {
-  webpack: {
-    node: {
-      // this is needed until level stops using node buffers in browser code
-      Buffer: true,
-
-      // needed by binary-parse-stream
-      stream: true
+/** @type {import('aegir').Options["build"]["config"]} */
+const esbuild = {
+  inject: [path.join(__dirname, 'scripts/node-globals.js')],
+  plugins: [
+    {
+      name: 'node built ins',
+      setup (build) {
+        build.onResolve({ filter: /^stream$/ }, () => {
+          return { path: require.resolve('readable-stream') }
+        })
+      }
     }
+  ]
+}
+
+/** @type {import('aegir').PartialOptions} */
+module.exports = {
+  test: {
+    browser: {
+      config: {
+        buildConfig: esbuild
+      }
+    }
+  },
+  build: {
+    bundlesizeMax: '132kB',
+    config: esbuild
   }
 }
