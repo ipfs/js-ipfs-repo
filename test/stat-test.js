@@ -15,7 +15,7 @@ module.exports = (repo) => {
         uint8ArrayFromString('foo'),
         new CID('bafyreighz6vdlkdsvp4nu3lxhsofnk2eqxn6o57ag3mfxkqa7c327djhra')
       )
-      await repo.blocks?.put(data)
+      await repo.blocks.put(data)
     })
 
     it('get stats', async () => {
