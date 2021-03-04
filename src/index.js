@@ -5,7 +5,6 @@ const _get = require('just-safe-get')
 const debug = require('debug')
 const Big = require('bignumber.js').BigNumber
 const errcode = require('err-code')
-// @ts-ignore
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
 const pathJoin = require('ipfs-utils/src/path-join')

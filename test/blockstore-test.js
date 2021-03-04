@@ -5,8 +5,6 @@
 const { expect } = require('aegir/utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
-/** @type {(...args: any) => number[] } */
-// @ts-ignore
 const range = require('just-range')
 const multihashing = require('multihashing-async')
 const tempDir = require('ipfs-utils/src/temp-dir')
