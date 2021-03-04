@@ -11,6 +11,10 @@ const esbuild = {
         build.onResolve({ filter: /^stream$/ }, () => {
           return { path: require.resolve('readable-stream') }
         })
+        build.onResolve({ filter: /^cborg$/ }, () => {
+          // remove when https://github.com/evanw/esbuild/issues/187 is fixed
+          return { path: require.resolve('cborg') }
+        })
       }
     }
   ]
@@ -26,7 +30,7 @@ module.exports = {
     }
   },
   build: {
-    bundlesizeMax: '141kB',
+    bundlesizeMax: '130kB',
     config: esbuild
   }
 }
