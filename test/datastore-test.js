@@ -3,6 +3,8 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+/** @type {(...args: any) => number[] } */
+// @ts-ignore
 const range = require('just-range')
 const Key = require('interface-datastore').Key
 const uint8ArrayFromString = require('uint8arrays/from-string')

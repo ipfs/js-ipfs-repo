@@ -10,7 +10,6 @@ const { Adapter } = require('interface-datastore')
 
 /**
  * @typedef {import('interface-datastore').Key} Key
- * @typedef {import("../src/index")} Repo
  */
 
 /**
@@ -239,7 +238,7 @@ module.exports = (repo) => {
         }
       }
 
-      /** @type {Repo} */
+      /** @type {IPFSRepo} */
       let otherRepo
 
       afterEach(async () => {

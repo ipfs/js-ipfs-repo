@@ -5,11 +5,13 @@
 const { expect } = require('aegir/utils/chai')
 const Block = require('ipld-block')
 const CID = require('cids')
+/** @type {(...args: any) => number[] } */
+// @ts-ignore
 const range = require('just-range')
 const multihashing = require('multihashing-async')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const { cidToKey } = require('../src/blockstore-utils')
-const IPFSRepo = require('../')
+const IPFSRepo = require('../src')
 const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
@@ -25,13 +27,12 @@ async function makeBlock () {
 }
 
 /**
- * @typedef {import("../src")} Repo
  * @typedef {import("interface-datastore").Key} Key
  */
 
 /**
  *
- * @param {Repo} repo
+ * @param {IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('blockstore', () => {
@@ -46,7 +47,7 @@ module.exports = (repo) => {
     })
 
     describe('.put', () => {
-      /** @type {Repo} */
+      /** @type {IPFSRepo} */
       let otherRepo
 
       after(async () => {
@@ -103,7 +104,7 @@ module.exports = (repo) => {
     })
 
     describe('.get', () => {
-      /** @type {Repo} */
+      /** @type {IPFSRepo} */
       let otherRepo
 
       after(async () => {
@@ -210,7 +211,7 @@ module.exports = (repo) => {
     })
 
     describe('.getMany', () => {
-      /** @type {Repo} */
+      /** @type {IPFSRepo} */
       let otherRepo
 
       after(async () => {
