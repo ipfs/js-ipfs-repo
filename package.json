@@ -16,6 +16,7 @@
     "./src/default-options.js": "./src/default-options-browser.js"
   },
   "scripts": {
+    "prepare": "aegir build --no-bundle",
     "test": "aegir test",
     "test:node": "aegir test -t node",
     "test:browser": "aegir test -t browser",
@@ -78,7 +79,7 @@
     "debug": "^4.1.0",
     "err-code": "^3.0.1",
     "interface-datastore": "^3.0.3",
-    "ipfs-repo-migrations": "^6.0.0",
+    "ipfs-repo-migrations": "^7.0.0",
     "ipfs-utils": "^6.0.0",
     "ipld-block": "^0.11.0",
     "it-map": "^1.0.2",

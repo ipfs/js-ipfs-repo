@@ -12,7 +12,7 @@ export interface Options {
   /**
    * Callback function to be notified of migration progress
    */
-  onMigrationProgress?: (version: number, percentComplete: number, message: string) => void
+  onMigrationProgress?: (version: number, percentComplete: string, message: string) => void
   /**
    * What type of lock to use. Lock has to be acquired when opening.
    */
