@@ -1,3 +1,12 @@
+# [9.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v8.0.0...v9.0.0) (2021-03-05)
+
+
+### Features
+
+* add types ([#275](https://github.com/ipfs/js-ipfs-repo/issues/275)) ([1f8ba76](https://github.com/ipfs/js-ipfs-repo/commit/1f8ba76c9408ba51199d87db062c0b3dc972657e))
+
+
+
 # [8.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v7.0.1...v8.0.0) (2021-01-29)
 
 
