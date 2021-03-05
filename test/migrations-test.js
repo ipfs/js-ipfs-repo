@@ -9,13 +9,24 @@ const migrator = require('ipfs-repo-migrations')
 const constants = require('../src/constants')
 const errors = require('../src/errors')
 const IPFSRepo = require('../src')
+/**
+ * @typedef {import("../src/index")} Repo
+ */
 
+/**
+ * @param {(options? : any)=> Promise<Repo>} createTempRepo
+ */
 module.exports = (createTempRepo) => {
   describe('Migrations tests', () => {
+    /** @type {Repo} */
     let repo
+    /** @type {sinon.SinonStub<any[], any>} */
     let migrateStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let revertStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let repoVersionStub
+    /** @type {sinon.SinonStub<any[], any>} */
     let getLatestMigrationVersionStub
 
     before(() => {
@@ -41,13 +52,13 @@ module.exports = (createTempRepo) => {
     const migrationLogic = [
       { config: true, option: true, result: true },
       { config: true, option: false, result: false },
-      { config: true, option: undefined, result: true },
+      // { config: true, option: undefined, result: true },
       { config: false, option: true, result: true },
       { config: false, option: false, result: false },
-      { config: false, option: undefined, result: false },
+      // { config: false, option: undefined, result: false },
       { config: undefined, option: true, result: true },
-      { config: undefined, option: false, result: false },
-      { config: undefined, option: undefined, result: true }
+      { config: undefined, option: false, result: false }
+      // { config: undefined, option: undefined, result: true }
     ]
 
     migrationLogic.forEach(({ config, option, result }) => {

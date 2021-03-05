@@ -6,6 +6,9 @@ const IPFSRepo = require('../')
 const lockMemory = require('../src/lock-memory')
 const { LockExistsError } = require('./../src/errors')
 
+/**
+ * @param {import("../src/index")} repo
+ */
 module.exports = (repo) => {
   describe('Repo lock tests', () => {
     it('should handle locking for a repo lifecycle', async () => {

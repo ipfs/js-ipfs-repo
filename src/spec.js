@@ -7,14 +7,17 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const specKey = new Key('datastore_spec')
 
+/**
+ *
+ * @param {import("interface-datastore").Datastore} store
+ */
 module.exports = (store) => {
   return {
     /**
      * Check if a datastore spec file exists.
      *
-     * @returns {Promise<bool>}
      */
-    async exists () { // eslint-disable-line require-await
+    exists () {
       return store.has(specKey)
     },
     /**
@@ -30,10 +33,10 @@ module.exports = (store) => {
      * Set the datastore spec of the repo, writing it to the underlying store.
      * TODO unclear on what the type should be or if it's required
      *
-     * @param {number} spec
+     * @param {any} spec
      * @returns {Promise<void>}
      */
-    async set (spec) { // eslint-disable-line require-await
+    async set (spec) {
       return store.put(specKey, uint8ArrayFromString(JSON.stringify(sortKeys(spec, { deep: true }))))
     }
   }

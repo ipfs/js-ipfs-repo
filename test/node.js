@@ -15,6 +15,10 @@ const fsstat = promisify(fs.stat)
 
 const IPFSRepo = require('../src')
 
+/**
+ * @typedef {import("../src/types").Options} Options
+ */
+
 async function createTempRepo (options = {}) {
   const date = Date.now().toString()
   const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
@@ -30,6 +34,9 @@ describe('IPFS Repo Tests onNode.js', () => {
 
   const customLock = {
     lockName: 'test.lock',
+    /**
+     * @param {string} dir
+     */
     lock: async (dir) => {
       const isLocked = await customLock.locked(dir)
       if (isLocked) {
@@ -41,6 +48,9 @@ describe('IPFS Repo Tests onNode.js', () => {
         close: () => asyncRimraf(lockPath)
       }
     },
+    /**
+     * @param {string} dir
+     */
     locked: async (dir) => {
       try {
         await fsstat(path.join(dir, customLock.lockName))
@@ -51,6 +61,9 @@ describe('IPFS Repo Tests onNode.js', () => {
     }
   }
 
+  /**
+   * @type {Array<{name: string, opts?: Options, init: boolean}>}
+   */
   const repos = [
     {
       name: 'default inited',
@@ -60,8 +73,9 @@ describe('IPFS Repo Tests onNode.js', () => {
     {
       name: 'memory',
       opts: {
-        fs: require('interface-datastore').MemoryDatastore,
-        level: require('memdown'),
+        // i dont think we need this
+        // fs: require('interface-datastore').MemoryDatastore,
+        // level: require('memdown'),
         lock: 'memory'
       },
       init: true
@@ -107,7 +121,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     require('./stat-test')(repo)
     require('./lock-test')(repo)
     require('./config-test')(repo)
-    require('./api-addr-test')(repo)
+    require('./api-addr-test')()
     if (!r.init) {
       require('./interop-test')(repo)
     }

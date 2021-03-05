@@ -36,7 +36,7 @@ describe('IPFS Repo Tests on the Browser', () => {
   require('./datastore-test')(repo)
   require('./keystore-test')(repo)
   require('./config-test')(repo)
-  require('./api-addr-test')(repo)
+  require('./api-addr-test')()
   require('./lock-test')(repo)
   require('./pins-test')(repo)
   require('./is-initialized')

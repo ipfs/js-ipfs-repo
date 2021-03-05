@@ -6,7 +6,15 @@ const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../')
 const Errors = require('../src/errors')
 const bytes = require('bytes')
+const { Adapter } = require('interface-datastore')
 
+/**
+ * @typedef {import('interface-datastore').Key} Key
+ */
+
+/**
+ * @param {import("../src/index")} repo
+ */
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
     it('check if Repo exists', async () => {
@@ -119,39 +127,46 @@ module.exports = (repo) => {
 
       it('should close all the datastores', async () => {
         let count = 0
-        class FakeDatastore {
+        class FakeDatastore extends Adapter {
           constructor () {
+            super()
+            /** @type {Record<string, Uint8Array>} */
             this.data = {}
           }
 
           async open () {}
 
-          // eslint-disable-next-line require-await
+          /**
+           * @param {Key} key
+           * @param {Uint8Array} val
+           */
           async put (key, val) {
             this.data[key.toString()] = val
           }
 
+          /**
+           * @param {Key} key
+           */
           async get (key) {
             const exists = await this.has(key)
-            if (!exists) throw Errors.notFoundError()
+            if (!exists) throw new Errors.NotFoundError()
             return this.data[key.toString()]
           }
 
-          // eslint-disable-next-line require-await
+          /**
+           * @param {Key} key
+           */
           async has (key) {
             return this.data[key.toString()] !== undefined
           }
 
-          // eslint-disable-next-line require-await
+          /**
+           * @param {Key} key
+           */
           async delete (key) {
             delete this.data[key.toString()]
           }
 
-          batch () {}
-
-          query (q) {}
-
-          // eslint-disable-next-line require-await
           async close () {
             count++
           }
@@ -209,6 +224,7 @@ module.exports = (repo) => {
           throw err
         }
 
+        // @ts-ignore we should not be using private stuff
         await otherRepo._openRoot()
 
         expect(threwError).to.be.true()
@@ -216,12 +232,13 @@ module.exports = (repo) => {
     })
 
     describe('locking', () => {
-      class ExplodingDatastore {
-        constructor () {
+      class ExplodingDatastore extends Adapter {
+        async open () {
           throw new Error('wat')
         }
       }
 
+      /** @type {IPFSRepo} */
       let otherRepo
 
       afterEach(async () => {
@@ -235,7 +252,11 @@ module.exports = (repo) => {
       it('should remove the lockfile when opening the repo fails', async () => {
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
-            datastore: ExplodingDatastore
+            datastore: ExplodingDatastore,
+            blocks: ExplodingDatastore,
+            pins: ExplodingDatastore,
+            keys: ExplodingDatastore
+            // root: ExplodingDatastore
           }
         })
 
@@ -250,10 +271,15 @@ module.exports = (repo) => {
       it('should re-throw the original error even when removing the lockfile fails', async () => {
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
-            datastore: ExplodingDatastore
+            datastore: ExplodingDatastore,
+            blocks: ExplodingDatastore,
+            pins: ExplodingDatastore,
+            keys: ExplodingDatastore,
+            root: ExplodingDatastore
           }
         })
 
+        // @ts-ignore we should not be using private stuff
         otherRepo._closeLock = () => {
           throw new Error('derp')
         }
@@ -269,7 +295,11 @@ module.exports = (repo) => {
       it('should throw when repos are not initialised', async () => {
         otherRepo = new IPFSRepo(tempDir(), {
           storageBackends: {
-            datastore: ExplodingDatastore
+            datastore: ExplodingDatastore,
+            blocks: ExplodingDatastore,
+            pins: ExplodingDatastore,
+            keys: ExplodingDatastore
+            // root: ExplodingDatastore
           }
         })
 
@@ -282,15 +312,9 @@ module.exports = (repo) => {
 
       it('should throw when config is not set', async () => {
         otherRepo = new IPFSRepo(tempDir())
-        otherRepo.config.exists = () => {
-          return false
-        }
-        otherRepo.spec.exists = () => {
-          return true
-        }
-        otherRepo.version.check = () => {
-          return null
-        }
+        otherRepo.config.exists = async () => false
+        otherRepo.spec.exists = async () => true
+        otherRepo.version.check = async () => false
 
         try {
           await otherRepo.open()
@@ -307,7 +331,7 @@ module.exports = (repo) => {
         await otherRepo.open()
         await otherRepo.config.set('Datastore.StorageMax', maxStorage)
 
-        const stat = await otherRepo.stat({})
+        const stat = await otherRepo.stat()
 
         expect(stat).to.have.property('storageMax')
         expect(stat.storageMax.toNumber()).to.equal(bytes(maxStorage))
@@ -349,11 +373,11 @@ module.exports = (repo) => {
       it('should throw unexpected errors when checking if the repo has been initialised', async () => {
         otherRepo = new IPFSRepo(tempDir())
 
-        otherRepo.config.exists = () => {
+        otherRepo.config.exists = async () => {
           return true
         }
 
-        otherRepo.version.check = () => {
+        otherRepo.version.check = async () => {
           return true
         }
 

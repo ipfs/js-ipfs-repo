@@ -1,8 +1,10 @@
 'use strict'
 
-const Key = require('interface-datastore').Key
+const { Key } = require('interface-datastore')
 const { default: Queue } = require('p-queue')
+// @ts-ignore
 const _get = require('just-safe-get')
+// @ts-ignore
 const _set = require('just-safe-set')
 const errcode = require('err-code')
 const errors = require('./errors')
@@ -11,10 +13,15 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 const {
   hasWithFallback,
   getWithFallback
+// @ts-ignore
 } = require('ipfs-repo-migrations/src/utils')
 
 const configKey = new Key('config')
 
+/**
+ *
+ * @param {import("interface-datastore").Datastore} store
+ */
 module.exports = (store) => {
   const setQueue = new Queue({ concurrency: 1 })
 
@@ -22,21 +29,21 @@ module.exports = (store) => {
     /**
      * Get the current configuration from the repo.
      *
-     * @param {Object} options - options
-     * @param {AbortSignal} options.signal - abort this config read
-     * @returns {Promise<Object>}
+     * @param {Object} [options] - options
+     * @param {AbortSignal} [options.signal] - abort this config read
+     * @returns {Promise<unknown>}
      */
-    async getAll (options = {}) { // eslint-disable-line require-await
+    getAll (options = {}) { // eslint-disable-line require-await
       return configStore.get(undefined, options)
     },
 
     /**
      * Get the value for the passed configuration key from the repo.
      *
-     * @param {string} key - the config key to get
-     * @param {Object} options - options
-     * @param {AbortSignal} options.signal - abort this config read
-     * @returns {Promise<Object>}
+     * @param {string} [key] - the config key to get
+     * @param {Object} [options] - options
+     * @param {AbortSignal} [options.signal] - abort this config read
+     * @returns {Promise<unknown>}
      */
     async get (key, options = {}) {
       if (!key) {
@@ -64,13 +71,12 @@ module.exports = (store) => {
     /**
      * Set the current configuration for this repo.
      *
-     * @param {string} key - the config key to be written
-     * @param {Object} value - the config value to be written
-     * @param {Object} options - options
-     * @param {AbortSignal} options.signal - abort this config write
-     * @returns {void}
+     * @param {string | unknown} [key] - the config key to be written
+     * @param {unknown} [value] - the config value to be written
+     * @param {Object} [options] - options
+     * @param {AbortSignal} [options.signal] - abort this config write
      */
-    async set (key, value, options = {}) { // eslint-disable-line require-await
+    set (key, value, options = {}) {
       if (arguments.length === 1) {
         value = key
         key = undefined
@@ -91,12 +97,11 @@ module.exports = (store) => {
     /**
      * Set the current configuration for this repo.
      *
-     * @param {Object} value - the config value to be written
-     * @param {Object} options - options
-     * @param {AbortSignal} options.signal - abort this config write
-     * @returns {void}
+     * @param {Object} [value] - the config value to be written
+     * @param {Object} [options] - options
+     * @param {AbortSignal} [options.signal] - abort this config write
      */
-    async replace (value, options = {}) { // eslint-disable-line require-await
+    replace (value, options = {}) {
       if (!value || (value instanceof Uint8Array)) {
         throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
@@ -110,7 +115,6 @@ module.exports = (store) => {
     /**
      * Check if a config file exists.
      *
-     * @returns {Promise<bool>}
      */
     async exists () { // eslint-disable-line require-await
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
@@ -122,6 +126,10 @@ module.exports = (store) => {
 
   return configStore
 
+  /**
+   * @param {{ key: any; value: any; }} m
+   * @param {AbortSignal | undefined} signal
+   */
   async function _maybeDoSet (m, signal) {
     if (signal && signal.aborted) {
       return
@@ -137,6 +145,9 @@ module.exports = (store) => {
     return _saveAll(value)
   }
 
+  /**
+   * @param {unknown} config
+   */
   function _saveAll (config) {
     const buf = uint8ArrayFromString(JSON.stringify(config, null, 2))
     return store.put(configKey, buf)

@@ -3,7 +3,14 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+/**
+ * @typedef {import("../src/index")} Repo
+ */
 
+/**
+ *
+ * @param {Repo} repo
+ */
 module.exports = (repo) => {
   describe('keystore', () => {
     it('exists', () => {

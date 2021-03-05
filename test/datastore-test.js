@@ -6,7 +6,14 @@ const { expect } = require('aegir/utils/chai')
 const range = require('just-range')
 const Key = require('interface-datastore').Key
 const uint8ArrayFromString = require('uint8arrays/from-string')
+/**
+ * @typedef {import("../src/index")} Repo
+ */
 
+/**
+ *
+ * @param {Repo} repo
+ */
 module.exports = (repo) => {
   describe('datastore', () => {
     const dataList = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))

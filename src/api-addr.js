@@ -5,6 +5,10 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const apiFile = new Key('api')
 
+/**
+ *
+ * @param {import("interface-datastore").Datastore} store
+ */
 module.exports = (store) => {
   return {
     /**
@@ -18,19 +22,17 @@ module.exports = (store) => {
     },
     /**
      * Set the current configuration for this repo.
+     * TODO: fix find the proper type or remove this API
      *
-     * @param {Object} value - the api address to be written
-     * @returns {Promise<?>}
+     * @param {string} value - the api address to be written
      */
-    async set (value) { // eslint-disable-line require-await
+    set (value) {
       return store.put(apiFile, uint8ArrayFromString(value.toString()))
     },
     /**
      * Deletes api file
-     *
-     * @returns {Promise<void>}
      */
-    async delete () { // eslint-disable-line require-await
+    delete () {
       return store.delete(apiFile)
     }
   }

@@ -4,6 +4,9 @@
  * Error raised when there is lock already in place when repo is being opened.
  */
 class LockExistsError extends Error {
+  /**
+   * @param {string} [message]
+   */
   constructor (message) {
     super(message)
     this.name = 'LockExistsError'
@@ -18,6 +21,9 @@ exports.LockExistsError = LockExistsError
  * Error raised when requested item is not found.
  */
 class NotFoundError extends Error {
+  /**
+   * @param {string} [message]
+   */
   constructor (message) {
     super(message)
     this.name = 'NotFoundError'
@@ -32,6 +38,9 @@ exports.NotFoundError = NotFoundError
  * Error raised when version of the stored repo is not compatible with version of this package.
  */
 class InvalidRepoVersionError extends Error {
+  /**
+   * @param {string} [message]
+   */
   constructor (message) {
     super(message)
     this.name = 'InvalidRepoVersionError'

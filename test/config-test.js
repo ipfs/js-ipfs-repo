@@ -3,20 +3,30 @@
 
 const { expect } = require('aegir/utils/chai')
 
+/**
+ *
+ * @param {import('../src')} repo
+ */
 module.exports = (repo) => {
   describe('config', () => {
     describe('.set', () => {
       it('should throw when invalid key is passed', () => {
-        return expect(repo.config.set(5, 'value')).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_KEY')
+        return expect(() => repo.config.set(5, 'value'))
+          .to.throw()
+          .with.property('code', 'ERR_INVALID_KEY')
       })
 
       it('should throw when invalid value is passed', () => {
-        return expect(repo.config.set('foo', Uint8Array.from([0, 1, 2]))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_VALUE')
+        return expect(() => repo.config.set('foo', Uint8Array.from([0, 1, 2])))
+          .to.throw()
+          .with.property('code', 'ERR_INVALID_VALUE')
       })
     })
     describe('.get', () => {
       it('should throw NotFoundError when key does not exist', () => {
-        return expect(repo.config.get('someRandomKey')).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
+        return expect(repo.config.get('someRandomKey'))
+          .to.eventually.be.rejected()
+          .with.property('code', 'ERR_NOT_FOUND')
       })
     })
     describe('.getAll', () => {
