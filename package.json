@@ -87,7 +87,7 @@
     "just-safe-set": "^2.1.0",
     "merge-options": "^3.0.4",
     "multibase": "^4.0.1",
-    "p-queue": "^6.0.0",
+    "p-queue": "^7.0.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0",
     "uint8arrays": "^2.1.3"
