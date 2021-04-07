@@ -36,12 +36,17 @@ module.exports = (repo) => {
   describe('blockstore', () => {
     const blockData = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
     const bData = uint8ArrayFromString('hello world')
+    const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
+
     /** @type {Block} */
     let b
-
+    /** @type {CID} */
+    let identityCID
     before(async () => {
       const hash = await multihashing(bData, 'sha2-256')
       b = new Block(bData, new CID(hash))
+      const identityHash = await multihashing(identityData, 'identity')
+      identityCID = new CID(1, 'dag-cbor', identityHash)
     })
 
     describe('.put', () => {
@@ -56,6 +61,16 @@ module.exports = (repo) => {
 
       it('simple', async () => {
         await repo.blocks.put(b)
+      })
+
+      it('does not write an identity block', async () => {
+        const identityBlock = new Block(identityData, identityCID)
+        await repo.blocks.put(identityBlock)
+        const cids = await all(repo.blocks.query({
+          keysOnly: true
+        }))
+        const rawCID = new CID(1, 'raw', identityCID.multihash)
+        expect(cids).to.not.deep.include(rawCID)
       })
 
       it('multi write (locks)', async () => {
@@ -93,6 +108,19 @@ module.exports = (repo) => {
           const block1 = await repo.blocks.get(block.cid)
           expect(block1).to.be.eql(block)
         }
+      })
+
+      it('.putMany with identity block included', async function () {
+        const d = uint8ArrayFromString('many' + Math.random())
+        const hash = await multihashing(d, 'sha2-256')
+        const blocks = [new Block(d, new CID(1, 'raw', hash)), new Block(identityData, identityCID)]
+        const put = await all(repo.blocks.putMany(blocks))
+        expect(put).to.deep.equal(blocks)
+        const cids = await all(repo.blocks.query({
+          keysOnly: true
+        }))
+        expect(cids).to.deep.include(new CID(1, 'raw', hash))
+        expect(cids).to.not.deep.include(new CID(1, 'raw', identityCID.multihash))
       })
 
       it('returns an error on invalid block', () => {
@@ -206,6 +234,11 @@ module.exports = (repo) => {
           expect(err2).to.deep.equal(err)
         }
       })
+
+      it('can load an identity hash without storing first', async () => {
+        const block = await repo.blocks.get(identityCID)
+        expect(block.data).to.be.eql(identityData)
+      })
     })
 
     describe('.getMany', () => {
@@ -221,6 +254,12 @@ module.exports = (repo) => {
       it('simple', async () => {
         const blocks = await all(repo.blocks.getMany([b.cid]))
         expect(blocks).to.deep.include(b)
+      })
+
+      it('including a block with identity has', async () => {
+        const blocks = await all(repo.blocks.getMany([b.cid, identityCID]))
+        expect(blocks).to.deep.include(b)
+        expect(blocks).to.deep.include(new Block(identityData, identityCID))
       })
 
       it('massive read', async function () {
@@ -340,6 +379,11 @@ module.exports = (repo) => {
         expect(exists).to.eql(true)
       })
 
+      it('identity hash block, not written to store', async () => {
+        const exists = await repo.blocks.has(identityCID)
+        expect(exists).to.eql(true)
+      })
+
       it('non existent block', async () => {
         const exists = await repo.blocks.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'))
         expect(exists).to.eql(false)
@@ -386,6 +430,12 @@ module.exports = (repo) => {
         expect(exists).to.equal(false)
       })
 
+      it('identity cid does nothing', async () => {
+        await repo.blocks.delete(identityCID)
+        const exists = await repo.blocks.has(identityCID)
+        expect(exists).to.equal(true)
+      })
+
       it('throws when passed an invalid cid', () => {
         // @ts-expect-error
         return expect(() => repo.blocks.delete('foo')).to.throw().with.property('code', 'ERR_INVALID_CID')
@@ -397,6 +447,14 @@ module.exports = (repo) => {
         await drain(repo.blocks.deleteMany([b.cid]))
         const exists = await repo.blocks.has(b.cid)
         expect(exists).to.equal(false)
+      })
+
+      it('including identity cid', async () => {
+        await drain(repo.blocks.deleteMany([b.cid, identityCID]))
+        const exists = await repo.blocks.has(b.cid)
+        expect(exists).to.equal(false)
+        const identityExists = await repo.blocks.has(identityCID)
+        expect(identityExists).to.equal(true)
       })
 
       it('throws when passed an invalid cid', () => {
