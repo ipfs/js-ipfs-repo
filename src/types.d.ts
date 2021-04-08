@@ -3,8 +3,6 @@ import type { BigNumber } from 'bignumber.js'
 
 import type CID from 'cids'
 
-import type Block from 'ipld-block'
-
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
 
@@ -59,6 +57,11 @@ export interface Stat {
   version: number
   numObjects: BigNumber
   repoSize: BigNumber
+}
+
+export interface Block {
+  cid: CID
+  data: Uint8Array
 }
 
 export interface Blockstore {
