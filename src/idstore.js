@@ -19,9 +19,7 @@ const errcode = require('err-code')
  *
  * @param {Blockstore} blockstore
  */
-module.exports = (blockstore) => {
-  return createIdStore(blockstore)
-}
+module.exports = createIdStore
 
 /**
  * @param {Blockstore} store

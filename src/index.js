@@ -438,7 +438,7 @@ module.exports.errors = ERRORS
  * @param {any} _config
  */
 function buildConfig (_config) {
-  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore', {}))
+  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore'))
 
   return _config
 }
@@ -450,7 +450,7 @@ function buildDatastoreSpec (_config) {
   /** @type { {type: string, mounts: Array<{mountpoint: string, type: string, prefix: string, child: {type: string, path: 'string', sync: boolean, shardFunc: string}}>}} */
   const spec = {
     ...defaultDatastore.Spec,
-    ..._get(_config, 'datastore.Spec', {})
+    ..._get(_config, 'datastore.Spec')
   }
 
   return {

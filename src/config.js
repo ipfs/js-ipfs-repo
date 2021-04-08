@@ -139,7 +139,9 @@ module.exports = (store) => {
     const value = m.value
     if (key) {
       const config = await configStore.get()
-      _set(config, key, value)
+      if (typeof config === 'object' && config !== null) {
+        _set(config, key, value)
+      }
       return _saveAll(config)
     }
     return _saveAll(value)
