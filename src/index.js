@@ -1,9 +1,7 @@
 'use strict'
 
-// @ts-ignore
 const _get = require('just-safe-get')
 const debug = require('debug')
-const Big = require('bignumber.js').BigNumber
 const errcode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
@@ -33,12 +31,14 @@ const lockers = {
 }
 
 /**
- * @typedef {import("./types").Options} Options
- * @typedef {import("./types").Lock} Lock
- * @typedef {import("./types").LockCloser} LockCloser
- * @typedef {import("./types").Stat} Stat
- * @typedef {import("ipld-block")} Block
- * @typedef {import("interface-datastore").Datastore} Datastore
+ * @typedef {import('./types').Options} Options
+ * @typedef {import('./types').Lock} Lock
+ * @typedef {import('./types').LockCloser} LockCloser
+ * @typedef {import('./types').Stat} Stat
+ * @typedef {import('./types').Blockstore} Blockstore
+ * @typedef {import('./types').Config} Config
+ * @typedef {import('ipld-block')} Block
+ * @typedef {import('interface-datastore').Datastore} Datastore
  */
 
 /**
@@ -319,9 +319,7 @@ class IpfsRepo {
         getSize(this.datastore),
         getSize(this.keys)
       ])
-      const size = blocks.size
-        .plus(datastore)
-        .plus(keys)
+      const size = blocks.size + datastore + keys
 
       return {
         repoPath: this.path,
@@ -389,9 +387,9 @@ class IpfsRepo {
   async _storageMaxStat () {
     try {
       const max = /** @type {number} */(await this.config.get('Datastore.StorageMax'))
-      return new Big(bytes(max))
+      return BigInt(bytes(max))
     } catch (err) {
-      return new Big(noLimit)
+      return BigInt(noLimit)
     }
   }
 
@@ -399,16 +397,15 @@ class IpfsRepo {
    * @private
    */
   async _blockStat () {
-    let count = new Big(0)
-    let size = new Big(0)
+    let count = BigInt(0)
+    let size = BigInt(0)
 
     if (this.blocks) {
       for await (const blockOrCid of this.blocks.query({})) {
         const block = /** @type {Block} */(blockOrCid)
-        count = count.plus(1)
-        size = size
-          .plus(block.data.byteLength)
-          .plus(block.cid.bytes.byteLength)
+        count += BigInt(1)
+        size += BigInt(block.data.byteLength)
+        size += BigInt(block.cid.bytes.byteLength)
       }
     }
 
@@ -420,10 +417,10 @@ class IpfsRepo {
  * @param {Datastore} datastore
  */
 async function getSize (datastore) {
-  const sum = new Big(0)
+  let sum = BigInt(0)
   for await (const block of datastore.query({})) {
-    sum.plus(block.value.byteLength)
-      .plus(block.key.uint8Array().byteLength)
+    sum += BigInt(block.value.byteLength)
+    sum += BigInt(block.key.uint8Array().byteLength)
   }
   return sum
 }

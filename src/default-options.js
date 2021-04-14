@@ -3,7 +3,7 @@
 // Default configuration for a repo in node.js
 
 /**
- * @type {Required<import("./types").Options>}
+ * @type {Required<import('./types').Options>}
  */
 module.exports = {
   autoMigrate: true,

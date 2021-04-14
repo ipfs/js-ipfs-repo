@@ -9,9 +9,9 @@ const CID = require('cids')
 const errcode = require('err-code')
 
 /**
- * @typedef {import("interface-datastore").Query} Query
- * @typedef {import("interface-datastore").Datastore} Datastore
- * @typedef {import("interface-datastore").Options} DatastoreOptions
+ * @typedef {import('interface-datastore').Query} Query
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-datastore').Options} DatastoreOptions
  * @typedef {import('./types').Blockstore} Blockstore
  */
 
@@ -30,6 +30,8 @@ function createIdStore (store) {
     open () {
       return store.open()
     },
+
+    // @ts-ignore TODO: how to not have ts freak out about this
     query (query, options) {
       return store.query(query, options)
     },

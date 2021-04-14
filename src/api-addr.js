@@ -7,7 +7,7 @@ const apiFile = new Key('api')
 
 /**
  *
- * @param {import("interface-datastore").Datastore} store
+ * @param {import('interface-datastore').Datastore} store
  */
 module.exports = (store) => {
   return {

@@ -13,7 +13,7 @@ const { Adapter } = require('interface-datastore')
  */
 
 /**
- * @param {import("../src/index")} repo
+ * @param {import('../src/index')} repo
  */
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
@@ -334,7 +334,7 @@ module.exports = (repo) => {
         const stat = await otherRepo.stat()
 
         expect(stat).to.have.property('storageMax')
-        expect(stat.storageMax.toNumber()).to.equal(bytes(maxStorage))
+        expect(stat.storageMax).to.equal(BigInt(bytes(maxStorage)))
       })
 
       it('should throw unexpected errors when closing', async () => {

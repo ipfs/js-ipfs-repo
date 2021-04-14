@@ -11,7 +11,7 @@ const lockFile = 'repo.lock'
 const LOCKS = {}
 
 /**
- * @typedef {import("./types").LockCloser} LockCloser
+ * @typedef {import('./types').LockCloser} LockCloser
  */
 
 /**

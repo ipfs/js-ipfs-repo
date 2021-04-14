@@ -2,9 +2,7 @@
 
 const { Key } = require('interface-datastore')
 const { default: Queue } = require('p-queue')
-// @ts-ignore
 const _get = require('just-safe-get')
-// @ts-ignore
 const _set = require('just-safe-set')
 const errcode = require('err-code')
 const errors = require('./errors')
@@ -19,8 +17,11 @@ const {
 const configKey = new Key('config')
 
 /**
- *
- * @param {import("interface-datastore").Datastore} store
+ * @typedef {import('./types').Config} Config
+ */
+
+/**
+ * @param {import('interface-datastore').Datastore} store
  */
 module.exports = (store) => {
   const setQueue = new Queue({ concurrency: 1 })
@@ -31,7 +32,7 @@ module.exports = (store) => {
      *
      * @param {Object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config read
-     * @returns {Promise<unknown>}
+     * @returns {Promise<Config>}
      */
     getAll (options = {}) { // eslint-disable-line require-await
       return configStore.get(undefined, options)
@@ -43,7 +44,7 @@ module.exports = (store) => {
      * @param {string} [key] - the config key to get
      * @param {Object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config read
-     * @returns {Promise<unknown>}
+     * @returns {Promise<Config | any>}
      */
     async get (key, options = {}) {
       if (!key) {
@@ -53,11 +54,9 @@ module.exports = (store) => {
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
       // using IndexedDB API with string keys - only necessary until we do
       // the migratiion to v10 or above
-      const encodedValue = await getWithFallback(configKey, store.get.bind(store), store.has.bind(store), store)
-
-      if (options.signal && options.signal.aborted) {
-        return
-      }
+      const encodedValue = await getWithFallback(configKey, store.get.bind(store), store.has.bind(store), store, {
+        signal: options.signal
+      })
 
       const config = JSON.parse(uint8ArrayToString(encodedValue))
       if (key !== undefined && _get(config, key) === undefined) {
@@ -71,8 +70,8 @@ module.exports = (store) => {
     /**
      * Set the current configuration for this repo.
      *
-     * @param {string | unknown} [key] - the config key to be written
-     * @param {unknown} [value] - the config value to be written
+     * @param {string} [key] - the config key to be written
+     * @param {any} [value] - the config value to be written
      * @param {Object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config write
      */
@@ -97,7 +96,7 @@ module.exports = (store) => {
     /**
      * Set the current configuration for this repo.
      *
-     * @param {Object} [value] - the config value to be written
+     * @param {Config} [value] - the config value to be written
      * @param {Object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config write
      */

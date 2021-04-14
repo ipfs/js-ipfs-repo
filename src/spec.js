@@ -9,7 +9,7 @@ const specKey = new Key('datastore_spec')
 
 /**
  *
- * @param {import("interface-datastore").Datastore} store
+ * @param {import('interface-datastore').Datastore} store
  */
 module.exports = (store) => {
   return {

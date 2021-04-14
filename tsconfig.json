@@ -1,5 +1,5 @@
 {
-    "extends": "./node_modules/aegir/src/config/tsconfig.aegir.json",
+    "extends": "aegir/src/config/tsconfig.aegir.json",
     "compilerOptions": {
         "outDir": "dist",
         "baseUrl": "./",
@@ -9,7 +9,7 @@
     },
     "include": [
       "types",
-      "test", // remove this line if you don't want to type-check tests
+      "test",
       "src"
     ]
 }

@@ -15,7 +15,7 @@ const versionKey = new Key('version')
 
 /**
  *
- * @param {import("interface-datastore").Datastore} store
+ * @param {import('interface-datastore').Datastore} store
  */
 module.exports = (store) => {
   return {

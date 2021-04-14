@@ -7,10 +7,10 @@ const map = require('it-map')
 const drain = require('it-drain')
 const pushable = require('it-pushable')
 /**
- * @typedef {import("interface-datastore").Query} Query
- * @typedef {import("interface-datastore").Datastore} Datastore
- * @typedef {import("interface-datastore").Options} DatastoreOptions
- * @typedef {import("cids")} CID
+ * @typedef {import('interface-datastore').Query} Query
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-datastore').Options} DatastoreOptions
+ * @typedef {import('cids')} CID
  * @typedef {import('./types').Blockstore} Blockstore
  */
 
@@ -45,6 +45,7 @@ function createBaseStore (store) {
       return store.open()
     },
 
+    // @ts-ignore TODO: how to not have ts freak out about this
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
         // TODO: we should make this a different method

@@ -1,9 +1,9 @@
 'use strict'
 
 /**
- * @typedef {import("interface-datastore").Datastore} Datastore
- * @typedef {import("./types").Backends} Backends
- * @typedef {Required<import("./types").Options>} Options
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('./types').Backends} Backends
+ * @typedef {Required<import('./types').Options>} Options
  */
 
 /**

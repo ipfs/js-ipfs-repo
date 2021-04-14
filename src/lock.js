@@ -9,7 +9,7 @@ const log = debug('ipfs:repo:lock')
 const lockFile = 'repo.lock'
 
 /**
- * @typedef {import("./types").LockCloser} LockCloser
+ * @typedef {import('./types').LockCloser} LockCloser
  */
 
 /**

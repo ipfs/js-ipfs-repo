@@ -25,7 +25,7 @@ async function makeBlock () {
 }
 
 /**
- * @typedef {import("interface-datastore").Key} Key
+ * @typedef {import('interface-datastore').Key} Key
  */
 
 /**
@@ -477,7 +477,7 @@ module.exports = (repo) => {
       })
 
       it('returns key/values for block data', async () => {
-        const blocks = /** @type {Block[]} */(await all(repo.blocks.query({})))
+        const blocks = await all(repo.blocks.query({}))
         const block = blocks.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
@@ -486,9 +486,9 @@ module.exports = (repo) => {
       })
 
       it('returns some of the blocks', async () => {
-        const blocksWithPrefix = /** @type {Block[]} */(await all(repo.blocks.query({
+        const blocksWithPrefix = await all(repo.blocks.query({
           prefix: cidToKey(block1.cid).toString().substring(0, 10)
-        })))
+        }))
         const block = blocksWithPrefix.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
 
         expect(block).to.be.ok()
