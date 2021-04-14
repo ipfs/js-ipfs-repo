@@ -11,6 +11,7 @@ const pushable = require('it-pushable')
  * @typedef {import("interface-datastore").Datastore} Datastore
  * @typedef {import("interface-datastore").Options} DatastoreOptions
  * @typedef {import("cids")} CID
+ * @typedef {import('./types').Blockstore} Blockstore
  */
 
 /**
@@ -36,19 +37,14 @@ function maybeWithSharding (filestore, options) {
 
 /**
  * @param {Datastore | ShardingDatastore} store
+ * @returns {Blockstore}
  */
 function createBaseStore (store) {
   return {
     open () {
       return store.open()
     },
-    /**
-     * Query the store
-     *
-     * @param {Query} query
-     * @param {DatastoreOptions} [options]
-     * @returns {AsyncIterable<Block|CID>}
-     */
+
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
         // TODO: we should make this a different method
@@ -61,13 +57,6 @@ function createBaseStore (store) {
       }
     },
 
-    /**
-     * Get a single block by CID
-     *
-     * @param {CID} cid
-     * @param {DatastoreOptions} [options]
-     * @returns {Promise<Block>}
-     */
     async get (cid, options) {
       const key = cidToKey(cid)
       const blockData = await store.get(key, options)
@@ -75,26 +64,12 @@ function createBaseStore (store) {
       return new Block(blockData, cid)
     },
 
-    /**
-     * Like get, but for more
-     *
-     * @param {Iterable<CID> | AsyncIterable<CID>} cids
-     * @param {DatastoreOptions} [options]
-     * @returns {AsyncIterable<Block>}
-     */
     async * getMany (cids, options) {
       for await (const cid of cids) {
         yield this.get(cid, options)
       }
     },
 
-    /**
-     * Write a single block to the store
-     *
-     * @param {Block} block
-     * @param {DatastoreOptions} [options]
-     * @returns {Promise<Block>}
-     */
     async put (block, options) {
       if (!Block.isBlock(block)) {
         throw new Error('invalid block')
@@ -110,13 +85,6 @@ function createBaseStore (store) {
       return block
     },
 
-    /**
-     * Like put, but for more
-     *
-     * @param {AsyncIterable<Block>|Iterable<Block>} blocks
-     * @param {DatastoreOptions} [options]
-     * @returns {AsyncIterable<Block>}
-     */
     async * putMany (blocks, options) { // eslint-disable-line require-await
       // we cannot simply chain to `store.putMany` because we convert a CID into
       // a key based on the multihash only, so we lose the version & codec and
@@ -158,41 +126,18 @@ function createBaseStore (store) {
       yield * output
     },
 
-    /**
-     * Does the store contain block with this CID?
-     *
-     * @param {CID} cid
-     * @param {DatastoreOptions} [options]
-     */
     has (cid, options) {
       return store.has(cidToKey(cid), options)
     },
 
-    /**
-     * Delete a block from the store
-     *
-     * @param {CID} cid
-     * @param {DatastoreOptions} [options]
-     * @returns {Promise<void>}
-     */
     delete (cid, options) {
       return store.delete(cidToKey(cid), options)
     },
 
-    /**
-     * Delete a block from the store
-     *
-     * @param {AsyncIterable<any> | Iterable<any>} cids
-     * @param {DatastoreOptions} [options]
-     */
     deleteMany (cids, options) {
       return store.deleteMany(map(cids, cid => cidToKey(cid)), options)
     },
 
-    /**
-     * Close the store
-     *
-     */
     close () {
       return store.close()
     }

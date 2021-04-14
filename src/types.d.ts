@@ -1,5 +1,7 @@
-import type { Datastore } from 'interface-datastore'
+import type { Datastore, Options as DatastoreOptions, Query } from 'interface-datastore'
 import type { BigNumber } from 'bignumber.js'
+
+import type CID from 'cids'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
@@ -55,4 +57,57 @@ export interface Stat {
   version: number
   numObjects: BigNumber
   repoSize: BigNumber
+}
+
+export interface Block {
+  cid: CID
+  data: Uint8Array
+}
+
+export interface Blockstore {
+  open: () => Promise<Void>
+  /**
+   * Query the store
+   */
+  query: (query: Query, options?: DatastoreOptions) => AsyncIterable<Block|CID>
+
+  /**
+   * Get a single block by CID
+   */
+  get: (cid: CID, options?: DatastoreOptions) => Promise<Block>
+
+  /**
+   * Like get, but for more
+   */
+  getMany: (cids: AwaitIterable<CID>, options?: DatastoreOptions) => AsyncIterable<Block>
+
+  /**
+   * Write a single block to the store
+   */
+  put: (block: Block, options?: DatastoreOptions) => Promise<Block>
+
+  /**
+   * Like put, but for more
+   */
+  putMany: (blocks: AwaitIterable<Block>, options?: DatastoreOptions) => AsyncIterable<Block>
+
+  /**
+   * Does the store contain block with this CID?
+   */
+  has: (cid: CID, options?: DatastoreOptions) => Promise<boolean>
+
+  /**
+   * Delete a block from the store
+   */
+  delete: (cid: CID, options?: DatastoreOptions) => Promise<Void>
+
+  /**
+   * Delete a block from the store
+   */
+  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<Key>
+
+  /**
+   * Close the store
+   */
+  close: () => Promise<Void>
 }

@@ -16,6 +16,7 @@ const config = require('./config')
 const spec = require('./spec')
 const apiAddr = require('./api-addr')
 const blockstore = require('./blockstore')
+const idstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
@@ -66,8 +67,8 @@ class IpfsRepo {
     this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
     this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
     const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
-    this.blocks = blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
-
+    const blockStore = blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
+    this.blocks = idstore(blockStore)
     this.version = version(this.root)
     this.config = config(this.root)
     this.spec = spec(this.root)
@@ -437,7 +438,7 @@ module.exports.errors = ERRORS
  * @param {any} _config
  */
 function buildConfig (_config) {
-  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore', {}))
+  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore'))
 
   return _config
 }
@@ -449,7 +450,7 @@ function buildDatastoreSpec (_config) {
   /** @type { {type: string, mounts: Array<{mountpoint: string, type: string, prefix: string, child: {type: string, path: 'string', sync: boolean, shardFunc: string}}>}} */
   const spec = {
     ...defaultDatastore.Spec,
-    ..._get(_config, 'datastore.Spec', {})
+    ..._get(_config, 'datastore.Spec')
   }
 
   return {
