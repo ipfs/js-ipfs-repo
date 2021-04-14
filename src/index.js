@@ -78,13 +78,13 @@ class IpfsRepo {
   /**
    * Initialize a new repo.
    *
-   * @param {any} config - config to write into `config`.
+   * @param {import('./types').Config} config - config to write into `config`.
    * @returns {Promise<void>}
    */
   async init (config) {
     log('initializing at: %s', this.path)
     await this._openRoot()
-    await this.config.set(buildConfig(config))
+    await this.config.replace(buildConfig(config))
     await this.spec.set(buildDatastoreSpec(config))
     await this.version.set(constants.repoVersion)
   }
@@ -430,24 +430,23 @@ module.exports.utils = { blockstore: require('./blockstore-utils') }
 module.exports.repoVersion = constants.repoVersion
 module.exports.errors = ERRORS
 
-// TODO this should come from js-ipfs instead
 /**
- * @param {any} _config
+ * @param {import('./types').Config} _config
  */
 function buildConfig (_config) {
-  _config.datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore'))
+  _config.Datastore = Object.assign({}, defaultDatastore, _get(_config, 'datastore'))
 
   return _config
 }
 
 /**
- * @param {any} _config
+ * @param {import('./types').Config} _config
  */
 function buildDatastoreSpec (_config) {
   /** @type { {type: string, mounts: Array<{mountpoint: string, type: string, prefix: string, child: {type: string, path: 'string', sync: boolean, shardFunc: string}}>}} */
   const spec = {
     ...defaultDatastore.Spec,
-    ..._get(_config, 'datastore.Spec')
+    ..._get(_config, 'Datastore.Spec')
   }
 
   return {

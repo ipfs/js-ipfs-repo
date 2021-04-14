@@ -28,13 +28,14 @@ module.exports = (repo) => {
 
     describe('config', () => {
       it('get config', async () => {
-        const config = await repo.config.get()
+        const config = await repo.config.getAll()
         expect(config).to.be.a('object')
       })
 
       it('set config', async () => {
-        await repo.config.set({ a: 'b' })
-        const config = await repo.config.get()
+        await repo.config.replace({})
+        await repo.config.set('a', 'b')
+        const config = await repo.config.getAll()
         expect(config).to.deep.equal({ a: 'b' })
       })
 
@@ -45,7 +46,7 @@ module.exports = (repo) => {
 
       it('set config key', async () => {
         await repo.config.set('c.x', 'd')
-        const config = await repo.config.get()
+        const config = await repo.config.getAll()
         expect(config).to.deep.equal({ a: 'b', c: { x: 'd' } })
       })
     })

@@ -45,7 +45,7 @@ function createBaseStore (store) {
       return store.open()
     },
 
-    // @ts-ignore TODO: how to not have ts freak out about this
+    // @ts-ignore TODO: ts does not think we will yield only CIDs or only Blocks
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
         // TODO: we should make this a different method

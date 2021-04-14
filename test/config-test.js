@@ -11,6 +11,7 @@ module.exports = (repo) => {
   describe('config', () => {
     describe('.set', () => {
       it('should throw when invalid key is passed', () => {
+        // @ts-expect-error key should be a string
         return expect(() => repo.config.set(5, 'value'))
           .to.throw()
           .with.property('code', 'ERR_INVALID_KEY')
@@ -33,16 +34,16 @@ module.exports = (repo) => {
       it('should return the whole conifg', async () => {
         const thing = await repo.config.getAll()
 
-        expect(thing).to.deep.equal(await repo.config.get())
+        expect(thing).to.deep.equal(await repo.config.getAll())
       })
     })
     describe('.replace', () => {
       it('should replace the whole conifg', async () => {
-        expect({}).to.not.deep.equal(await repo.config.get())
+        expect({}).to.not.deep.equal(await repo.config.getAll())
 
         await repo.config.replace({})
 
-        expect({}).to.deep.equal(await repo.config.get())
+        expect({}).to.deep.equal(await repo.config.getAll())
       })
     })
   })

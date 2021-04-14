@@ -34,23 +34,7 @@ module.exports = (store) => {
      * @param {AbortSignal} [options.signal] - abort this config read
      * @returns {Promise<Config>}
      */
-    getAll (options = {}) { // eslint-disable-line require-await
-      return configStore.get(undefined, options)
-    },
-
-    /**
-     * Get the value for the passed configuration key from the repo.
-     *
-     * @param {string} [key] - the config key to get
-     * @param {Object} [options] - options
-     * @param {AbortSignal} [options.signal] - abort this config read
-     * @returns {Promise<Config | any>}
-     */
-    async get (key, options = {}) {
-      if (!key) {
-        key = undefined
-      }
-
+    async getAll (options = {}) { // eslint-disable-line require-await
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
       // using IndexedDB API with string keys - only necessary until we do
       // the migratiion to v10 or above
@@ -58,28 +42,42 @@ module.exports = (store) => {
         signal: options.signal
       })
 
-      const config = JSON.parse(uint8ArrayToString(encodedValue))
-      if (key !== undefined && _get(config, key) === undefined) {
+      return JSON.parse(uint8ArrayToString(encodedValue))
+    },
+
+    /**
+     * Get the value for the passed configuration key from the repo.
+     *
+     * @param {string} key - the config key to get
+     * @param {Object} [options] - options
+     * @param {AbortSignal} [options.signal] - abort this config read
+     */
+    async get (key, options = {}) {
+      if (key == null) {
         throw new errors.NotFoundError(`Key ${key} does not exist in config`)
       }
 
-      const value = key !== undefined ? _get(config, key) : config
+      const config = await this.getAll(options)
+      const value = _get(config, key)
+
+      if (value === undefined) {
+        throw new errors.NotFoundError(`Key ${key} does not exist in config`)
+      }
+
       return value
     },
 
     /**
      * Set the current configuration for this repo.
      *
-     * @param {string} [key] - the config key to be written
+     * @param {string} key - the config key to be written
      * @param {any} [value] - the config value to be written
      * @param {Object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config write
      */
     set (key, value, options = {}) {
-      if (arguments.length === 1) {
-        value = key
-        key = undefined
-      } else if (!key || typeof key !== 'string') {
+      // @ts-ignore ts thinks key will only be a string, but it may not be
+      if (typeof key !== 'string' && !(key instanceof String)) {
         throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
       }
 
@@ -137,7 +135,7 @@ module.exports = (store) => {
     const key = m.key
     const value = m.value
     if (key) {
-      const config = await configStore.get()
+      const config = await configStore.getAll()
       if (typeof config === 'object' && config !== null) {
         _set(config, key, value)
       }
