@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -107,8 +107,8 @@
     "dignifiedquire <dignifiedquire@gmail.com>",
     "Hugo Dias <hugomrdias@gmail.com>",
     "Stephen Whitmore <stephen.whitmore@gmail.com>",
-    "Adam Uhlíř <adam@uhlir.dev>",
     "Alan Shaw <alan.shaw@protocol.ai>",
+    "Adam Uhlíř <adam@uhlir.dev>",
     "Vasco Santos <vasco.santos@moxy.studio>",
     "Hector Sanjuan <code@hector.link>",
     "Pau Ramon Revilla <masylum@gmail.com>",
@@ -117,6 +117,7 @@
     "Lars-Magnus Skog <ralphtheninja@riseup.net>",
     "Francisco Baio Dias <xicombd@gmail.com>",
     "Pedro Santos <pedro.santos@moxy.studio>",
+    "Linus Unnebäck <linus@folkdatorn.se>",
     "Marcus Bernales <mboperator@gmail.com>",
     "Pedro Teixeira <i@pgte.me>",
     "Richard Littauer <richard.littauer@gmail.com>",
@@ -127,9 +128,9 @@
     "Andrew Nesbitt <andrewnez@gmail.com>",
     "nginnever <ginneversource@gmail.com>",
     "Henrique Dias <hacdias@gmail.com>",
+    "Hannah Howard <hannah@hannahhoward.net>",
     "Jonah Weissman <jonahrweissman@gmail.com>",
     "Jonathan <jkrone@vt.edu>",
-    "Justin Chase <justin.m.chase@gmail.com>",
-    "Linus Unnebäck <linus@folkdatorn.se>"
+    "Justin Chase <justin.m.chase@gmail.com>"
   ]
 }
