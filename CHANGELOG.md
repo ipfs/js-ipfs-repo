@@ -1,3 +1,12 @@
+# [9.1.0](https://github.com/ipfs/js-ipfs-repo/compare/v9.0.0...v9.1.0) (2021-04-15)
+
+
+### Features
+
+* make blockstore identity-hash compatible ([#297](https://github.com/ipfs/js-ipfs-repo/issues/297)) ([bbcdb12](https://github.com/ipfs/js-ipfs-repo/commit/bbcdb1205832ba9bb4fd214c7d9e1c1125d48f18))
+
+
+
 # [9.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v8.0.0...v9.0.0) (2021-03-05)
 
 
