@@ -7,7 +7,7 @@ const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../src')
 
 /**
- * @typedef {import("../src/index")} Repo
+ * @typedef {import('../src/index')} Repo
  */
 
 describe('isInitialized', () => {

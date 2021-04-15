@@ -4,7 +4,7 @@
 
 const { expect } = require('aegir/utils/chai')
 /**
- * @typedef {import("../src/index")} Repo
+ * @typedef {import('../src/index')} Repo
  */
 
 /**

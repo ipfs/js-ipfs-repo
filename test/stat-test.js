@@ -6,7 +6,7 @@ const Block = require('ipld-block')
 const CID = require('cids')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 /**
- * @param {import("../src/index")} repo
+ * @param {import('../src/index')} repo
  */
 module.exports = (repo) => {
   describe('stat', () => {
@@ -27,10 +27,10 @@ module.exports = (repo) => {
       expect(stats).to.have.property('repoSize')
       expect(stats).to.have.property('storageMax')
 
-      expect(stats.numObjects.isGreaterThan(0)).to.eql(true)
+      expect(stats.numObjects > 0n).to.eql(true)
       expect(stats.version > 0).to.eql(true)
-      expect(stats.repoSize.isGreaterThan(0)).to.eql(true)
-      expect(stats.storageMax.isGreaterThan(0)).to.eql(true)
+      expect(stats.repoSize > 0n).to.eql(true)
+      expect(stats.storageMax > 0n).to.eql(true)
     })
   })
 }

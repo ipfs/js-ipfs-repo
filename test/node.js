@@ -16,7 +16,7 @@ const fsstat = promisify(fs.stat)
 const IPFSRepo = require('../src')
 
 /**
- * @typedef {import("../src/types").Options} Options
+ * @typedef {import('../src/types').Options} Options
  */
 
 async function createTempRepo (options = {}) {

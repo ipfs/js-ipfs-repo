@@ -7,7 +7,7 @@ const range = require('just-range')
 const Key = require('interface-datastore').Key
 const uint8ArrayFromString = require('uint8arrays/from-string')
 /**
- * @typedef {import("../src/index")} Repo
+ * @typedef {import('../src/index')} Repo
  */
 
 /**

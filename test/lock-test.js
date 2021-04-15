@@ -7,7 +7,7 @@ const lockMemory = require('../src/lock-memory')
 const { LockExistsError } = require('./../src/errors')
 
 /**
- * @param {import("../src/index")} repo
+ * @param {import('../src/index')} repo
  */
 module.exports = (repo) => {
   describe('Repo lock tests', () => {

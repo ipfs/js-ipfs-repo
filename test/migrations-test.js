@@ -10,7 +10,7 @@ const constants = require('../src/constants')
 const errors = require('../src/errors')
 const IPFSRepo = require('../src')
 /**
- * @typedef {import("../src/index")} Repo
+ * @typedef {import('../src/index')} Repo
  */
 
 /**

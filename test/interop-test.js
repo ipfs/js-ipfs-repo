@@ -8,7 +8,7 @@ const Key = require('interface-datastore').Key
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 /**
- * @param {import("../src/index")} repo
+ * @param {import('../src/index')} repo
  */
 module.exports = (repo) => {
   describe('interop', () => {

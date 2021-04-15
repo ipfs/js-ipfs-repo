@@ -13,7 +13,7 @@ const { Adapter } = require('interface-datastore')
  */
 
 /**
- * @param {import("../src/index")} repo
+ * @param {import('../src/index')} repo
  */
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
@@ -28,13 +28,14 @@ module.exports = (repo) => {
 
     describe('config', () => {
       it('get config', async () => {
-        const config = await repo.config.get()
+        const config = await repo.config.getAll()
         expect(config).to.be.a('object')
       })
 
       it('set config', async () => {
-        await repo.config.set({ a: 'b' })
-        const config = await repo.config.get()
+        await repo.config.replace({})
+        await repo.config.set('a', 'b')
+        const config = await repo.config.getAll()
         expect(config).to.deep.equal({ a: 'b' })
       })
 
@@ -45,7 +46,7 @@ module.exports = (repo) => {
 
       it('set config key', async () => {
         await repo.config.set('c.x', 'd')
-        const config = await repo.config.get()
+        const config = await repo.config.getAll()
         expect(config).to.deep.equal({ a: 'b', c: { x: 'd' } })
       })
     })
@@ -334,7 +335,7 @@ module.exports = (repo) => {
         const stat = await otherRepo.stat()
 
         expect(stat).to.have.property('storageMax')
-        expect(stat.storageMax.toNumber()).to.equal(bytes(maxStorage))
+        expect(stat.storageMax).to.equal(BigInt(bytes(maxStorage)))
       })
 
       it('should throw unexpected errors when closing', async () => {
