@@ -45,16 +45,15 @@ function createBaseStore (store) {
       return store.open()
     },
 
-    // @ts-ignore TODO: ts does not think we will yield only CIDs or only Blocks
     async * query (query, options) {
       for await (const { key, value } of store.query(query, options)) {
-        // TODO: we should make this a different method
-        if (query.keysOnly) {
-          yield keyToCid(key)
-          continue
-        }
-
         yield new Block(value, keyToCid(key))
+      }
+    },
+
+    async * queryKeys (query, options) {
+      for await (const key of store.queryKeys(query, options)) {
+        yield keyToCid(key)
       }
     },
 

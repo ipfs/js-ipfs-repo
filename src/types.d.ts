@@ -1,5 +1,5 @@
 
-import type { Datastore, Options as DatastoreOptions, Query, Key } from 'interface-datastore'
+import type { Datastore, Options as DatastoreOptions, Query, KeyQuery, Key } from 'interface-datastore'
 import type CID from 'cids'
 import type Block from 'ipld-block'
 
@@ -65,7 +65,12 @@ export interface Blockstore {
   /**
    * Query the store
    */
-  query: ((query: Query & { keysOnly: true }, options?: DatastoreOptions) => AsyncIterable<CID>) & ((query: Query, options?: DatastoreOptions) => AsyncIterable<Block>)
+  query: (Query, options?: DatastoreOptions) => AsyncIterable<Block>
+
+  /**
+   * Query the store, returning only keys
+   */
+   queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
 
   /**
    * Get a single block by CID

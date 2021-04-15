@@ -31,9 +31,12 @@ function createIdStore (store) {
       return store.open()
     },
 
-    // @ts-ignore TODO: ts does not think we will yield only CIDs or only Blocks
     query (query, options) {
       return store.query(query, options)
+    },
+
+    queryKeys (query, options) {
+      return store.queryKeys(query, options)
     },
 
     async get (cid, options) {
