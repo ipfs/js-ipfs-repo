@@ -60,12 +60,12 @@ export interface Stat {
 }
 
 export interface Blockstore {
-  open: () => Promise<Void>
+  open: () => Promise<void>
 
   /**
    * Query the store
    */
-  query: (Query, options?: DatastoreOptions) => AsyncIterable<Block>
+  query: (query: Query, options?: DatastoreOptions) => AsyncIterable<Block>
 
   /**
    * Query the store, returning only keys
@@ -100,7 +100,7 @@ export interface Blockstore {
   /**
    * Delete a block from the store
    */
-  delete: (cid: CID, options?: DatastoreOptions) => Promise<Void>
+  delete: (cid: CID, options?: DatastoreOptions) => Promise<void>
 
   /**
    * Delete a block from the store
@@ -110,7 +110,7 @@ export interface Blockstore {
   /**
    * Close the store
    */
-  close: () => Promise<Void>
+  close: () => Promise<void>
 }
 
 export interface Config {

@@ -66,9 +66,7 @@ module.exports = (repo) => {
       it('does not write an identity block', async () => {
         const identityBlock = new Block(identityData, identityCID)
         await repo.blocks.put(identityBlock)
-        const cids = await all(repo.blocks.query({
-          keysOnly: true
-        }))
+        const cids = await all(repo.blocks.queryKeys({}))
         const rawCID = new CID(1, 'raw', identityCID.multihash)
         expect(cids).to.not.deep.include(rawCID)
       })
@@ -116,9 +114,7 @@ module.exports = (repo) => {
         const blocks = [new Block(d, new CID(1, 'raw', hash)), new Block(identityData, identityCID)]
         const put = await all(repo.blocks.putMany(blocks))
         expect(put).to.deep.equal(blocks)
-        const cids = await all(repo.blocks.query({
-          keysOnly: true
-        }))
+        const cids = await all(repo.blocks.queryKeys({}))
         expect(cids).to.deep.include(new CID(1, 'raw', hash))
         expect(cids).to.not.deep.include(new CID(1, 'raw', identityCID.multihash))
       })
@@ -500,9 +496,7 @@ module.exports = (repo) => {
       })
 
       it('returns only keys', async () => {
-        const cids = await all(repo.blocks.query({
-          keysOnly: true
-        }))
+        const cids = await all(repo.blocks.queryKeys({}))
 
         expect(cids.length).to.be.greaterThan(0)
 
