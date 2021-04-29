@@ -1,3 +1,12 @@
+## [9.1.3](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.2...v9.1.3) (2021-04-29)
+
+
+### Bug Fixes
+
+* make announce and noannounce optional ([a7562d8](https://github.com/ipfs/js-ipfs-repo/commit/a7562d8e4fcd00e43c65728c48ae543998cde17f))
+
+
+
 ## [9.1.2](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.1...v9.1.2) (2021-04-29)
 
 
