@@ -1,3 +1,7 @@
+## [9.1.2](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.1...v9.1.2) (2021-04-29)
+
+
+
 ## [9.1.1](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.0...v9.1.1) (2021-04-22)
 
 
