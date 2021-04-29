@@ -136,8 +136,8 @@ export interface AddressConfig {
   Delegates?: string[]
   Gateway?: string
   Swarm?: string[],
-  Announce: string[],
-  NoAnnounce: string[]
+  Announce?: string[],
+  NoAnnounce?: string[]
 }
 
 export interface APIConfig {
