@@ -105,7 +105,7 @@ export interface Blockstore {
   /**
    * Delete a block from the store
    */
-  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<Key>
+  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<CID>
 
   /**
    * Close the store

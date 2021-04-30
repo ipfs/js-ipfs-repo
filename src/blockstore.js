@@ -3,7 +3,6 @@
 const { shard, ShardingDatastore } = require('datastore-core')
 const Block = require('ipld-block')
 const { cidToKey, keyToCid } = require('./blockstore-utils')
-const map = require('it-map')
 const drain = require('it-drain')
 const pushable = require('it-pushable')
 /**
@@ -135,7 +134,21 @@ function createBaseStore (store) {
     },
 
     deleteMany (cids, options) {
-      return store.deleteMany(map(cids, cid => cidToKey(cid)), options)
+      const out = pushable()
+
+      drain(store.deleteMany((async function * () {
+        for await (const cid of cids) {
+          yield cidToKey(cid)
+
+          out.push(cid)
+        }
+
+        out.end()
+      }()), options)).catch(err => {
+        out.end(err)
+      })
+
+      return out
     },
 
     close () {

@@ -440,9 +440,11 @@ module.exports = (repo) => {
 
     describe('.deleteMany', () => {
       it('simple', async () => {
-        await drain(repo.blocks.deleteMany([b.cid]))
+        const deleted = await all(repo.blocks.deleteMany([b.cid]))
         const exists = await repo.blocks.has(b.cid)
         expect(exists).to.equal(false)
+        expect(deleted).to.have.lengthOf(1)
+        expect(deleted[0]).to.deep.equal(b.cid)
       })
 
       it('including identity cid', async () => {
