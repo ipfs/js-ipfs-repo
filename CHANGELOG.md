@@ -1,3 +1,12 @@
+# [10.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.3...v10.0.0) (2021-05-01)
+
+
+### Bug Fixes
+
+* return type of deleteMany should be the cids you deleted ([#311](https://github.com/ipfs/js-ipfs-repo/issues/311)) ([7760066](https://github.com/ipfs/js-ipfs-repo/commit/776006680d728b8eba340fe0695d5dca9cdfbd11))
+
+
+
 ## [9.1.3](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.2...v9.1.3) (2021-04-29)
 
 
