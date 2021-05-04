@@ -1,3 +1,12 @@
+## [10.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v10.0.0...v10.0.1) (2021-05-04)
+
+
+### Bug Fixes
+
+* correct key name ([928b0e1](https://github.com/ipfs/js-ipfs-repo/commit/928b0e1557933247bdd48fe578b67766edf5bb4e))
+
+
+
 # [10.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v9.1.3...v10.0.0) (2021-05-01)
 
 
