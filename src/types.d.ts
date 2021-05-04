@@ -141,7 +141,7 @@ export interface AddressConfig {
 }
 
 export interface APIConfig {
-  HTTPHeaders?: Record<string, string>
+  HTTPHeaders?: Record<string, string[]>
 }
 
 export interface DiscoveryConfig {
