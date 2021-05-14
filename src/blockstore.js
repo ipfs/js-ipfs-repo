@@ -1,16 +1,15 @@
 'use strict'
 
 const { shard, ShardingDatastore } = require('datastore-core')
-const Block = require('ipld-block')
 const { cidToKey, keyToCid } = require('./blockstore-utils')
 const drain = require('it-drain')
 const pushable = require('it-pushable')
+
 /**
- * @typedef {import('interface-datastore').Query} Query
+ * @typedef {import('multiformats').CID} CID
  * @typedef {import('interface-datastore').Datastore} Datastore
- * @typedef {import('interface-datastore').Options} DatastoreOptions
- * @typedef {import('cids')} CID
- * @typedef {import('./types').Blockstore} Blockstore
+ * @typedef {import('interface-store').Options} DatastoreOptions
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  */
 
 /**
@@ -39,28 +38,56 @@ function maybeWithSharding (filestore, options) {
  * @returns {Blockstore}
  */
 function createBaseStore (store) {
-  return {
+  /** @type {Blockstore} */
+  const bs = {
     open () {
       return store.open()
     },
 
+    close () {
+      return store.close()
+    },
+
     async * query (query, options) {
-      for await (const { key, value } of store.query(query, options)) {
-        yield new Block(value, keyToCid(key))
+      /** @type {import('interface-datastore').Query} */
+      const storeQuery = {
+        prefix: query.prefix,
+        limit: query.limit,
+        offset: query.offset,
+        filters: (query.filters || []).map(filter => {
+          return ({ key, value }) => filter({ key: keyToCid(key), value })
+        }),
+        orders: (query.orders || []).map(order => {
+          return (a, b) => order({ key: keyToCid(a.key), value: a.value }, { key: keyToCid(b.key), value: b.value })
+        })
+      }
+
+      for await (const { key, value } of store.query(storeQuery, options)) {
+        yield { key: keyToCid(key), value }
       }
     },
 
     async * queryKeys (query, options) {
-      for await (const key of store.queryKeys(query, options)) {
+      /** @type {import('interface-datastore').KeyQuery} */
+      const storeQuery = {
+        prefix: query.prefix,
+        limit: query.limit,
+        offset: query.offset,
+        filters: (query.filters || []).map(filter => {
+          return (key) => filter(keyToCid(key))
+        }),
+        orders: (query.orders || []).map(order => {
+          return (a, b) => order(keyToCid(a), keyToCid(b))
+        })
+      }
+
+      for await (const key of store.queryKeys(storeQuery, options)) {
         yield keyToCid(key)
       }
     },
 
     async get (cid, options) {
-      const key = cidToKey(cid)
-      const blockData = await store.get(key, options)
-
-      return new Block(blockData, cid)
+      return store.get(cidToKey(cid), options)
     },
 
     async * getMany (cids, options) {
@@ -69,22 +96,16 @@ function createBaseStore (store) {
       }
     },
 
-    async put (block, options) {
-      if (!Block.isBlock(block)) {
-        throw new Error('invalid block')
-      }
-
-      const key = cidToKey(block.cid)
+    async put (cid, buf, options) {
+      const key = cidToKey(cid)
       const exists = await store.has(key, options)
 
       if (!exists) {
-        await store.put(key, block.data, options)
+        await store.put(key, buf, options)
       }
-
-      return block
     },
 
-    async * putMany (blocks, options) { // eslint-disable-line require-await
+    async * putMany (pairs, options) { // eslint-disable-line require-await
       // we cannot simply chain to `store.putMany` because we convert a CID into
       // a key based on the multihash only, so we lose the version & codec and
       // cannot give the user back the CID they used to create the block, so yield
@@ -102,17 +123,17 @@ function createBaseStore (store) {
       runner(async () => {
         try {
           await drain(store.putMany(async function * () {
-            for await (const block of blocks) {
-              const key = cidToKey(block.cid)
+            for await (const { key: cid, value } of pairs) {
+              const key = cidToKey(cid)
               const exists = await store.has(key, options)
 
               if (!exists) {
-                yield { key, value: block.data }
+                yield { key, value }
               }
 
               // there is an assumption here that after the yield has completed
               // the underlying datastore has finished writing the block
-              output.push(block)
+              output.push({ key: cid, value })
             }
           }()))
 
@@ -151,8 +172,14 @@ function createBaseStore (store) {
       return out
     },
 
-    close () {
-      return store.close()
+    batch () {
+      return {
+        put (key, value) { },
+        delete (key) { },
+        commit: async (options) => { }
+      }
     }
   }
+
+  return bs
 }

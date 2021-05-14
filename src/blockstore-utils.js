@@ -1,10 +1,11 @@
 'use strict'
 
 const { Key } = require('interface-datastore')
-const CID = require('cids')
-const multibase = require('multibase')
+const { CID } = require('multiformats')
+const mhd = require('multiformats/hashes/digest')
+const raw = require('multiformats/codecs/raw')
 const errcode = require('err-code')
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { base32 } = require('multiformats/bases/base32')
 
 /**
  * Transform a cid to the appropriate datastore key.
@@ -13,11 +14,13 @@ const uint8ArrayToString = require('uint8arrays/to-string')
  * @returns {Key}
  */
 exports.cidToKey = cid => {
-  if (!CID.isCID(cid)) {
+  if (!(cid instanceof CID)) {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
-  return new Key('/' + uint8ArrayToString(multibase.encode('base32', cid.multihash)).slice(1).toUpperCase(), false)
+  const encoded = base32.encode(cid.multihash.bytes)
+
+  return new Key('/' + encoded.slice(1).toUpperCase(), false)
 }
 
 /**
@@ -30,5 +33,7 @@ exports.cidToKey = cid => {
  */
 exports.keyToCid = key => {
   // Block key is of the form /<base32 encoded string>
-  return new CID(1, 'raw', multibase.decode('b' + key.toString().slice(1).toLowerCase()))
+  const digest = mhd.decode(base32.decode('b' + key.toString().slice(1).toLowerCase()))
+
+  return CID.createV1(raw.code, digest)
 }

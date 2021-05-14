@@ -35,10 +35,9 @@ const lockers = {
  * @typedef {import('./types').Lock} Lock
  * @typedef {import('./types').LockCloser} LockCloser
  * @typedef {import('./types').Stat} Stat
- * @typedef {import('./types').Blockstore} Blockstore
  * @typedef {import('./types').Config} Config
- * @typedef {import('ipld-block')} Block
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  */
 
 /**
@@ -401,11 +400,10 @@ class IpfsRepo {
     let size = BigInt(0)
 
     if (this.blocks) {
-      for await (const blockOrCid of this.blocks.query({})) {
-        const block = /** @type {Block} */(blockOrCid)
+      for await (const { key, value } of this.blocks.query({})) {
         count += BigInt(1)
-        size += BigInt(block.data.byteLength)
-        size += BigInt(block.cid.bytes.byteLength)
+        size += BigInt(value.byteLength)
+        size += BigInt(key.bytes.byteLength)
       }
     }
 

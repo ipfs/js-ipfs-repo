@@ -3,10 +3,8 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats')
 const range = require('just-range')
-const multihashing = require('multihashing-async')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const { cidToKey } = require('../src/blockstore-utils')
 const IPFSRepo = require('../src')
@@ -15,17 +13,26 @@ const all = require('it-all')
 const first = require('it-first')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayEquals = require('uint8arrays/equals')
 const { Adapter } = require('interface-datastore')
+const { sha256 } = require('multiformats/hashes/sha2')
+const { identity } = require('multiformats/hashes/identity')
+const raw = require('multiformats/codecs/raw')
+const dagCbor = require('@ipld/dag-cbor')
+const dagPb = require('@ipld/dag-pb')
+const mc = require('multicodec')
 
-async function makeBlock () {
-  const bData = uint8ArrayFromString(`hello-${Math.random()}`)
+async function makePair () {
+  const data = new TextEncoder().encode(`hello-${Math.random()}`)
+  const digest = await sha256.digest(data)
+  const cid = CID.create(1, raw.code, digest)
 
-  const hash = await multihashing(bData, 'sha2-256')
-  return new Block(bData, new CID(hash))
+  return { key: cid, value: data }
 }
 
 /**
  * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('interface-blockstore').Pair} Pair
  */
 
 /**
@@ -38,15 +45,16 @@ module.exports = (repo) => {
     const bData = uint8ArrayFromString('hello world')
     const identityData = uint8ArrayFromString('A16461736466190144', 'base16upper')
 
-    /** @type {Block} */
-    let b
+    /** @type { { key: CID, value: Uint8Array } } */
+    let pair
     /** @type {CID} */
     let identityCID
+
     before(async () => {
-      const hash = await multihashing(bData, 'sha2-256')
-      b = new Block(bData, new CID(hash))
-      const identityHash = await multihashing(identityData, 'identity')
-      identityCID = new CID(1, 'dag-cbor', identityHash)
+      const digest1 = await sha256.digest(bData)
+      pair = { key: CID.createV0(digest1), value: bData }
+      const digest2 = await identity.digest(identityData)
+      identityCID = CID.createV1(mc.IDENTITY, digest2)
     })
 
     describe('.put', () => {
@@ -60,34 +68,31 @@ module.exports = (repo) => {
       })
 
       it('simple', async () => {
-        await repo.blocks.put(b)
+        await repo.blocks.put(pair.key, pair.value)
       })
 
       it('does not write an identity block', async () => {
-        const identityBlock = new Block(identityData, identityCID)
-        await repo.blocks.put(identityBlock)
+        await repo.blocks.put(identityCID, identityData)
         const cids = await all(repo.blocks.queryKeys({}))
-        const rawCID = new CID(1, 'raw', identityCID.multihash)
+        const rawCID = CID.createV1(raw.code, identityCID.multihash)
         expect(cids).to.not.deep.include(rawCID)
       })
 
       it('multi write (locks)', async () => {
-        await Promise.all([repo.blocks.put(b), repo.blocks.put(b)])
+        await Promise.all([repo.blocks.put(pair.key, pair.value), repo.blocks.put(pair.key, pair.value)])
       })
 
       it('empty value', async () => {
         const d = new Uint8Array(0)
-        const multihash = await multihashing(d, 'sha2-256')
-        const empty = new Block(d, new CID(multihash))
-        await repo.blocks.put(empty)
+        const digest = await sha256.digest(d)
+        await repo.blocks.put(CID.createV0(digest), d)
       })
 
       it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
-        const hashes = await Promise.all(range(100).map((i) => multihashing(blockData[i], 'sha2-256')))
+        const hashes = await Promise.all(range(100).map((i) => sha256.digest(blockData[i])))
         await Promise.all(range(100).map((i) => {
-          const block = new Block(blockData[i], new CID(hashes[i]))
-          return repo.blocks.put(block)
+          return repo.blocks.put(CID.createV0(hashes[i]), blockData[i])
         }))
       })
 
@@ -95,28 +100,33 @@ module.exports = (repo) => {
         this.timeout(15000) // add time for ci
         const blocks = await Promise.all(range(50).map(async (i) => {
           const d = uint8ArrayFromString('many' + Math.random())
-          const hash = await multihashing(d, 'sha2-256')
-          return new Block(d, new CID(hash))
+          const digest = await sha256.digest(d)
+          return { key: CID.createV0(digest), value: d }
         }))
 
         const put = await all(repo.blocks.putMany(blocks))
         expect(put).to.deep.equal(blocks)
 
         for (const block of blocks) {
-          const block1 = await repo.blocks.get(block.cid)
-          expect(block1).to.be.eql(block)
+          const block1 = await repo.blocks.get(block.key)
+          expect(block1).to.equalBytes(block.value)
         }
       })
 
       it('.putMany with identity block included', async function () {
         const d = uint8ArrayFromString('many' + Math.random())
-        const hash = await multihashing(d, 'sha2-256')
-        const blocks = [new Block(d, new CID(1, 'raw', hash)), new Block(identityData, identityCID)]
+        const digest = await sha256.digest(d)
+
+        const blocks = [{
+          key: CID.createV1(raw.code, digest), value: d
+        }, {
+          key: identityCID, value: identityData
+        }]
         const put = await all(repo.blocks.putMany(blocks))
         expect(put).to.deep.equal(blocks)
         const cids = await all(repo.blocks.queryKeys({}))
-        expect(cids).to.deep.include(new CID(1, 'raw', hash))
-        expect(cids).to.not.deep.include(new CID(1, 'raw', identityCID.multihash))
+        expect(cids).to.deep.include(CID.createV1(raw.code, digest))
+        expect(cids).to.not.deep.include(CID.createV1(raw.code, identityCID.multihash))
       })
 
       it('returns an error on invalid block', () => {
@@ -136,17 +146,19 @@ module.exports = (repo) => {
       })
 
       it('simple', async () => {
-        const block = await repo.blocks.get(b.cid)
-        expect(block).to.be.eql(b)
+        const block = await repo.blocks.get(pair.key)
+        expect(block).to.equalBytes(pair.value)
       })
 
       it('massive read', async function () {
         this.timeout(15000) // add time for ci
         await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % blockData.length
-          const hash = await multihashing(blockData[j], 'sha2-256')
-          const block = await repo.blocks.get(new CID(hash))
-          expect(block.data).to.be.eql(blockData[j])
+          const digest = await sha256.digest(blockData[j])
+          const cid = CID.createV0(digest)
+          const block = await repo.blocks.get(cid)
+
+          expect(block).to.equalBytes(blockData[j])
         }))
       })
 
@@ -157,21 +169,21 @@ module.exports = (repo) => {
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
-        await repo.blocks.put(new Block(data, cid))
+        const digest = await sha256.digest(data)
+        const cid = CID.createV0(digest)
+        await repo.blocks.put(cid, data)
         const block = await repo.blocks.get(cid.toV1())
-        expect(block.data).to.eql(data)
+        expect(block).to.equalBytes(data)
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-pb', hash)
-        await repo.blocks.put(new Block(data, cid))
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagPb.code, digest)
+        await repo.blocks.put(cid, data)
         const block = await repo.blocks.get(cid.toV0())
-        expect(block.data).to.eql(data)
+        expect(block).to.equalBytes(data)
       })
 
       it('throws when passed an invalid cid', () => {
@@ -181,8 +193,8 @@ module.exports = (repo) => {
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-cbor', hash)
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagPb.code, digest)
 
         await expect(repo.blocks.get(cid)).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
       })
@@ -190,8 +202,8 @@ module.exports = (repo) => {
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
+        const digest = await sha256.digest(data)
+        const cid = CID.createV0(digest)
         const key = cidToKey(cid)
 
         otherRepo = new IPFSRepo(tempDir(), {
@@ -233,7 +245,7 @@ module.exports = (repo) => {
 
       it('can load an identity hash without storing first', async () => {
         const block = await repo.blocks.get(identityCID)
-        expect(block.data).to.be.eql(identityData)
+        expect(block).to.equalBytes(identityData)
       })
     })
 
@@ -248,14 +260,14 @@ module.exports = (repo) => {
       })
 
       it('simple', async () => {
-        const blocks = await all(repo.blocks.getMany([b.cid]))
-        expect(blocks).to.deep.include(b)
+        const blocks = await all(repo.blocks.getMany([pair.key]))
+        expect(blocks).to.deep.include(pair.value)
       })
 
-      it('including a block with identity has', async () => {
-        const blocks = await all(repo.blocks.getMany([b.cid, identityCID]))
-        expect(blocks).to.deep.include(b)
-        expect(blocks).to.deep.include(new Block(identityData, identityCID))
+      it('including a block with identity hash', async () => {
+        const blocks = await all(repo.blocks.getMany([pair.key, identityCID]))
+        expect(blocks).to.deep.include(pair.value)
+        expect(blocks).to.deep.include(identityData)
       })
 
       it('massive read', async function () {
@@ -265,9 +277,9 @@ module.exports = (repo) => {
         const blocks = await all(repo.blocks.getMany(async function * () {
           for (let i = 0; i < num; i++) {
             const j = i % blockData.length
-            const hash = await multihashing(blockData[j], 'sha2-256')
+            const digest = await sha256.digest(blockData[j])
 
-            yield new CID(hash)
+            yield CID.createV0(digest)
           }
         }()))
 
@@ -275,7 +287,7 @@ module.exports = (repo) => {
 
         for (let i = 0; i < num; i++) {
           const j = i % blockData.length
-          expect(blocks[i]).to.have.deep.property('data', blockData[j])
+          expect(blocks[i]).to.equalBytes(blockData[j])
         }
       })
 
@@ -286,21 +298,21 @@ module.exports = (repo) => {
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
-        await repo.blocks.put(new Block(data, cid))
+        const digest = await sha256.digest(data)
+        const cid = CID.createV0(digest)
+        await repo.blocks.put(cid, data)
         const block = await first(repo.blocks.getMany([cid.toV1()]))
-        expect(block && block.data).to.eql(data)
+        expect(block).to.equalBytes(data)
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-pb', hash)
-        await repo.blocks.put(new Block(data, cid))
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagPb.code, digest)
+        await repo.blocks.put(cid, data)
         const block = await first(repo.blocks.getMany([cid.toV0()]))
-        expect(block && block.data).to.eql(data)
+        expect(block).to.equalBytes(data)
       })
 
       it('throws when passed an invalid cid', () => {
@@ -310,8 +322,8 @@ module.exports = (repo) => {
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-cbor', hash)
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagCbor.code, digest)
 
         await expect(drain(repo.blocks.getMany([cid]))).to.eventually.be.rejected().with.property('code', 'ERR_NOT_FOUND')
       })
@@ -319,8 +331,8 @@ module.exports = (repo) => {
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
+        const digest = await sha256.digest(data)
+        const cid = CID.createV0(digest)
         const key = cidToKey(cid)
 
         otherRepo = new IPFSRepo(tempDir(), {
@@ -371,7 +383,7 @@ module.exports = (repo) => {
 
     describe('.has', () => {
       it('existing block', async () => {
-        const exists = await repo.blocks.has(b.cid)
+        const exists = await repo.blocks.has(pair.key)
         expect(exists).to.eql(true)
       })
 
@@ -381,15 +393,15 @@ module.exports = (repo) => {
       })
 
       it('non existent block', async () => {
-        const exists = await repo.blocks.has(new CID('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'))
+        const exists = await repo.blocks.has(CID.parse('QmbcpFjzamCj5ZZdduW32ctWUPvbGMwQZk2ghWK6PrKswE'))
         expect(exists).to.eql(false)
       })
 
       it('should have block stored under v0 CID with a v1 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(hash)
-        await repo.blocks.put(new Block(data, cid))
+        const digest = await sha256.digest(data)
+        const cid = CID.createV0(digest)
+        await repo.blocks.put(cid, data)
         const exists = await repo.blocks.has(cid.toV1())
         expect(exists).to.eql(true)
       })
@@ -397,10 +409,10 @@ module.exports = (repo) => {
       it('should have block stored under v1 CID with a v0 CID', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
 
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-pb', hash)
-        await repo.blocks.put(new Block(data, cid))
-        const exists = await repo.blocks.has(cid.toV0())
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagCbor.code, digest)
+        await repo.blocks.put(cid, data)
+        const exists = await repo.blocks.has(CID.createV0(digest))
         expect(exists).to.eql(true)
       })
 
@@ -411,8 +423,8 @@ module.exports = (repo) => {
 
       it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
-        const hash = await multihashing(data, 'sha2-256')
-        const cid = new CID(1, 'dag-cbor', hash)
+        const digest = await sha256.digest(data)
+        const cid = CID.createV1(dagCbor.code, digest)
         const result = await repo.blocks.has(cid)
 
         expect(result).to.be.false()
@@ -421,8 +433,8 @@ module.exports = (repo) => {
 
     describe('.delete', () => {
       it('simple', async () => {
-        await repo.blocks.delete(b.cid)
-        const exists = await repo.blocks.has(b.cid)
+        await repo.blocks.delete(pair.key)
+        const exists = await repo.blocks.has(pair.key)
         expect(exists).to.equal(false)
       })
 
@@ -440,58 +452,62 @@ module.exports = (repo) => {
 
     describe('.deleteMany', () => {
       it('simple', async () => {
-        const deleted = await all(repo.blocks.deleteMany([b.cid]))
-        const exists = await repo.blocks.has(b.cid)
+        const deleted = await all(repo.blocks.deleteMany([pair.key]))
+        const exists = await repo.blocks.has(pair.key)
         expect(exists).to.equal(false)
         expect(deleted).to.have.lengthOf(1)
-        expect(deleted[0]).to.deep.equal(b.cid)
+        expect(deleted[0]).to.deep.equal(pair.key)
       })
 
       it('including identity cid', async () => {
-        await drain(repo.blocks.deleteMany([b.cid, identityCID]))
-        const exists = await repo.blocks.has(b.cid)
+        await drain(repo.blocks.deleteMany([pair.key, identityCID]))
+        const exists = await repo.blocks.has(pair.key)
         expect(exists).to.equal(false)
         const identityExists = await repo.blocks.has(identityCID)
         expect(identityExists).to.equal(true)
       })
 
       it('throws when passed an invalid cid', () => {
+        // @ts-expect-error invalid key type
         return expect(drain(repo.blocks.deleteMany(['foo']))).to.eventually.be.rejected().with.property('code', 'ERR_INVALID_CID')
       })
     })
 
     describe('.query', () => {
-      /** @type {Block} */
-      let block1
-      /** @type {Block} */
-      let block2
+      /** @type {Pair} */
+      let pair1
+      /** @type {Pair} */
+      let pair2
 
       before(async () => {
-        block1 = await makeBlock()
-        block2 = await makeBlock()
+        pair1 = await makePair()
+        pair2 = await makePair()
 
-        await repo.blocks.put(block1)
-        await repo.blocks.put(block2)
+        await repo.blocks.put(pair1.key, pair1.value)
+        await repo.blocks.put(pair2.key, pair2.value)
       })
 
       it('returns key/values for block data', async () => {
-        const blocks = await all(repo.blocks.query({}))
-        const block = blocks.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
+        const blocks = await all(repo.blocks.query({
+          filters: [
+            ({ value }) => uint8ArrayEquals(value, pair1.value)
+          ]
+        }))
 
-        expect(block).to.be.ok()
-        expect(block && block.cid.multihash).to.deep.equal(block1.cid.multihash)
-        expect(block && block.data).to.deep.equal(block1.data)
+        expect(blocks).to.have.lengthOf(1)
+        expect(blocks[0]).to.have.nested.property('key.bytes').that.equalBytes(pair1.key.bytes)
+        expect(blocks[0]).to.have.property('value').that.equalBytes(pair1.value)
       })
 
       it('returns some of the blocks', async () => {
         const blocksWithPrefix = await all(repo.blocks.query({
-          prefix: cidToKey(block1.cid).toString().substring(0, 10)
+          prefix: cidToKey(pair1.key).toString().substring(0, 10)
         }))
-        const block = blocksWithPrefix.find(block => uint8ArrayToString(block.data, 'base64') === uint8ArrayToString(block1.data, 'base64'))
+        const block = blocksWithPrefix.find(({ key, value }) => uint8ArrayToString(value, 'base64') === uint8ArrayToString(pair1.value, 'base64'))
 
         expect(block).to.be.ok()
-        expect(block && block.cid.multihash).to.deep.equal(block1.cid.multihash)
-        expect(block && block.data).to.deep.equal(block1.data)
+        expect(block?.key.bytes).to.equalBytes(pair1.key.bytes)
+        expect(block?.value).to.equalBytes(pair1.value)
 
         const allBlocks = await all(repo.blocks.query({}))
         expect(blocksWithPrefix.length).to.be.lessThan(allBlocks.length)
@@ -503,7 +519,7 @@ module.exports = (repo) => {
         expect(cids.length).to.be.greaterThan(0)
 
         for (const cid of cids) {
-          expect(CID.isCID(cid)).to.be.true()
+          expect(CID.asCID(cid)).to.be.ok()
         }
       })
     })

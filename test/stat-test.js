@@ -2,8 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const Block = require('ipld-block')
-const CID = require('cids')
+const { CID } = require('multiformats')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 /**
  * @param {import('../src/index')} repo
@@ -11,11 +10,10 @@ const uint8ArrayFromString = require('uint8arrays/from-string')
 module.exports = (repo) => {
   describe('stat', () => {
     before(async () => {
-      const data = new Block(
-        uint8ArrayFromString('foo'),
-        new CID('bafyreighz6vdlkdsvp4nu3lxhsofnk2eqxn6o57ag3mfxkqa7c327djhra')
+      await repo.blocks.put(
+        CID.parse('bafyreighz6vdlkdsvp4nu3lxhsofnk2eqxn6o57ag3mfxkqa7c327djhra'),
+        uint8ArrayFromString('foo')
       )
-      await repo.blocks.put(data)
     })
 
     it('get stats', async () => {

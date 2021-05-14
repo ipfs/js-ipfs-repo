@@ -1,7 +1,6 @@
 
-import type { Datastore, Options as DatastoreOptions, Query, KeyQuery, Key } from 'interface-datastore'
-import type CID from 'cids'
-import type Block from 'ipld-block'
+import type { Datastore } from 'interface-datastore'
+import type { CID } from 'multiformats'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
@@ -57,60 +56,6 @@ export interface Stat {
   version: number
   numObjects: BigInt
   repoSize: BigInt
-}
-
-export interface Blockstore {
-  open: () => Promise<void>
-
-  /**
-   * Query the store
-   */
-  query: (query: Query, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Query the store, returning only keys
-   */
-   queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
-
-  /**
-   * Get a single block by CID
-   */
-  get: (cid: CID, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like get, but for more
-   */
-  getMany: (cids: AwaitIterable<CID>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Write a single block to the store
-   */
-  put: (block: Block, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like put, but for more
-   */
-  putMany: (blocks: AwaitIterable<Block>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Does the store contain block with this CID?
-   */
-  has: (cid: CID, options?: DatastoreOptions) => Promise<boolean>
-
-  /**
-   * Delete a block from the store
-   */
-  delete: (cid: CID, options?: DatastoreOptions) => Promise<void>
-
-  /**
-   * Delete a block from the store
-   */
-  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<CID>
-
-  /**
-   * Close the store
-   */
-  close: () => Promise<void>
 }
 
 export interface Config {
