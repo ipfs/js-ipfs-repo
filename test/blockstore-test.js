@@ -20,7 +20,6 @@ const { identity } = require('multiformats/hashes/identity')
 const raw = require('multiformats/codecs/raw')
 const dagCbor = require('@ipld/dag-cbor')
 const dagPb = require('@ipld/dag-pb')
-const mc = require('multicodec')
 
 async function makePair () {
   const data = new TextEncoder().encode(`hello-${Math.random()}`)
@@ -54,7 +53,7 @@ module.exports = (repo) => {
       const digest1 = await sha256.digest(bData)
       pair = { key: CID.createV0(digest1), value: bData }
       const digest2 = await identity.digest(identityData)
-      identityCID = CID.createV1(mc.IDENTITY, digest2)
+      identityCID = CID.createV1(identity.code, digest2)
     })
 
     describe('.put', () => {
