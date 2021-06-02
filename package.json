@@ -78,7 +78,7 @@
     "err-code": "^3.0.1",
     "interface-datastore": "^4.0.0",
     "ipfs-repo-migrations": "^8.0.0",
-    "ipfs-utils": "^7.0.0",
+    "ipfs-utils": "^8.1.2",
     "ipld-block": "^0.11.0",
     "it-filter": "^1.0.2",
     "it-pushable": "^1.4.0",
