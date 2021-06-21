@@ -3,7 +3,7 @@
 const filter = require('it-filter')
 const pushable = require('it-pushable')
 const drain = require('it-drain')
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const errcode = require('err-code')
 const { identity } = require('multiformats/hashes/identity')
 
@@ -133,7 +133,8 @@ function createIdStore (store) {
  * @returns {{ isIdentity: false } | { isIdentity: true, digest: Uint8Array}}
  */
 function extractContents (k) {
-  if (!(k instanceof CID)) {
+  cid = CID.asCID(cid)
+  if (cid == null) {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 

@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const { Key } = require('interface-datastore')
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const Repo = require('../src')
 const raw = require('multiformats/codecs/raw')
 

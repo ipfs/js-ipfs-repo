@@ -14,7 +14,8 @@ const { base32 } = require('multiformats/bases/base32')
  * @returns {Key}
  */
 exports.cidToKey = cid => {
-  if (!(cid instanceof CID)) {
+  cid = CID.asCID(cid)
+  if (cid == null) {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 

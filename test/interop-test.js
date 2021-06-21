@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const Key = require('interface-datastore').Key
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')

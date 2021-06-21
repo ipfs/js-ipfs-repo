@@ -2,7 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 /**
  * @param {import('../src/index')} repo

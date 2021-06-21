@@ -6,7 +6,7 @@ const drain = require('it-drain')
 const pushable = require('it-pushable')
 
 /**
- * @typedef {import('multiformats').CID} CID
+ * @typedef {import('multiformats/cid').CID} CID
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-store').Options} DatastoreOptions
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
@@ -49,7 +49,7 @@ function createBaseStore (store) {
     },
 
     async * query (query, options) {
-      /** @type {import('interface-datastore').Query} */
+      /** @type {import('interface-blockstore').Query} */
       const storeQuery = {
         prefix: query.prefix,
         limit: query.limit,
@@ -68,7 +68,7 @@ function createBaseStore (store) {
     },
 
     async * queryKeys (query, options) {
-      /** @type {import('interface-datastore').KeyQuery} */
+      /** @type {import('interface-blockstore').KeyQuery} */
       const storeQuery = {
         prefix: query.prefix,
         limit: query.limit,
