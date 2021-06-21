@@ -49,7 +49,7 @@ function createBaseStore (store) {
     },
 
     async * query (query, options) {
-      /** @type {import('interface-blockstore').Query} */
+      /** @type {import('interface-datastore').Query} */
       const storeQuery = {
         prefix: query.prefix,
         limit: query.limit,
@@ -68,7 +68,7 @@ function createBaseStore (store) {
     },
 
     async * queryKeys (query, options) {
-      /** @type {import('interface-blockstore').KeyQuery} */
+      /** @type {import('interface-datastore').KeyQuery} */
       const storeQuery = {
         prefix: query.prefix,
         limit: query.limit,

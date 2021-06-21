@@ -75,7 +75,7 @@
     "debug": "^4.1.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^0.0.4",
-    "interface-datastore": "ipfs/interface-datastore#feat/make-datastore-generic",
+    "interface-datastore": "^4.0.2",
     "ipfs-repo-migrations": "ipfs/js-ipfs-repo-migrations#chore/upgrade-multiformats",
     "ipfs-utils": "^7.0.0",
     "it-filter": "^1.0.2",

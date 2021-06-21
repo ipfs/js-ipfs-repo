@@ -133,12 +133,13 @@ function createIdStore (store) {
  * @returns {{ isIdentity: false } | { isIdentity: true, digest: Uint8Array}}
  */
 function extractContents (k) {
-  cid = CID.asCID(cid)
+  const cid = CID.asCID(k)
+
   if (cid == null) {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
-  if (k.multihash.code !== identity.code) {
+  if (cid.multihash.code !== identity.code) {
     return {
       isIdentity: false
     }
@@ -146,6 +147,6 @@ function extractContents (k) {
 
   return {
     isIdentity: true,
-    digest: k.multihash.digest
+    digest: cid.multihash.digest
   }
 }

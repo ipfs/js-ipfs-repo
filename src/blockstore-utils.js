@@ -10,11 +10,12 @@ const { base32 } = require('multiformats/bases/base32')
 /**
  * Transform a cid to the appropriate datastore key.
  *
- * @param {CID} cid
+ * @param {CID} c
  * @returns {Key}
  */
-exports.cidToKey = cid => {
-  cid = CID.asCID(cid)
+exports.cidToKey = c => {
+  const cid = CID.asCID(c)
+
   if (cid == null) {
     throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
