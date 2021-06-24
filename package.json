@@ -69,6 +69,7 @@
   },
   "dependencies": {
     "bytes": "^3.1.0",
+    "cborg": "^1.3.4",
     "datastore-core": "^4.0.0",
     "datastore-fs": "^4.0.0",
     "datastore-level": "^5.0.0",
@@ -79,6 +80,7 @@
     "ipfs-repo-migrations": "ipfs/js-ipfs-repo-migrations#chore/upgrade-multiformats",
     "ipfs-utils": "^7.0.0",
     "it-filter": "^1.0.2",
+    "it-map": "^1.0.5",
     "it-pushable": "^1.4.0",
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
