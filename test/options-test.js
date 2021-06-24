@@ -10,6 +10,7 @@ if (!rimraf.sync) {
   rimraf.sync = noop
 }
 const Repo = require('../')
+const loadCodec = require('./fixtures/load-codec')
 
 describe('custom options tests', () => {
   const repoPath = tempDir()
@@ -21,11 +22,11 @@ describe('custom options tests', () => {
     expect(
       // @ts-expect-error
       () => new Repo()
-    ).to.throw('missing repoPath')
+    ).to.throw('missing repo path')
   })
 
   it('default options', () => {
-    const repo = new Repo(repoPath)
+    const repo = new Repo(repoPath, loadCodec)
     expect(repo.options).to.deep.equal(expectedRepoOptions())
   })
 
@@ -47,7 +48,7 @@ describe('custom options tests', () => {
       }
     }
 
-    const repo = new Repo(repoPath, {
+    const repo = new Repo(repoPath, loadCodec, {
       lock
     })
 
@@ -73,7 +74,7 @@ describe('custom options tests', () => {
       }
     }
 
-    const repo = new Repo(repoPath, {
+    const repo = new Repo(repoPath, loadCodec, {
       // @ts-expect-error
       lock
     })

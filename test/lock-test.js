@@ -5,6 +5,7 @@ const { expect } = require('aegir/utils/chai')
 const IPFSRepo = require('../')
 const lockMemory = require('../src/lock-memory')
 const { LockExistsError } = require('./../src/errors')
+const loadCodec = require('./fixtures/load-codec')
 
 /**
  * @param {import('../src/index')} repo
@@ -18,7 +19,7 @@ module.exports = (repo) => {
     })
 
     it('should prevent multiple repos from using the same path', async () => {
-      const repoClone = new IPFSRepo(repo.path, repo.options)
+      const repoClone = new IPFSRepo(repo.path, loadCodec, repo.options)
       try {
         await repoClone.init({})
         await repoClone.open()

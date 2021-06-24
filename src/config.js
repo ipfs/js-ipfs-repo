@@ -4,7 +4,7 @@ const { Key } = require('interface-datastore')
 const { default: Queue } = require('p-queue')
 const _get = require('just-safe-get')
 const _set = require('just-safe-set')
-const errcode = require('err-code')
+const errCode = require('err-code')
 const errors = require('./errors')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
@@ -78,11 +78,11 @@ module.exports = (store) => {
     set (key, value, options = {}) {
       // @ts-ignore ts thinks key will only be a string, but it may not be
       if (typeof key !== 'string' && !(key instanceof String)) {
-        throw errcode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
+        throw errCode(new Error('Invalid key type: ' + typeof key), 'ERR_INVALID_KEY')
       }
 
       if (value === undefined || (value instanceof Uint8Array)) {
-        throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
+        throw errCode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
       return setQueue.add(() => _maybeDoSet({
@@ -100,7 +100,7 @@ module.exports = (store) => {
      */
     replace (value, options = {}) {
       if (!value || (value instanceof Uint8Array)) {
-        throw errcode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
+        throw errCode(new Error('Invalid value type: ' + typeof value), 'ERR_INVALID_VALUE')
       }
 
       return setQueue.add(() => _maybeDoSet({

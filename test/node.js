@@ -8,22 +8,27 @@ const path = require('path')
 const promisify = require('util').promisify
 const os = require('os')
 const { LockExistsError } = require('../src/errors')
+const loadCodec = require('./fixtures/load-codec')
 
 const asyncRimraf = promisify(rimraf)
 const asyncNcp = promisify(ncp)
 const fsstat = promisify(fs.stat)
 
-const IPFSRepo = require('../src')
-
 /**
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  * @typedef {import('../src/types').Options} Options
  */
 
-async function createTempRepo (options = {}) {
+const IPFSRepo = require('../src')
+
+/**
+ * @param {Options} options
+ */
+async function createTempRepo (options) {
   const date = Date.now().toString()
   const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
   await asyncNcp(path.join(__dirname, 'test-repo'), repoPath)
-  const repo = new IPFSRepo(repoPath, options)
+  const repo = new IPFSRepo(repoPath, loadCodec, options)
   await repo.open()
   return repo
 }
@@ -73,9 +78,6 @@ describe('IPFS Repo Tests onNode.js', () => {
     {
       name: 'memory',
       opts: {
-        // i dont think we need this
-        // fs: require('interface-datastore').MemoryDatastore,
-        // level: require('memdown'),
         lock: 'memory'
       },
       init: true
@@ -98,7 +100,7 @@ describe('IPFS Repo Tests onNode.js', () => {
     const date = Date.now().toString()
     const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
 
-    const repo = new IPFSRepo(repoPath, r.opts)
+    const repo = new IPFSRepo(repoPath, loadCodec, r.opts)
 
     before(async () => {
       if (r.init) {

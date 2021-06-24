@@ -26,9 +26,6 @@ const defaultOptions = {
     },
     keys: {
     }
-  },
-  codecLoader: {
-    getCodec: (codeOrName) => Promise.reject(new Error(`Could not load codec for "${codeOrName}"`))
   }
 }
 

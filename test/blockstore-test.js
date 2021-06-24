@@ -20,6 +20,7 @@ const { identity } = require('multiformats/hashes/identity')
 const raw = require('multiformats/codecs/raw')
 const dagCbor = require('@ipld/dag-cbor')
 const dagPb = require('@ipld/dag-pb')
+const loadCodec = require('./fixtures/load-codec')
 
 async function makePair () {
   const data = new TextEncoder().encode(`hello-${Math.random()}`)
@@ -205,7 +206,7 @@ module.exports = (repo) => {
         const cid = CID.createV0(digest)
         const key = cidToKey(cid)
 
-        otherRepo = new IPFSRepo(tempDir(), {
+        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
           storageBackends: {
             blocks: class ExplodingBlockStore extends Adapter {
               /**
@@ -334,7 +335,7 @@ module.exports = (repo) => {
         const cid = CID.createV0(digest)
         const key = cidToKey(cid)
 
-        otherRepo = new IPFSRepo(tempDir(), {
+        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
           storageBackends: {
             blocks: class ExplodingBlockStore extends Adapter {
               /**

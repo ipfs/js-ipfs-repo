@@ -3,12 +3,13 @@
 'use strict'
 
 const IPFSRepo = require('../src')
+const loadCodec = require('./fixtures/load-codec')
 
 async function createTempRepo (options = {}) {
   const date = Date.now().toString()
   const repoPath = 'test-repo-for-' + date
 
-  const repo = new IPFSRepo(repoPath, options)
+  const repo = new IPFSRepo(repoPath, loadCodec, options)
   await repo.init({})
   await repo.open()
 
@@ -19,7 +20,7 @@ describe('IPFS Repo Tests on the Browser', () => {
   require('./options-test')
   require('./migrations-test')(createTempRepo)
 
-  const repo = new IPFSRepo('myrepo')
+  const repo = new IPFSRepo('myrepo', loadCodec)
 
   before(async () => {
     await repo.init({})

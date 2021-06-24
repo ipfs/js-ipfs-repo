@@ -5,6 +5,7 @@
 const { expect } = require('aegir/utils/chai')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const IPFSRepo = require('../src')
+const loadCodec = require('./fixtures/load-codec')
 
 /**
  * @typedef {import('../src/index')} Repo
@@ -15,7 +16,7 @@ describe('isInitialized', () => {
   let repo
 
   beforeEach(() => {
-    repo = new IPFSRepo(tempDir(b => 'test-repo-for-' + b))
+    repo = new IPFSRepo(tempDir(b => 'test-repo-for-' + b), loadCodec)
   })
 
   it('should be false before initialization', async () => {

@@ -46,16 +46,17 @@ function invalidPinTypeErr (type) {
  * @param {CID} cid
  */
 function cidToKey (cid) {
-  return new Key(`/${base32.encode(cid.multihash.bytes).toUpperCase()}`)
+  return new Key(`/${base32.encode(cid.multihash.bytes).toUpperCase().substring(1)}`)
 }
 
 /**
  * @param {Key | string} key
  */
 function keyToMultihash (key) {
-  return Digest.decode(base32.decode(key.toString().toLowerCase().slice(1)))
+  return Digest.decode(base32.decode(`b${key.toString().toLowerCase().substring(1)}`))
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * @param {any} obj
  * @param {string[]} path
@@ -67,18 +68,18 @@ function * dagCborLinks (obj, path = [], parseBuffer = true) {
     obj = cborg.decode(obj)
   }
 
-  for (let key of Object.keys(obj)) {
-    let _path = path.slice()
+  for (const key of Object.keys(obj)) {
+    const _path = path.slice()
     _path.push(key)
-    let val = obj[key]
+    const val = obj[key]
 
     if (val && typeof val === 'object') {
       if (Array.isArray(val)) {
         for (let i = 0; i < val.length; i++) {
-          let __path = _path.slice()
+          const __path = _path.slice()
           __path.push(i.toString())
-          let o = val[i]
-          if (CID.isCID(o)) {
+          const o = val[i]
+          if (CID.isCID(o)) { // eslint-disable-line max-depth
             yield [__path.join('/'), o]
           } else if (typeof o === 'object') {
             yield * dagCborLinks(o, _path, false)
@@ -111,13 +112,13 @@ class Pins {
    * @param {Object} config
    * @param {import('interface-datastore').Datastore} config.pinstore
    * @param {import('interface-blockstore').Blockstore} config.blockstore
-   * @param {import('./types').CodecLoader} config.codecs
+   * @param {import('./types').loadCodec} config.loadCodec
    */
-  constructor ({ pinstore, blockstore, codecs }) {
+  constructor ({ pinstore, blockstore, loadCodec }) {
     this.pinstore = pinstore
     this.blockstore = blockstore
-    this.codecs = codecs
-    this.log = debug('ipfs:pin')
+    this.loadCodec = loadCodec
+    this.log = debug('ipfs:repo:pin')
     this.directPins = new Set()
     this.recursivePins = new Set()
   }
@@ -129,20 +130,24 @@ class Pins {
    * @returns {AsyncGenerator<CID, void, undefined>}
    */
   async * _walkDag (cid, options) {
-    const block = await this.blockstore.get(cid, options)
-    const codec = await this.codecs.getCodec(cid.code)
-    const node = codec.decode(block)
+    try {
+      const block = await this.blockstore.get(cid, options)
+      const codec = await this.loadCodec(cid.code)
+      const node = codec.decode(block)
 
-    if (cid.code === dagPb.code) {
-      for (const link of node.Links) {
-        yield link.Hash
-        yield * this._walkDag(link.Hash, options)
+      if (cid.code === dagPb.code) {
+        for (const link of node.Links) {
+          yield link.Hash
+          yield * this._walkDag(link.Hash, options)
+        }
+      } else if (cid.code === dagCbor.code) {
+        for (const [, childCid] of dagCborLinks(node)) {
+          yield childCid
+          yield * this._walkDag(childCid, options)
+        }
       }
-    } else if (cid.code === dagCbor.code) {
-      for (const [, childCid] of dagCborLinks(node)) {
-        yield childCid
-        yield * this._walkDag(childCid, options)
-      }
+    } catch (err) {
+      this.log('Could not walk DAG for CID', cid.toString(), err)
     }
   }
 
@@ -179,9 +184,8 @@ class Pins {
    * @param {AbortOptions} [options]
    * @returns {Promise<void>}
    */
-  // eslint-disable-next-line require-await
-  async unpin (cid, options) {
-    return this.pinstore.delete(cidToKey(cid))
+  unpin (cid, options) {
+    return this.pinstore.delete(cidToKey(cid), options)
   }
 
   /**

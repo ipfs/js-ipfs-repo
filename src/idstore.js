@@ -4,7 +4,7 @@ const filter = require('it-filter')
 const pushable = require('it-pushable')
 const drain = require('it-drain')
 const { CID } = require('multiformats/cid')
-const errcode = require('err-code')
+const errCode = require('err-code')
 const { identity } = require('multiformats/hashes/identity')
 
 /**
@@ -136,7 +136,7 @@ function extractContents (k) {
   const cid = CID.asCID(k)
 
   if (cid == null) {
-    throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+    throw errCode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
   if (cid.multihash.code !== identity.code) {

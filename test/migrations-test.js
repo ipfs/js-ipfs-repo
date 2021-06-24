@@ -9,6 +9,7 @@ const migrator = require('ipfs-repo-migrations')
 const constants = require('../src/constants')
 const errors = require('../src/errors')
 const IPFSRepo = require('../src')
+const loadCodec = require('./fixtures/load-codec')
 /**
  * @typedef {import('../src/index')} Repo
  */
@@ -75,7 +76,7 @@ module.exports = (createTempRepo) => {
 
         const newOpts = Object.assign({}, repo.options)
         newOpts.autoMigrate = option
-        const newRepo = new IPFSRepo(repo.path, newOpts)
+        const newRepo = new IPFSRepo(repo.path, loadCodec, newOpts)
 
         expect(migrateStub.called).to.be.false()
 

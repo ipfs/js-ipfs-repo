@@ -7,6 +7,7 @@ const IPFSRepo = require('../')
 const Errors = require('../src/errors')
 const bytes = require('bytes')
 const { Adapter } = require('interface-datastore')
+const loadCodec = require('./fixtures/load-codec')
 
 /**
  * @typedef {import('interface-datastore').Key} Key
@@ -172,7 +173,7 @@ module.exports = (repo) => {
             count++
           }
         }
-        const repo = new IPFSRepo(tempDir(), {
+        const repo = new IPFSRepo(tempDir(), loadCodec, {
           lock: 'memory',
           storageBackends: {
             root: FakeDatastore,
@@ -200,7 +201,7 @@ module.exports = (repo) => {
       })
 
       it('should throw non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(tempDir())
+        const otherRepo = new IPFSRepo(tempDir(), loadCodec)
         const err = new Error('wat')
 
         otherRepo.root.open = () => {
@@ -215,7 +216,7 @@ module.exports = (repo) => {
       })
 
       it('should ignore non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(tempDir())
+        const otherRepo = new IPFSRepo(tempDir(), loadCodec)
 
         const err = new Error('Already open')
         let threwError = false
@@ -251,7 +252,7 @@ module.exports = (repo) => {
       })
 
       it('should remove the lockfile when opening the repo fails', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
+        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
           storageBackends: {
             datastore: ExplodingDatastore,
             blocks: ExplodingDatastore,
@@ -270,7 +271,7 @@ module.exports = (repo) => {
       })
 
       it('should re-throw the original error even when removing the lockfile fails', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
+        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
           storageBackends: {
             datastore: ExplodingDatastore,
             blocks: ExplodingDatastore,
@@ -294,7 +295,7 @@ module.exports = (repo) => {
       })
 
       it('should throw when repos are not initialised', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
+        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
           storageBackends: {
             datastore: ExplodingDatastore,
             blocks: ExplodingDatastore,
@@ -312,7 +313,7 @@ module.exports = (repo) => {
       })
 
       it('should throw when config is not set', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = new IPFSRepo(tempDir(), loadCodec)
         otherRepo.config.exists = async () => false
         otherRepo.spec.exists = async () => true
         otherRepo.version.check = async () => false
@@ -327,7 +328,7 @@ module.exports = (repo) => {
       it('should return the max storage stat when set', async () => {
         const maxStorage = '1GB'
 
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = new IPFSRepo(tempDir(), loadCodec)
         await otherRepo.init({})
         await otherRepo.open()
         await otherRepo.config.set('Datastore.StorageMax', maxStorage)
@@ -339,7 +340,7 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when closing', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = new IPFSRepo(tempDir(), loadCodec)
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -358,7 +359,7 @@ module.exports = (repo) => {
       })
 
       it('should swallow expected errors when closing', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = new IPFSRepo(tempDir(), loadCodec)
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -372,7 +373,7 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when checking if the repo has been initialised', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = new IPFSRepo(tempDir(), loadCodec)
 
         otherRepo.config.exists = async () => {
           return true

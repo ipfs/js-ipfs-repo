@@ -2,7 +2,7 @@
 
 const _get = require('just-safe-get')
 const debug = require('debug')
-const errcode = require('err-code')
+const errCode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
 const pathJoin = require('ipfs-utils/src/path-join')
@@ -13,12 +13,13 @@ const version = require('./version')
 const config = require('./config')
 const spec = require('./spec')
 const apiAddr = require('./api-addr')
-const blockstore = require('./blockstore')
-const idstore = require('./idstore')
+const createBlockstore = require('./blockstore')
+const createIdstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 const Pins = require('./pins')
+const createPinnedBlockstore = require('./pinned-blockstore')
 
 const log = debug('ipfs:repo')
 
@@ -47,11 +48,16 @@ const lockers = {
 class IpfsRepo {
   /**
    * @param {string} repoPath - path where the repo is stored
+   * @param {import('./types').loadCodec} loadCodec - a function that will load multiformat block codecs
    * @param {Options} [options] - Configuration
    */
-  constructor (repoPath, options) {
+  constructor (repoPath, loadCodec, options) {
     if (typeof repoPath !== 'string') {
-      throw new Error('missing repoPath')
+      throw new Error('missing repo path')
+    }
+
+    if (typeof loadCodec !== 'function') {
+      throw new Error('missing codec loader')
     }
 
     this.options = merge(defaultOptions, options)
@@ -65,11 +71,19 @@ class IpfsRepo {
     this.root = backends.create('root', this.path, this.options)
     this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
     this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
+
     const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
-    const blockStore = blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
-    this.blocks = idstore(blockStore)
+    const blockstore = createBlockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
     const pinstore = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
-    this.pins = new Pins({ pinstore, blockstore: this.blocks, codecs: this.options.codecLoader})
+
+    this.pins = new Pins({ pinstore, blockstore, loadCodec })
+
+    // this blockstore will not delete blocks that have been pinned
+    const pinnedBlockstore = createPinnedBlockstore(this.pins, blockstore)
+
+    // this blockstore will extract blocks from multihashes with the identity codec
+    this.blocks = createIdstore(pinnedBlockstore)
+
     this.version = version(this.root)
     this.config = config(this.root)
     this.spec = spec(this.root)
@@ -123,7 +137,7 @@ class IpfsRepo {
    */
   async open () {
     if (!this.closed) {
-      throw errcode(new Error('repo is already open'), ERRORS.ERR_REPO_ALREADY_OPEN)
+      throw errCode(new Error('repo is already open'), ERRORS.ERR_REPO_ALREADY_OPEN)
     }
     log('opening at: %s', this.path)
 
@@ -218,7 +232,7 @@ class IpfsRepo {
     const lockfile = await this._locker.lock(path)
 
     if (typeof lockfile.close !== 'function') {
-      throw errcode(new Error('Locks must have a close method'), 'ERR_NO_CLOSE_FUNCTION')
+      throw errCode(new Error('Locks must have a close method'), 'ERR_NO_CLOSE_FUNCTION')
     }
 
     return lockfile
@@ -249,7 +263,7 @@ class IpfsRepo {
       ])
     } catch (err) {
       if (err.code === 'ERR_NOT_FOUND') {
-        throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
+        throw errCode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
           path: this.path
         })
       }
@@ -258,7 +272,7 @@ class IpfsRepo {
     }
 
     if (!config) {
-      throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
+      throw errCode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
         path: this.path
       })
     }
@@ -271,7 +285,7 @@ class IpfsRepo {
    */
   async close () {
     if (this.closed) {
-      throw errcode(new Error('repo is already closed'), ERRORS.ERR_REPO_ALREADY_CLOSED)
+      throw errCode(new Error('repo is already closed'), ERRORS.ERR_REPO_ALREADY_CLOSED)
     }
     log('closing at: %s', this.path)
 
@@ -330,7 +344,7 @@ class IpfsRepo {
         repoSize: size
       }
     }
-    throw errcode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
+    throw errCode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
       path: this.path
     })
   }

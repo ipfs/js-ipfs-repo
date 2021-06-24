@@ -4,7 +4,7 @@ const { Key } = require('interface-datastore')
 const { CID } = require('multiformats')
 const mhd = require('multiformats/hashes/digest')
 const raw = require('multiformats/codecs/raw')
-const errcode = require('err-code')
+const errCode = require('err-code')
 const { base32 } = require('multiformats/bases/base32')
 
 /**
@@ -17,7 +17,7 @@ exports.cidToKey = c => {
   const cid = CID.asCID(c)
 
   if (cid == null) {
-    throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+    throw errCode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
   const encoded = base32.encode(cid.multihash.bytes)
