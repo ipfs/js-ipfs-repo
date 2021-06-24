@@ -5,7 +5,7 @@
 /**
  * @type {Required<import('./types').Options>}
  */
-module.exports = {
+const defaultOptions = {
   autoMigrate: true,
   onMigrationProgress: () => {},
   lock: 'fs',
@@ -26,5 +26,10 @@ module.exports = {
     },
     keys: {
     }
+  },
+  codecLoader: {
+    getCodec: (codeOrName) => Promise.reject(new Error(`Could not load codec for "${codeOrName}"`))
   }
 }
+
+module.exports = defaultOptions

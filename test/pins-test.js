@@ -26,24 +26,24 @@ module.exports = (repo) => {
 
     describe('.put', () => {
       it('simple', async () => {
-        await repo.pins.put(b, data)
+        await repo.pins.pinstore.put(b, data)
       })
 
       it('multi write (locks)', async () => {
-        await Promise.all([repo.pins.put(b, data), repo.pins.put(b, data)])
+        await Promise.all([repo.pins.pinstore.put(b, data), repo.pins.pinstore.put(b, data)])
       })
 
       it('massive multiwrite', async function () {
         this.timeout(15000) // add time for ci
         await Promise.all(range(100).map((i) => {
-          return repo.pins.put(new Key('hello' + i), dataList[i])
+          return repo.pins.pinstore.put(new Key('hello' + i), dataList[i])
         }))
       })
     })
 
     describe('.get', () => {
       it('simple', async () => {
-        const val = await repo.pins.get(b)
+        const val = await repo.pins.pinstore.get(b)
         expect(val).to.be.eql(data)
       })
 
@@ -51,7 +51,7 @@ module.exports = (repo) => {
         this.timeout(15000) // add time for ci
         await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % dataList.length
-          const val = await repo.pins.get(new Key('hello' + j))
+          const val = await repo.pins.pinstore.get(new Key('hello' + j))
           expect(val).to.be.eql(dataList[j])
         }))
       }).timeout(10 * 1000)
@@ -59,20 +59,20 @@ module.exports = (repo) => {
 
     describe('.has', () => {
       it('existing pin', async () => {
-        const exists = await repo.pins.has(b)
+        const exists = await repo.pins.pinstore.has(b)
         expect(exists).to.eql(true)
       })
 
       it('non existent pin', async () => {
-        const exists = await repo.pins.has(new Key('world'))
+        const exists = await repo.pins.pinstore.has(new Key('world'))
         expect(exists).to.eql(false)
       })
     })
 
     describe('.delete', () => {
       it('simple', async () => {
-        await repo.pins.delete(b)
-        const exists = await repo.pins.has(b)
+        await repo.pins.pinstore.delete(b)
+        const exists = await repo.pins.pinstore.has(b)
         expect(exists).to.equal(false)
       })
     })

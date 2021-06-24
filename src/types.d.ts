@@ -1,6 +1,7 @@
 
 import type { Datastore } from 'interface-datastore'
 import type { CID } from 'multiformats'
+import type { BlockCodec } from 'multiformats/codecs/interface'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
@@ -30,6 +31,8 @@ export interface Options {
   storageBackends?: Partial<Record<Backends, { new(...args: any[]): Datastore }>>
 
   storageBackendOptions?: Partial<Record<Backends, unknown>>
+
+  codecLoader: CodecLoader
 }
 
 export type Backends = 'root' | 'blocks' | 'keys' | 'datastore' | 'pins'
@@ -169,4 +172,16 @@ export interface ConnMgrConfig {
 
 export interface RoutingConfig {
   Type?: string
+}
+
+export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
+
+export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
+
+export interface AbortOptions {
+  signal?: AbortSignal
+}
+
+export interface CodecLoader {
+  getCodec: (codeOrName: number | string) => Promise<BlockCodec<any, any>>
 }

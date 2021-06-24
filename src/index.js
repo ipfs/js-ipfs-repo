@@ -18,6 +18,7 @@ const idstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
+const Pins = require('./pins')
 
 const log = debug('ipfs:repo')
 
@@ -48,7 +49,7 @@ class IpfsRepo {
    * @param {string} repoPath - path where the repo is stored
    * @param {Options} [options] - Configuration
    */
-  constructor (repoPath, options = {}) {
+  constructor (repoPath, options) {
     if (typeof repoPath !== 'string') {
       throw new Error('missing repoPath')
     }
@@ -64,10 +65,11 @@ class IpfsRepo {
     this.root = backends.create('root', this.path, this.options)
     this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
     this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
-    this.pins = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
     const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
     const blockStore = blockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
     this.blocks = idstore(blockStore)
+    const pinstore = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
+    this.pins = new Pins({ pinstore, blockstore: this.blocks, codecs: this.options.codecLoader})
     this.version = version(this.root)
     this.config = config(this.root)
     this.spec = spec(this.root)
@@ -152,7 +154,7 @@ class IpfsRepo {
       await this.keys.open()
 
       log('creating pins')
-      await this.pins.open()
+      await this.pins.pinstore.open()
 
       this.closed = false
       log('all opened')
@@ -287,7 +289,7 @@ class IpfsRepo {
       this.blocks,
       this.keys,
       this.datastore,
-      this.pins
+      this.pins.pinstore
     ].map((store) => store && store.close()))
 
     log('unlocking')
