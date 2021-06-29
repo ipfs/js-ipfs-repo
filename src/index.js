@@ -5,54 +5,53 @@ const debug = require('debug')
 const errCode = require('err-code')
 const migrator = require('ipfs-repo-migrations')
 const bytes = require('bytes')
-const pathJoin = require('ipfs-utils/src/path-join')
 const merge = require('merge-options')
 const constants = require('./constants')
-const backends = require('./backends')
 const version = require('./version')
 const config = require('./config')
 const spec = require('./spec')
 const apiAddr = require('./api-addr')
-const createBlockstore = require('./blockstore')
 const createIdstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
 const Pins = require('./pins')
 const createPinnedBlockstore = require('./pinned-blockstore')
+// @ts-ignore - no types
+const mortice = require('mortice')
+const gc = require('./gc')
+const MemoryLock = require('./locks/memory')
+const FSLock = require('./locks/fs')
 
 const log = debug('ipfs:repo')
 
 const noLimit = Number.MAX_SAFE_INTEGER
 const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
 
-/** @type {Record<string, Lock>} */
-const lockers = {
-  memory: require('./lock-memory'),
-  fs: require('./lock')
-}
-
 /**
  * @typedef {import('./types').Options} Options
- * @typedef {import('./types').Lock} Lock
+ * @typedef {import('./types').RepoLock} RepoLock
  * @typedef {import('./types').LockCloser} LockCloser
+ * @typedef {import('./types').GCLock} GCLock
  * @typedef {import('./types').Stat} Stat
  * @typedef {import('./types').Config} Config
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
+ * @typedef {import('./types').Backends} Backends
  */
 
 /**
- * IpfsRepo implements all required functionality to read and write to an ipfs repo.
+ * IPFSRepo implements all required functionality to read and write to an ipfs repo.
  */
-class IpfsRepo {
+class Repo {
   /**
-   * @param {string} repoPath - path where the repo is stored
+   * @param {string} path - Where this repo is stored
    * @param {import('./types').loadCodec} loadCodec - a function that will load multiformat block codecs
-   * @param {Options} [options] - Configuration
+   * @param {Backends} backends - backends used by this repo
+   * @param {Partial<Options>} [options] - Configuration
    */
-  constructor (repoPath, loadCodec, options) {
-    if (typeof repoPath !== 'string') {
+  constructor (path, loadCodec, backends, options) {
+    if (typeof path !== 'string') {
       throw new Error('missing repo path')
     }
 
@@ -60,21 +59,16 @@ class IpfsRepo {
       throw new Error('missing codec loader')
     }
 
+    /** @type {Options} */
     this.options = merge(defaultOptions, options)
     this.closed = true
-    this.path = repoPath
+    this.path = path
+    this.root = backends.root
+    this.datastore = backends.datastore
+    this.keys = backends.keys
 
-    /**
-     * @private
-     */
-    this._locker = this._getLocker()
-    this.root = backends.create('root', this.path, this.options)
-    this.datastore = backends.create('datastore', pathJoin(this.path, 'datastore'), this.options)
-    this.keys = backends.create('keys', pathJoin(this.path, 'keys'), this.options)
-
-    const blocksBaseStore = backends.create('blocks', pathJoin(this.path, 'blocks'), this.options)
-    const blockstore = createBlockstore(blocksBaseStore, this.options.storageBackendOptions.blocks)
-    const pinstore = backends.create('pins', pathJoin(this.path, 'pins'), this.options)
+    const blockstore = backends.blocks
+    const pinstore = backends.pins
 
     this.pins = new Pins({ pinstore, blockstore, loadCodec })
 
@@ -88,6 +82,13 @@ class IpfsRepo {
     this.config = config(this.root)
     this.spec = spec(this.root)
     this.apiAddr = apiAddr(this.root)
+
+    /** @type {GCLock} */
+    this.gcLock = mortice(path, {
+      singleProcess: this.options.repoOwner !== false
+    })
+
+    this.gc = gc({ gcLock: this.gcLock, pins: this.pins, blockstore: this.blocks, root: this.root, loadCodec })
   }
 
   /**
@@ -145,14 +146,21 @@ class IpfsRepo {
     try {
       await this._openRoot()
       await this._checkInitialized()
-      this.lockfile = await this._openLock(this.path)
+
+      this._lockfile = await this._openLock()
       log('acquired repo.lock')
 
       const isCompatible = await this.version.check(constants.repoVersion)
 
       if (!isCompatible) {
         if (await this._isAutoMigrationEnabled()) {
-          await this._migrate(constants.repoVersion)
+          await this._migrate(constants.repoVersion, {
+            root: this.root,
+            datastore: this.datastore,
+            pins: this.pins.pinstore,
+            blocks: this.pins.blockstore,
+            keys: this.keys
+          })
         } else {
           throw new ERRORS.InvalidRepoVersionError('Incompatible repo versions. Automatic migrations disabled. Please migrate the repo manually.')
         }
@@ -173,10 +181,10 @@ class IpfsRepo {
       this.closed = false
       log('all opened')
     } catch (err) {
-      if (this.lockfile) {
+      if (this._lockfile) {
         try {
           await this._closeLock()
-          this.lockfile = null
+          this._lockfile = null
         } catch (err2) {
           log('error removing lock', err2)
         }
@@ -184,25 +192,6 @@ class IpfsRepo {
 
       throw err
     }
-  }
-
-  /**
-   * Returns the repo locker to be used.
-   *
-   * @private
-   */
-  _getLocker () {
-    if (typeof this.options.lock === 'string') {
-      if (!lockers[this.options.lock]) {
-        throw new Error('Unknown lock type: ' + this.options.lock)
-      }
-      return lockers[this.options.lock]
-    }
-
-    if (!this.options.lock) {
-      throw new Error('No lock provided')
-    }
-    return this.options.lock
   }
 
   /**
@@ -225,11 +214,10 @@ class IpfsRepo {
    * be returned in the callback if one has been created.
    *
    * @private
-   * @param {string} path
    * @returns {Promise<LockCloser>}
    */
-  async _openLock (path) {
-    const lockfile = await this._locker.lock(path)
+  async _openLock () {
+    const lockfile = await this.options.repoLock.lock(this.path)
 
     if (typeof lockfile.close !== 'function') {
       throw errCode(new Error('Locks must have a close method'), 'ERR_NO_CLOSE_FUNCTION')
@@ -244,7 +232,7 @@ class IpfsRepo {
    * @private
    */
   _closeLock () {
-    return this.lockfile && this.lockfile.close()
+    return this._lockfile && this._lockfile.close()
   }
 
   /**
@@ -377,19 +365,20 @@ class IpfsRepo {
    *
    * @private
    * @param {number} toVersion
+   * @param {Backends} backends
    */
-  async _migrate (toVersion) {
+  async _migrate (toVersion, backends) {
     const currentRepoVersion = await this.version.get()
 
     if (currentRepoVersion > toVersion) {
       log(`reverting to version ${toVersion}`)
-      return migrator.revert(this.path, this.options, toVersion, {
+      return migrator.revert(this.path, backends, this.options, toVersion, {
         ignoreLock: true,
         onProgress: this.options.onMigrationProgress
       })
     } else {
       log(`migrating to version ${toVersion}`)
-      return migrator.migrate(this.path, this.options, toVersion, {
+      return migrator.migrate(this.path, backends, this.options, toVersion, {
         ignoreLock: true,
         onProgress: this.options.onMigrationProgress
       })
@@ -439,10 +428,27 @@ async function getSize (datastore) {
   return sum
 }
 
-module.exports = IpfsRepo
-module.exports.utils = { blockstore: require('./blockstore-utils') }
-module.exports.repoVersion = constants.repoVersion
-module.exports.errors = ERRORS
+/**
+ * @param {string} path - Where this repo is stored
+ * @param {import('./types').loadCodec} loadCodec - a function that will load multiformat block codecs
+ * @param {import('./types').Backends} backends - backends used by this repo
+ * @param {Partial<Options>} [options] - Configuration
+ * @returns {import('./types').IPFSRepo}
+ */
+function createRepo (path, loadCodec, backends, options) {
+  return new Repo(path, loadCodec, backends, options)
+}
+
+module.exports = {
+  createRepo,
+  repoVersion: constants.repoVersion,
+  errors: ERRORS,
+  utils: { blockstore: require('./utils/blockstore') },
+  locks: {
+    memory: MemoryLock,
+    fs: FSLock
+  }
+}
 
 /**
  * @param {import('./types').Config} _config

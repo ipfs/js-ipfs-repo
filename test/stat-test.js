@@ -4,8 +4,9 @@
 const { expect } = require('aegir/utils/chai')
 const { CID } = require('multiformats/cid')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+
 /**
- * @param {import('../src/index')} repo
+ * @param {import('../src/types').IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('stat', () => {

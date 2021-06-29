@@ -1,34 +1,26 @@
 /* eslint-env mocha */
 'use strict'
 
-const ncp = require('ncp').ncp
-const rimraf = require('rimraf')
-const fs = require('fs')
-const path = require('path')
-const promisify = require('util').promisify
-const os = require('os')
-const { LockExistsError } = require('../src/errors')
 const loadCodec = require('./fixtures/load-codec')
-
-const asyncRimraf = promisify(rimraf)
-const asyncNcp = promisify(ncp)
-const fsstat = promisify(fs.stat)
+const MemoryLock = require('../src/locks/memory')
+const createBackend = require('./fixtures/create-backend')
 
 /**
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  * @typedef {import('../src/types').Options} Options
  */
 
-const IPFSRepo = require('../src')
+const { createRepo } = require('../src')
 
 /**
- * @param {Options} options
+ * @param {Partial<Options>} [options]
  */
-async function createTempRepo (options) {
-  const date = Date.now().toString()
-  const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
-  await asyncNcp(path.join(__dirname, 'test-repo'), repoPath)
-  const repo = new IPFSRepo(repoPath, loadCodec, options)
+async function createTempRepo (options = {}) {
+  const repo = createRepo(`/foo-${Math.random()}`, loadCodec, createBackend(), {
+    ...options,
+    repoLock: MemoryLock
+  })
+  await repo.init({})
   await repo.open()
   return repo
 }
@@ -37,83 +29,34 @@ describe('IPFS Repo Tests onNode.js', () => {
   require('./options-test')
   require('./migrations-test')(createTempRepo)
 
-  const customLock = {
-    lockName: 'test.lock',
-    /**
-     * @param {string} dir
-     */
-    lock: async (dir) => {
-      const isLocked = await customLock.locked(dir)
-      if (isLocked) {
-        throw new LockExistsError('already locked')
-      }
-      const lockPath = path.join(dir, customLock.lockName)
-      fs.writeFileSync(lockPath, '')
-      return {
-        close: () => asyncRimraf(lockPath)
-      }
-    },
-    /**
-     * @param {string} dir
-     */
-    locked: async (dir) => {
-      try {
-        await fsstat(path.join(dir, customLock.lockName))
-        return true
-      } catch (err) {
-        return false
-      }
-    }
-  }
-
   /**
-   * @type {Array<{name: string, opts?: Options, init: boolean}>}
+   * @type {Array<{name: string, opts?: Options}>}
    */
   const repos = [
     {
       name: 'default inited',
-      opts: undefined,
-      init: true
+      opts: undefined
     },
     {
       name: 'memory',
       opts: {
-        lock: 'memory'
-      },
-      init: true
-    },
-    {
-      name: 'custom locker',
-      opts: {
-        lock: customLock
-      },
-      init: true
-    },
-    {
-      name: 'default existing',
-      opts: undefined,
-      init: false
+        repoLock: MemoryLock
+      }
     }
   ]
   repos.forEach((r) => describe(r.name, () => {
-    const testRepoPath = path.join(__dirname, 'test-repo')
-    const date = Date.now().toString()
-    const repoPath = path.join(os.tmpdir(), 'test-repo-for-' + date)
-
-    const repo = new IPFSRepo(repoPath, loadCodec, r.opts)
+    const repo = createRepo(`repo-${Math.random()}`, loadCodec, createBackend(), {
+      repoLock: MemoryLock,
+      ...(r.opts || {})
+    })
 
     before(async () => {
-      if (r.init) {
-        await repo.init({})
-      } else {
-        await asyncNcp(testRepoPath, repoPath)
-      }
+      await repo.init({})
       await repo.open()
     })
 
     after(async () => {
       await repo.close()
-      await asyncRimraf(repoPath)
     })
 
     require('./repo-test')(repo)
@@ -124,9 +67,6 @@ describe('IPFS Repo Tests onNode.js', () => {
     require('./lock-test')(repo)
     require('./config-test')(repo)
     require('./api-addr-test')()
-    if (!r.init) {
-      require('./interop-test')(repo)
-    }
     require('./pins-test')(repo)
     require('./is-initialized')
   }))

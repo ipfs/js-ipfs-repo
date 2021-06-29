@@ -6,13 +6,9 @@ const { expect } = require('aegir/utils/chai')
 const range = require('just-range')
 const Key = require('interface-datastore').Key
 const uint8ArrayFromString = require('uint8arrays/from-string')
-/**
- * @typedef {import('../src/index')} Repo
- */
 
 /**
- *
- * @param {Repo} repo
+ * @param {import('../src/types').IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('pins', () => {

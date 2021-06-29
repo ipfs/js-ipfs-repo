@@ -5,13 +5,14 @@ const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 const debug = require('debug')
 const first = require('it-first')
-const all = require('it-all')
+const drain = require('it-drain')
 const cborg = require('cborg')
-const { Key } = require('interface-datastore')
 const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const { base32 } = require('multiformats/bases/base32')
-const Digest = require('multiformats/hashes/digest')
+const {
+  cidToKey,
+  keyToMultihash
+} = require('./utils/blockstore')
+const walkDag = require('./utils/walk-dag')
 
 /**
  * @typedef {object} Pin
@@ -42,60 +43,6 @@ function invalidPinTypeErr (type) {
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
-/**
- * @param {CID} cid
- */
-function cidToKey (cid) {
-  return new Key(`/${base32.encode(cid.multihash.bytes).toUpperCase().substring(1)}`)
-}
-
-/**
- * @param {Key | string} key
- */
-function keyToMultihash (key) {
-  return Digest.decode(base32.decode(`b${key.toString().toLowerCase().substring(1)}`))
-}
-
-// eslint-disable-next-line jsdoc/require-returns-check
-/**
- * @param {any} obj
- * @param {string[]} path
- * @param {boolean} parseBuffer
- * @returns {Generator<[string, CID], void, undefined>}
- */
-function * dagCborLinks (obj, path = [], parseBuffer = true) {
-  if (parseBuffer && Buffer.isBuffer(obj)) {
-    obj = cborg.decode(obj)
-  }
-
-  for (const key of Object.keys(obj)) {
-    const _path = path.slice()
-    _path.push(key)
-    const val = obj[key]
-
-    if (val && typeof val === 'object') {
-      if (Array.isArray(val)) {
-        for (let i = 0; i < val.length; i++) {
-          const __path = _path.slice()
-          __path.push(i.toString())
-          const o = val[i]
-          if (CID.isCID(o)) { // eslint-disable-line max-depth
-            yield [__path.join('/'), o]
-          } else if (typeof o === 'object') {
-            yield * dagCborLinks(o, _path, false)
-          }
-        }
-      } else {
-        if (CID.isCID(val)) {
-          yield [_path.join('/'), val]
-        } else {
-          yield * dagCborLinks(val, _path, false)
-        }
-      }
-    }
-  }
-}
-
 const PinTypes = {
   /** @type {'direct'} */
   direct: ('direct'),
@@ -121,34 +68,6 @@ class Pins {
     this.log = debug('ipfs:repo:pin')
     this.directPins = new Set()
     this.recursivePins = new Set()
-  }
-
-  /**
-   * @private
-   * @param {CID} cid
-   * @param {AbortOptions} [options]
-   * @returns {AsyncGenerator<CID, void, undefined>}
-   */
-  async * _walkDag (cid, options) {
-    try {
-      const block = await this.blockstore.get(cid, options)
-      const codec = await this.loadCodec(cid.code)
-      const node = codec.decode(block)
-
-      if (cid.code === dagPb.code) {
-        for (const link of node.Links) {
-          yield link.Hash
-          yield * this._walkDag(link.Hash, options)
-        }
-      } else if (cid.code === dagCbor.code) {
-        for (const [, childCid] of dagCborLinks(node)) {
-          yield childCid
-          yield * this._walkDag(childCid, options)
-        }
-      }
-    } catch (err) {
-      this.log('Could not walk DAG for CID', cid.toString(), err)
-    }
   }
 
   /**
@@ -267,7 +186,7 @@ class Pins {
    */
   async * indirectKeys (options) {
     for await (const { cid } of this.recursiveKeys()) {
-      for await (const childCid of this._walkDag(cid, options)) {
+      for await (const childCid of walkDag(cid, this.blockstore, this.loadCodec, options)) {
         // recursive pins override indirect pins
         const types = [
           PinTypes.recursive
@@ -334,7 +253,7 @@ class Pins {
      */
     async function * findChild (key, source) {
       for await (const { cid: parentCid } of source) {
-        for await (const childCid of self._walkDag(parentCid)) {
+        for await (const childCid of walkDag(parentCid, self.blockstore, self.loadCodec)) {
           if (childCid.equals(key)) {
             yield parentCid
             return
@@ -370,7 +289,7 @@ class Pins {
    * @param {AbortOptions} options
    */
   async fetchCompleteDag (cid, options) {
-    await all(this._walkDag(cid, options))
+    await drain(walkDag(cid, this.blockstore, this.loadCodec, options))
   }
 
   /**

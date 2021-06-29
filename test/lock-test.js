@@ -2,13 +2,13 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const IPFSRepo = require('../')
-const lockMemory = require('../src/lock-memory')
+const { createRepo } = require('../')
+const lockMemory = require('../src/locks/memory')
 const { LockExistsError } = require('./../src/errors')
 const loadCodec = require('./fixtures/load-codec')
 
 /**
- * @param {import('../src/index')} repo
+ * @param {import('../src/types').IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('Repo lock tests', () => {
@@ -19,7 +19,13 @@ module.exports = (repo) => {
     })
 
     it('should prevent multiple repos from using the same path', async () => {
-      const repoClone = new IPFSRepo(repo.path, loadCodec, repo.options)
+      const repoClone = createRepo(repo.path, loadCodec, {
+        blocks: repo.pins.blockstore,
+        datastore: repo.datastore,
+        root: repo.root,
+        keys: repo.keys,
+        pins: repo.pins.pinstore
+      }, repo.options)
       try {
         await repoClone.init({})
         await repoClone.open()

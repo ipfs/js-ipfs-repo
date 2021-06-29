@@ -6,21 +6,22 @@ const { expect } = require('aegir/utils/chai')
 const { CID } = require('multiformats')
 const range = require('just-range')
 const tempDir = require('ipfs-utils/src/temp-dir')
-const { cidToKey } = require('../src/blockstore-utils')
-const IPFSRepo = require('../src')
+const { createRepo } = require('../src')
 const drain = require('it-drain')
 const all = require('it-all')
 const first = require('it-first')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayEquals = require('uint8arrays/equals')
-const { Adapter } = require('interface-datastore')
+const { BlockstoreAdapter } = require('interface-blockstore')
 const { sha256 } = require('multiformats/hashes/sha2')
 const { identity } = require('multiformats/hashes/identity')
 const raw = require('multiformats/codecs/raw')
 const dagCbor = require('@ipld/dag-cbor')
 const dagPb = require('@ipld/dag-pb')
 const loadCodec = require('./fixtures/load-codec')
+const createBackend = require('./fixtures/create-backend')
+const MemoryLock = require('../src/locks/memory')
 
 async function makePair () {
   const data = new TextEncoder().encode(`hello-${Math.random()}`)
@@ -33,6 +34,7 @@ async function makePair () {
 /**
  * @typedef {import('interface-datastore').Key} Key
  * @typedef {import('interface-blockstore').Pair} Pair
+ * @typedef {import('../src/types').IPFSRepo} IPFSRepo
  */
 
 /**
@@ -204,43 +206,35 @@ module.exports = (repo) => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
-        const key = cidToKey(cid)
 
-        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
-          storageBackends: {
-            blocks: class ExplodingBlockStore extends Adapter {
-              /**
-               *
-               * @param {Key} c
-               */
-              async get (c) {
-                if (c.toString() === key.toString()) {
-                  throw err
-                }
-                return new Uint8Array()
-              }
-
-              async open () {}
-
-              async close () {}
+        class ExplodingBlockStore extends BlockstoreAdapter {
+          /**
+           *
+           * @param {CID} c
+           */
+          async get (c) {
+            if (c.toString() === cid.toString()) {
+              throw err
             }
-          },
-          storageBackendOptions: {
-            blocks: {
-              sharding: false
-            }
+
+            return new Uint8Array()
           }
+
+          async open () {}
+
+          async close () {}
+        }
+
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend({
+          blocks: new ExplodingBlockStore()
+        }), {
+          repoLock: MemoryLock
         })
 
         await otherRepo.init({})
         await otherRepo.open()
 
-        try {
-          await otherRepo.blocks.get(cid)
-          throw new Error('Should have thrown')
-        } catch (err2) {
-          expect(err2).to.deep.equal(err)
-        }
+        await expect(otherRepo.blocks.get(cid)).to.eventually.be.rejectedWith(err)
       })
 
       it('can load an identity hash without storing first', async () => {
@@ -333,51 +327,42 @@ module.exports = (repo) => {
         const data = uint8ArrayFromString(`TEST${Date.now()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
-        const key = cidToKey(cid)
 
-        otherRepo = new IPFSRepo(tempDir(), loadCodec, {
-          storageBackends: {
-            blocks: class ExplodingBlockStore extends Adapter {
-              /**
-               * @param {Key} c
-               */
-              async get (c) {
-                if (c.toString() === key.toString()) {
-                  throw err
-                }
-                return new Uint8Array()
-              }
-
-              async open () {}
-
-              async close () {}
-
-              /**
-               * @param {any} source
-               */
-              async * getMany (source) {
-                for await (const c of source) {
-                  yield this.get(c)
-                }
-              }
+        class ExplodingBlockStore extends BlockstoreAdapter {
+          /**
+           * @param {CID} c
+           */
+          async get (c) {
+            if (c.toString() === cid.toString()) {
+              throw err
             }
-          },
-          storageBackendOptions: {
-            blocks: {
-              sharding: false
+            return new Uint8Array()
+          }
+
+          async open () {}
+
+          async close () {}
+
+          /**
+           * @param {any} source
+           */
+          async * getMany (source) {
+            for await (const c of source) {
+              yield this.get(c)
             }
           }
+        }
+
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend({
+          blocks: new ExplodingBlockStore()
+        }), {
+          repoLock: MemoryLock
         })
 
         await otherRepo.init({})
         await otherRepo.open()
 
-        try {
-          await drain(otherRepo.blocks.getMany([cid]))
-          throw new Error('Should have thrown')
-        } catch (err2) {
-          expect(err2).to.deep.equal(err)
-        }
+        await expect(drain(otherRepo.blocks.getMany([cid]))).to.eventually.be.rejectedWith(err)
       })
     })
 
@@ -501,7 +486,7 @@ module.exports = (repo) => {
 
       it('returns some of the blocks', async () => {
         const blocksWithPrefix = await all(repo.blocks.query({
-          prefix: cidToKey(pair1.key).toString().substring(0, 10)
+          prefix: pair1.key.toString().substring(0, 13)
         }))
         const block = blocksWithPrefix.find(({ key, value }) => uint8ArrayToString(value, 'base64') === uint8ArrayToString(pair1.value, 'base64'))
 

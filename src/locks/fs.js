@@ -1,15 +1,15 @@
 'use strict'
 
-const { LockExistsError } = require('./errors')
+const { LockExistsError } = require('../errors')
 const path = require('path')
 const debug = require('debug')
 const { lock: properLock, check } = require('proper-lockfile')
 
-const log = debug('ipfs:repo:lock')
+const log = debug('ipfs:repo:lock:fs')
 const lockFile = 'repo.lock'
 
 /**
- * @typedef {import('./types').LockCloser} LockCloser
+ * @typedef {import('../types').LockCloser} LockCloser
  */
 
 /**

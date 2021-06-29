@@ -8,18 +8,19 @@ const sinon = require('sinon')
 const migrator = require('ipfs-repo-migrations')
 const constants = require('../src/constants')
 const errors = require('../src/errors')
-const IPFSRepo = require('../src')
-const loadCodec = require('./fixtures/load-codec')
+const { createRepo } = require('../src')
+
 /**
- * @typedef {import('../src/index')} Repo
+ * @typedef {import('../src/types').IPFSRepo} IPFSRepo
+ * @typedef {import('../src/types').Options} Options
  */
 
 /**
- * @param {(options? : any)=> Promise<Repo>} createTempRepo
+ * @param {(options?: Partial<Options>)=> Promise<IPFSRepo>} createTempRepo
  */
 module.exports = (createTempRepo) => {
   describe('Migrations tests', () => {
-    /** @type {Repo} */
+    /** @type {IPFSRepo} */
     let repo
     /** @type {sinon.SinonStub<any[], any>} */
     let migrateStub
@@ -74,9 +75,16 @@ module.exports = (createTempRepo) => {
         await repo.version.set(7)
         await repo.close()
 
+        // @ts-expect-error options is a private field
         const newOpts = Object.assign({}, repo.options)
         newOpts.autoMigrate = option
-        const newRepo = new IPFSRepo(repo.path, loadCodec, newOpts)
+        const newRepo = createRepo(repo.path, repo.pins.loadCodec, {
+          blocks: repo.pins.blockstore,
+          datastore: repo.datastore,
+          root: repo.root,
+          keys: repo.keys,
+          pins: repo.pins.pinstore
+        }, newOpts)
 
         expect(migrateStub.called).to.be.false()
 
@@ -116,12 +124,14 @@ module.exports = (createTempRepo) => {
 
       expect(migrateStub.called).to.be.false()
 
+      // @ts-expect-error options is a private field
       repo.options.onMigrationProgress = sinon.stub()
 
       await repo.open()
 
       expect(migrateStub.called).to.be.true()
-      expect(migrateStub.getCall(0).args[3]).to.have.property('onProgress', repo.options.onMigrationProgress)
+      // @ts-expect-error options is a private field
+      expect(migrateStub.getCall(0).args[4]).to.have.property('onProgress', repo.options.onMigrationProgress)
     })
 
     it('should not migrate when versions matches', async () => {
@@ -165,12 +175,14 @@ module.exports = (createTempRepo) => {
 
       expect(revertStub.called).to.be.false()
 
+      // @ts-expect-error options is a private field
       repo.options.onMigrationProgress = sinon.stub()
 
       await repo.open()
 
       expect(revertStub.called).to.be.true()
-      expect(revertStub.getCall(0).args[3]).to.have.property('onProgress', repo.options.onMigrationProgress)
+      // @ts-expect-error options is a private field
+      expect(revertStub.getCall(0).args[4]).to.have.property('onProgress', repo.options.onMigrationProgress)
     })
   })
 }

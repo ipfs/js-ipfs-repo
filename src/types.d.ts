@@ -1,5 +1,6 @@
 
 import type { Datastore } from 'interface-datastore'
+import type { Blockstore } from 'interface-blockstore'
 import type { CID } from 'multiformats'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 
@@ -10,41 +11,150 @@ export interface Options {
   /**
    * Controls automatic migrations of repository. (defaults: true)
    */
-  autoMigrate?: boolean
+  autoMigrate: boolean
   /**
    * Callback function to be notified of migration progress
    */
-  onMigrationProgress?: (version: number, percentComplete: string, message: string) => void
-  /**
-   * What type of lock to use. Lock has to be acquired when opening.
-   */
-  lock?: Lock | 'fs' | 'memory'
+  onMigrationProgress: (version: number, percentComplete: string, message: string) => void
 
   /**
-   * Map for backends and implementation reference.
-   * - `root` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `blocks` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `keys` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `datastore` (defaults to `datastore-level`)
-   * - `pins` (defaults to `datastore-level`)
+   * If multiple processes are accessing the same repo - e.g. via node cluster or browser UI and webworkers
+   * one instance must be designated the repo owner to hold the lock on shared resources like the datastore.
+   *
+   * Set this property to true on one instance only if this is how your application is set up.
    */
-  storageBackends?: Partial<Record<Backends, { new(...args: any[]): Datastore }>>
+  repoOwner: boolean
 
-  storageBackendOptions?: Partial<Record<Backends, unknown>>
+  /**
+   * A lock implementation that prevents multiple processes accessing the same repo
+   */
+  repoLock: RepoLock
 }
 
-export type Backends = 'root' | 'blocks' | 'keys' | 'datastore' | 'pins'
+export interface IPFSRepo {
+  closed: boolean;
+  path: string;
+  root: Datastore;
+  datastore: Datastore;
+  keys: Datastore;
+  pins: Pins;
+  blocks: Blockstore;
 
-export interface Lock {
+  version: {
+      exists(): Promise<any>;
+      get(): Promise<number>;
+      set(version: number): Promise<void>;
+      check(expected: number): Promise<boolean>;
+  }
+
+  config: {
+      getAll(options?: {
+          signal?: AbortSignal | undefined;
+      } | undefined): Promise<import("./types").Config>;
+      get(key: string, options?: {
+          signal?: AbortSignal | undefined;
+      } | undefined): Promise<any>;
+      set(key: string, value?: any, options?: {
+          signal?: AbortSignal | undefined;
+      } | undefined): Promise<void>;
+      replace(value?: import("./types").Config | undefined, options?: {
+          signal?: AbortSignal | undefined;
+      } | undefined): Promise<void>;
+      exists(): Promise<any>;
+  }
+
+  spec: {
+      exists(): Promise<boolean>;
+      get(): Promise<Uint8Array>;
+      set(spec: any): Promise<void>;
+  }
+
+  apiAddr: {
+      get(): Promise<string>;
+      set(value: string): Promise<void>;
+      delete(): Promise<void>;
+  }
+
+  gcLock: GCLock
+
+  gc: () => AsyncGenerator<{
+      err: Error;
+      cid?: undefined;
+  } | {
+      cid: CID;
+      err?: undefined;
+  } | null, void, unknown>
+
+  /**
+   * Initialize a new repo.
+   *
+   * @param {import('./types').Config} config - config to write into `config`.
+   * @returns {Promise<void>}
+   */
+  init(config: Config): Promise<void>
+
+  /**
+   * Check if the repo is already initialized.
+   *
+   * @returns {Promise<boolean>}
+   */
+  isInitialized(): Promise<boolean>
+
+  /**
+   * Open the repo. If the repo is already open an error will be thrown.
+   * If the repo is not initialized it will throw an error.
+   *
+   * @returns {Promise<void>}
+   */
+  open(): Promise<void>
+
+  /**
+   * Close the repo and cleanup.
+   *
+   * @returns {Promise<void>}
+   */
+  close(): Promise<void>
+
+  /**
+   * Check if a repo exists.
+   *
+   * @returns {Promise<boolean>}
+   */
+  exists(): Promise<boolean>
+
+  /**
+   * Get repo status.
+   *
+   * @returns {Promise<Stat>}
+   */
+  stat(): Promise<Stat>
+}
+
+export interface Backends {
+  root: Datastore
+  blocks: Blockstore
+  keys: Datastore
+  datastore: Datastore
+  pins: Datastore
+}
+
+export interface RepoLock {
   /**
    * Sets the lock if one does not already exist. If a lock already exists, should throw an error.
    */
-  lock: (dir: string) => Promise<LockCloser>
+  lock: (path: string) => Promise<LockCloser>
 
   /**
    * Checks the existence of the lock.
    */
-  locked: (dir: string) => Promise<boolean>
+  locked: (path: string) => Promise<boolean>
+}
+
+export type ReleaseLock = () => void
+
+export interface GCLock {
+  readLock: () => Promise<ReleaseLock>
+  writeLock: () => Promise<ReleaseLock>
 }
 
 export interface LockCloser {

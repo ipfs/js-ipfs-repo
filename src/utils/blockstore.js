@@ -2,18 +2,17 @@
 
 const { Key } = require('interface-datastore')
 const { CID } = require('multiformats')
-const mhd = require('multiformats/hashes/digest')
 const raw = require('multiformats/codecs/raw')
 const errCode = require('err-code')
 const { base32 } = require('multiformats/bases/base32')
+const Digest = require('multiformats/hashes/digest')
 
 /**
  * Transform a cid to the appropriate datastore key.
  *
  * @param {CID} c
- * @returns {Key}
  */
-exports.cidToKey = c => {
+function cidToKey (c) {
   const cid = CID.asCID(c)
 
   if (cid == null) {
@@ -31,11 +30,21 @@ exports.cidToKey = c => {
  * Hence it is highly probable that stored CID will differ from a CID retrieved from blockstore.
  *
  * @param {Key} key
- * @returns {CID}
  */
-exports.keyToCid = key => {
+function keyToCid (key) {
   // Block key is of the form /<base32 encoded string>
-  const digest = mhd.decode(base32.decode('b' + key.toString().slice(1).toLowerCase()))
+  return CID.createV1(raw.code, keyToMultihash(key))
+}
 
-  return CID.createV1(raw.code, digest)
+/**
+ * @param {Key | string} key
+ */
+function keyToMultihash (key) {
+  return Digest.decode(base32.decode(`b${key.toString().toLowerCase().substring(1)}`))
+}
+
+module.exports = {
+  cidToKey,
+  keyToCid,
+  keyToMultihash
 }
