@@ -28,7 +28,7 @@ const MFS_ROOT_KEY = new Key('/local/filesroot')
  *
  * @param {object} config
  * @param {import('./types').GCLock} config.gcLock
- * @param {import('./pins')} config.pins
+ * @param {import('./pins').Pins} config.pins
  * @param {Blockstore} config.blockstore
  * @param {import('interface-datastore').Datastore} config.root
  * @param {loadCodec} config.loadCodec
@@ -62,7 +62,7 @@ module.exports = ({ gcLock, pins, blockstore, root, loadCodec }) => {
  * Get Set of CIDs of blocks to keep
  *
  * @param {object} config
- * @param {import('./pins')} config.pins
+ * @param {import('./pins').Pins} config.pins
  * @param {import('interface-blockstore').Blockstore} config.blockstore
  * @param {import('interface-datastore').Datastore} config.root
  * @param {loadCodec} config.loadCodec

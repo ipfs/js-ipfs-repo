@@ -15,7 +15,7 @@ const createIdstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
-const Pins = require('./pins')
+const { Pins, PinTypes } = require('./pins')
 const createPinnedBlockstore = require('./pinned-blockstore')
 // @ts-ignore - no types
 const mortice = require('mortice')
@@ -448,7 +448,8 @@ module.exports = {
   locks: {
     memory: MemoryLock,
     fs: FSLock
-  }
+  },
+  PinTypes
 }
 
 /**

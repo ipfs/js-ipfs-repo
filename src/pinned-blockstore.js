@@ -2,7 +2,7 @@
 
 const map = require('it-map')
 const errCode = require('err-code')
-const Pins = require('./pins')
+const { PinTypes } = require('./pins')
 
 /**
  * @typedef {import('interface-datastore').Query} Query
@@ -10,6 +10,7 @@ const Pins = require('./pins')
  * @typedef {import('interface-datastore').Options} DatastoreOptions
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('multiformats/cid').CID} CID
+ * @typedef {import('./pins').Pins} Pins
  */
 
 /**
@@ -86,7 +87,7 @@ function createPinnedBlockstore (pins, store) {
  * @param {Pins} pins
  */
 async function ensureNotPinned (cid, pins) {
-  const { pinned, reason } = await pins.isPinnedWithType(cid, Pins.PinTypes.all)
+  const { pinned, reason } = await pins.isPinnedWithType(cid, PinTypes.all)
 
   if (pinned) {
     throw errCode(new Error(`pinned: ${reason}`), 'ERR_BLOCK_PINNED')

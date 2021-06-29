@@ -306,6 +306,7 @@ class Pins {
   }
 }
 
-Pins.PinTypes = PinTypes
-
-module.exports = Pins
+module.exports = {
+  Pins,
+  PinTypes
+}
