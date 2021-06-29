@@ -38,6 +38,7 @@ const AUTO_MIGRATE_CONFIG_KEY = 'repoAutoMigrate'
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('./types').Backends} Backends
+ * @typedef {import('./types').IPFSRepo} IPFSRepo
  */
 
 /**
