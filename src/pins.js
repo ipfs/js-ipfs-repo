@@ -15,7 +15,7 @@ const {
 const walkDag = require('./utils/walk-dag')
 
 /**
- * @typedef {object} Pin
+ * @typedef {object} PinInternal
  * @property {number} depth
  * @property {import('multiformats/cid').CIDVersion} [version]
  * @property {number} [codec]
@@ -26,13 +26,9 @@ const walkDag = require('./utils/walk-dag')
  * @typedef {import('./types').PinType} PinType
  * @typedef {import('./types').PinQueryType} PinQueryType
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
- */
-
-/**
- * @typedef {Object} PinOptions
- * @property {any} [metadata]
- *
+ * @typedef {import('./types').PinOptions} PinOptions
  * @typedef {import('./types').AbortOptions} AbortOptions
+ * @typedef {import('./types').Pins} Pins
  */
 
 /**
@@ -54,7 +50,10 @@ const PinTypes = {
   all: ('all')
 }
 
-class Pins {
+/**
+ * @implements {Pins}
+ */
+class PinManager {
   /**
    * @param {Object} config
    * @param {import('interface-datastore').Datastore} config.pinstore
@@ -73,12 +72,11 @@ class Pins {
   /**
    * @param {CID} cid
    * @param {PinOptions & AbortOptions} [options]
-   * @returns {Promise<void>}
    */
   async pinDirectly (cid, options = {}) {
     await this.blockstore.get(cid, options)
 
-    /** @type {Pin} */
+    /** @type {PinInternal} */
     const pin = {
       depth: 0
     }
@@ -101,7 +99,6 @@ class Pins {
   /**
    * @param {CID} cid
    * @param {AbortOptions} [options]
-   * @returns {Promise<void>}
    */
   unpin (cid, options) {
     return this.pinstore.delete(cidToKey(cid), options)
@@ -110,12 +107,11 @@ class Pins {
   /**
    * @param {CID} cid
    * @param {PinOptions & AbortOptions} [options]
-   * @returns {Promise<void>}
    */
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
 
-    /** @type {Pin} */
+    /** @type {PinInternal} */
     const pin = {
       depth: Infinity
     }
@@ -307,6 +303,6 @@ class Pins {
 }
 
 module.exports = {
-  Pins,
+  PinManager,
   PinTypes
 }

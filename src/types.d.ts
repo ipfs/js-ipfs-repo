@@ -1,7 +1,7 @@
 
 import type { Datastore } from 'interface-datastore'
 import type { Blockstore } from 'interface-blockstore'
-import type { CID } from 'multiformats'
+import type { CID, CIDVersion } from 'multiformats/cid'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
@@ -77,13 +77,7 @@ export interface IPFSRepo {
 
   gcLock: GCLock
 
-  gc: () => AsyncGenerator<{
-      err: Error;
-      cid?: undefined;
-  } | {
-      cid: CID;
-      err?: undefined;
-  } | null, void, unknown>
+  gc: () => AsyncGenerator<GCErrorResult | GCSuccessResult, void, unknown>
 
   /**
    * Initialize a new repo.
@@ -138,6 +132,10 @@ export interface Backends {
   pins: Datastore
 }
 
+export interface LockCloser {
+  close: () => Promise<void>
+}
+
 export interface RepoLock {
   /**
    * Sets the lock if one does not already exist. If a lock already exists, should throw an error.
@@ -157,8 +155,14 @@ export interface GCLock {
   writeLock: () => Promise<ReleaseLock>
 }
 
-export interface LockCloser {
-  close: () => Promise<void>
+export interface GCErrorResult {
+  err: Error
+  cid?: undefined
+}
+
+export interface GCSuccessResult {
+  cid: CID
+  err?: undefined
 }
 
 export interface Stat {
@@ -285,6 +289,32 @@ export interface RoutingConfig {
 export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
 
 export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
+
+export interface PinOptions extends AbortOptions {
+  metadata?: Record<string, any>
+}
+
+export interface Pin {
+  cid: CID
+  metadata?: Record<string, any>
+}
+
+export interface PinnedWithTypeResult {
+  cid: CID
+  pinned: boolean
+  reason?: PinType
+  metadata?: Record<string, any>
+}
+
+export interface Pins {
+  pinDirectly: (cid: CID, options?: PinOptions) => Promise<void>
+  pinRecursively: (cid: CID, options?: PinOptions) => Promise<void>
+  unpin: (cid: CID, options?: AbortOptions) => Promise<void>
+  directKeys: (options?: AbortOptions) => AsyncGenerator<Pin, void, undefined>
+  recursiveKeys: (options?: AbortOptions) => AsyncGenerator<Pin, void, undefined>
+  indirectKeys: (options?: AbortOptions) => AsyncGenerator<CID, void, undefined>
+  isPinnedWithType: (cid: CID, types: PinQueryType|PinQueryType[], options?: AbortOptions) => Promise<PinnedWithTypeResult>
+}
 
 export interface AbortOptions {
   signal?: AbortSignal

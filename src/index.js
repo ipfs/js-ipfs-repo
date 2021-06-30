@@ -15,7 +15,7 @@ const createIdstore = require('./idstore')
 const defaultOptions = require('./default-options')
 const defaultDatastore = require('./default-datastore')
 const ERRORS = require('./errors')
-const { Pins, PinTypes } = require('./pins')
+const { PinManager, PinTypes } = require('./pins')
 const createPinnedBlockstore = require('./pinned-blockstore')
 // @ts-ignore - no types
 const mortice = require('mortice')
@@ -71,7 +71,7 @@ class Repo {
     const blockstore = backends.blocks
     const pinstore = backends.pins
 
-    this.pins = new Pins({ pinstore, blockstore, loadCodec })
+    this.pins = new PinManager({ pinstore, blockstore, loadCodec })
 
     // this blockstore will not delete blocks that have been pinned
     const pinnedBlockstore = createPinnedBlockstore(this.pins, blockstore)

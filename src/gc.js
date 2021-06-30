@@ -21,6 +21,8 @@ const MFS_ROOT_KEY = new Key('/local/filesroot')
 /**
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('./types').loadCodec} loadCodec
+ * @typedef {import('./types').GCErrorResult} GCErrorResult
+ * @typedef {import('./types').GCSuccessResult} GCSuccessResult
  */
 
 /**
@@ -34,6 +36,9 @@ const MFS_ROOT_KEY = new Key('/local/filesroot')
  * @param {loadCodec} config.loadCodec
  */
 module.exports = ({ gcLock, pins, blockstore, root, loadCodec }) => {
+  /**
+   * @returns {AsyncGenerator<GCErrorResult | GCSuccessResult, void, unknown>}
+   */
   async function * gc () {
     const start = Date.now()
     log('Creating set of marked blocks')
@@ -47,6 +52,7 @@ module.exports = ({ gcLock, pins, blockstore, root, loadCodec }) => {
       const blockKeys = blockstore.queryKeys({})
 
       // Delete blocks that are not being used
+      // @ts-ignore ts cannot tell that we filter out null results
       yield * deleteUnmarkedBlocks({ blockstore }, markedSet, blockKeys)
 
       log(`Complete (${Date.now() - start}ms)`)
