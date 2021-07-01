@@ -40,6 +40,9 @@ describe('IPFS Repo Tests onNode.js', () => {
     {
       name: 'memory',
       opts: {
+        autoMigrate: true,
+        onMigrationProgress: () => {},
+        repoOwner: true,
         repoLock: MemoryLock
       }
     }

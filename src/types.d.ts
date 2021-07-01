@@ -1,7 +1,7 @@
 
 import type { Datastore } from 'interface-datastore'
 import type { Blockstore } from 'interface-blockstore'
-import type { CID, CIDVersion } from 'multiformats/cid'
+import type { CID } from 'multiformats/cid'
 import type { BlockCodec } from 'multiformats/codecs/interface'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
@@ -32,47 +32,47 @@ export interface Options {
 }
 
 export interface IPFSRepo {
-  closed: boolean;
-  path: string;
-  root: Datastore;
-  datastore: Datastore;
-  keys: Datastore;
-  pins: Pins;
-  blocks: Blockstore;
+  closed: boolean
+  path: string
+  root: Datastore
+  datastore: Datastore
+  keys: Datastore
+  pins: Pins
+  blocks: Blockstore
 
   version: {
-      exists(): Promise<any>;
-      get(): Promise<number>;
-      set(version: number): Promise<void>;
-      check(expected: number): Promise<boolean>;
+    exists: () => Promise<any>
+    get: () => Promise<number>
+    set: (version: number) => Promise<void>
+    check: (expected: number) => Promise<boolean>
   }
 
   config: {
-      getAll(options?: {
-          signal?: AbortSignal | undefined;
-      } | undefined): Promise<import("./types").Config>;
-      get(key: string, options?: {
-          signal?: AbortSignal | undefined;
-      } | undefined): Promise<any>;
-      set(key: string, value?: any, options?: {
-          signal?: AbortSignal | undefined;
-      } | undefined): Promise<void>;
-      replace(value?: import("./types").Config | undefined, options?: {
-          signal?: AbortSignal | undefined;
-      } | undefined): Promise<void>;
-      exists(): Promise<any>;
+    getAll: (options?: {
+      signal?: AbortSignal
+    }) => Promise<import('./types').Config>
+    get: (key: string, options?: {
+      signal?: AbortSignal
+    }) => Promise<any>
+    set: (key: string, value?: any, options?: {
+      signal?: AbortSignal
+    }) => Promise<void>
+    replace: (value?: import('./types').Config, options?: {
+      signal?: AbortSignal
+    }) => Promise<void>
+    exists: () => Promise<any>
   }
 
   spec: {
-      exists(): Promise<boolean>;
-      get(): Promise<Uint8Array>;
-      set(spec: any): Promise<void>;
+    exists: () => Promise<boolean>
+    get: () => Promise<Uint8Array>
+    set: (spec: any) => Promise<void>
   }
 
   apiAddr: {
-      get(): Promise<string>;
-      set(value: string): Promise<void>;
-      delete(): Promise<void>;
+    get: () => Promise<string>
+    set: (value: string) => Promise<void>
+    delete: () => Promise<void>
   }
 
   gcLock: GCLock
@@ -85,14 +85,14 @@ export interface IPFSRepo {
    * @param {import('./types').Config} config - config to write into `config`.
    * @returns {Promise<void>}
    */
-  init(config: Config): Promise<void>
+  init: (config: Config) => Promise<void>
 
   /**
    * Check if the repo is already initialized.
    *
    * @returns {Promise<boolean>}
    */
-  isInitialized(): Promise<boolean>
+  isInitialized: () => Promise<boolean>
 
   /**
    * Open the repo. If the repo is already open an error will be thrown.
@@ -100,28 +100,28 @@ export interface IPFSRepo {
    *
    * @returns {Promise<void>}
    */
-  open(): Promise<void>
+  open: () => Promise<void>
 
   /**
    * Close the repo and cleanup.
    *
    * @returns {Promise<void>}
    */
-  close(): Promise<void>
+  close: () => Promise<void>
 
   /**
    * Check if a repo exists.
    *
    * @returns {Promise<boolean>}
    */
-  exists(): Promise<boolean>
+  exists: () => Promise<boolean>
 
   /**
    * Get repo status.
    *
    * @returns {Promise<Stat>}
    */
-  stat(): Promise<Stat>
+  stat: () => Promise<Stat>
 }
 
 export interface Backends {
@@ -148,7 +148,7 @@ export interface RepoLock {
   locked: (path: string) => Promise<boolean>
 }
 
-export type ReleaseLock = () => void
+export interface ReleaseLock { (): void }
 
 export interface GCLock {
   readLock: () => Promise<ReleaseLock>
@@ -175,7 +175,7 @@ export interface Stat {
 
 export interface Config {
   Addresses?: AddressConfig
-  API?: APIConfig,
+  API?: APIConfig
   Profiles?: string
   Bootstrap?: string[]
   Discovery?: DiscoveryConfig
@@ -195,8 +195,8 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm?: string[],
-  Announce?: string[],
+  Swarm?: string[]
+  Announce?: string[]
   NoAnnounce?: string[]
 }
 
@@ -223,22 +223,22 @@ export interface DatastoreConfig {
 }
 
 export interface DatastoreType {
-  type: string,
-  path: string,
-  sync?: boolean,
-  shardFunc?: string,
+  type: string
+  path: string
+  sync?: boolean
+  shardFunc?: string
   compression?: string
 }
 
 export interface DatastoreMountPoint {
-  mountpoint: string,
-  type: string,
-  prefix: string,
+  mountpoint: string
+  type: string
+  prefix: string
   child: DatastoreType
 }
 
 export interface DatastoreSpec {
-  type?: string,
+  type?: string
   mounts?: DatastoreMountPoint[]
 }
 
@@ -304,6 +304,7 @@ export interface PinnedWithTypeResult {
   pinned: boolean
   reason?: PinType
   metadata?: Record<string, any>
+  parent?: CID
 }
 
 export interface Pins {
@@ -320,4 +321,4 @@ export interface AbortOptions {
   signal?: AbortSignal
 }
 
-export type loadCodec = (codeOrName: number | string) => Promise<BlockCodec<any, any>>
+export interface loadCodec { (codeOrName: number | string): Promise<BlockCodec<any, any>> }

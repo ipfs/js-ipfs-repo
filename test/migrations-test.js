@@ -78,11 +78,14 @@ module.exports = (createTempRepo) => {
         // @ts-expect-error options is a private field
         const newOpts = Object.assign({}, repo.options)
         newOpts.autoMigrate = option
+        // @ts-expect-error loadCodec is a private field
         const newRepo = createRepo(repo.path, repo.pins.loadCodec, {
+          // @ts-expect-error blockstore is a private field
           blocks: repo.pins.blockstore,
           datastore: repo.datastore,
           root: repo.root,
           keys: repo.keys,
+          // @ts-expect-error pinstore is a private field
           pins: repo.pins.pinstore
         }, newOpts)
 

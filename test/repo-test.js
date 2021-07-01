@@ -14,7 +14,11 @@ const MemoryLock = require('../src/locks/memory')
 const createBackend = require('./fixtures/create-backend')
 
 /**
- * @param {import('../src/types').IPFSRepo} repo
+ * @typedef {import('../src/types').IPFSRepo} IPFSRepo
+ */
+
+/**
+ * @param {IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {

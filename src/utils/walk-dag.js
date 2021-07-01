@@ -64,14 +64,14 @@ function * dagCborLinks (obj, path = [], parseBuffer = true) {
           const __path = _path.slice()
           __path.push(i.toString())
           const o = val[i]
-          if (CID.isCID(o)) { // eslint-disable-line max-depth
+          if (o instanceof CID) { // eslint-disable-line max-depth
             yield [__path.join('/'), o]
           } else if (typeof o === 'object') {
             yield * dagCborLinks(o, _path, false)
           }
         }
       } else {
-        if (CID.isCID(val)) {
+        if (val instanceof CID) {
           yield [_path.join('/'), val]
         } else {
           yield * dagCborLinks(val, _path, false)
