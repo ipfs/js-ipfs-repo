@@ -159,9 +159,12 @@ module.exports = (repo) => {
       })
 
       it('lists indirectly pinned cbor keys', async () => {
-        const child = await createDagCborNode()
+        const child = await createDagCborNode({
+          data: Math.random()
+        })
         const parent = await createDagCborNode({
-          child: { '/': child.cid }
+          child: child.cid,
+          data: Math.random()
         })
 
         await repo.blocks.put(child.cid, child.buf)

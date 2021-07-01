@@ -49,7 +49,7 @@ async function * walkDag (cid, blockstore, loadCodec, options) {
  * @returns {Generator<[string, CID], void, undefined>}
  */
 function * dagCborLinks (obj, path = [], parseBuffer = true) {
-  if (parseBuffer && Buffer.isBuffer(obj)) {
+  if (parseBuffer && obj instanceof Uint8Array) {
     obj = cborg.decode(obj)
   }
 
