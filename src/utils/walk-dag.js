@@ -38,6 +38,8 @@ async function * walkDag (cid, blockstore, loadCodec, options) {
     }
   } catch (err) {
     log('Could not walk DAG for CID', cid.toString(), err)
+
+    throw err
   }
 }
 
