@@ -73,7 +73,7 @@
     "cids": "^1.1.6",
     "datastore-core": "^4.0.0",
     "datastore-fs": "^4.0.0",
-    "datastore-level": "^5.0.0",
+    "datastore-level": "^6.0.0",
     "debug": "^4.1.0",
     "err-code": "^3.0.1",
     "interface-datastore": "^4.0.0",
