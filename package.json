@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo",
-  "version": "10.0.3",
+  "version": "11.0.0",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
@@ -126,6 +126,7 @@
     "Steef Min <steefmin@gmail.com>",
     "Volker Mische <volker.mische@gmail.com>",
     "Bryan Stenson <bryan.stenson@gmail.com>",
+    "Brian Hoffman <hoffmabc@users.noreply.github.com>",
     "Andrew Nesbitt <andrewnez@gmail.com>",
     "nginnever <ginneversource@gmail.com>",
     "Henrique Dias <hacdias@gmail.com>",
