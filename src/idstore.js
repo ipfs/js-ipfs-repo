@@ -119,10 +119,30 @@ function createIdStore (store) {
     },
 
     batch () {
+      const batch = store.batch()
+
       return {
-        put (key, value) { },
-        delete (key) { },
-        commit: async (options) => { }
+        put (cid, buf) {
+          const { isIdentity } = extractContents(cid)
+
+          if (isIdentity) {
+            return
+          }
+
+          batch.put(cid, buf)
+        },
+        delete (cid) {
+          const { isIdentity } = extractContents(cid)
+
+          if (isIdentity) {
+            return
+          }
+
+          batch.delete(cid)
+        },
+        commit: (options) => {
+          return batch.commit(options)
+        }
       }
     }
   }
