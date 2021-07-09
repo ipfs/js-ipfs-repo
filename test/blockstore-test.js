@@ -167,7 +167,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
         await repo.blocks.put(cid, data)
@@ -176,7 +176,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
 
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagPb.code, digest)
@@ -191,7 +191,7 @@ module.exports = (repo) => {
       })
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagPb.code, digest)
 
@@ -200,7 +200,7 @@ module.exports = (repo) => {
 
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
 
@@ -287,7 +287,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v0 CID with a v1 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
         await repo.blocks.put(cid, data)
@@ -296,7 +296,7 @@ module.exports = (repo) => {
       })
 
       it('should get block stored under v1 CID with a v0 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
 
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagPb.code, digest)
@@ -311,7 +311,7 @@ module.exports = (repo) => {
       })
 
       it('throws ERR_NOT_FOUND when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagCbor.code, digest)
 
@@ -320,7 +320,7 @@ module.exports = (repo) => {
 
       it('throws unknown error encountered when getting a block', async () => {
         const err = new Error('wat')
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
 
@@ -379,7 +379,7 @@ module.exports = (repo) => {
       })
 
       it('should have block stored under v0 CID with a v1 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
         await repo.blocks.put(cid, data)
@@ -388,7 +388,7 @@ module.exports = (repo) => {
       })
 
       it('should have block stored under v1 CID with a v0 CID', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
 
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagCbor.code, digest)
@@ -403,7 +403,7 @@ module.exports = (repo) => {
       })
 
       it('returns false when requesting non-dag-pb CID that is not in the store', async () => {
-        const data = uint8ArrayFromString(`TEST${Date.now()}`)
+        const data = uint8ArrayFromString(`TEST${Math.random()}`)
         const digest = await sha256.digest(data)
         const cid = CID.createV1(dagCbor.code, digest)
         const result = await repo.blocks.has(cid)
