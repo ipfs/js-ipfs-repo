@@ -90,16 +90,14 @@ module.exports = (repo) => {
         await repo.blocks.put(CID.createV0(digest), d)
       })
 
-      it('massive multiwrite', async function () {
-        this.timeout(15000) // add time for ci
+      it('massive multiwrite', async () => {
         const hashes = await Promise.all(range(100).map((i) => sha256.digest(blockData[i])))
         await Promise.all(range(100).map((i) => {
           return repo.blocks.put(CID.createV0(hashes[i]), blockData[i])
         }))
       })
 
-      it('.putMany', async function () {
-        this.timeout(15000) // add time for ci
+      it('.putMany', async () => {
         const blocks = await Promise.all(range(50).map(async (i) => {
           const d = uint8ArrayFromString('many' + Math.random())
           const digest = await sha256.digest(d)
@@ -152,8 +150,7 @@ module.exports = (repo) => {
         expect(block).to.equalBytes(pair.value)
       })
 
-      it('massive read', async function () {
-        this.timeout(15000) // add time for ci
+      it('massive read', async () => {
         await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % blockData.length
           const digest = await sha256.digest(blockData[j])
@@ -264,8 +261,7 @@ module.exports = (repo) => {
         expect(blocks).to.deep.include(identityData)
       })
 
-      it('massive read', async function () {
-        this.timeout(15000) // add time for ci
+      it('massive read', async () => {
         const num = 20 * 100
 
         const blocks = await all(repo.blocks.getMany(async function * () {

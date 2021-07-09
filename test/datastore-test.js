@@ -25,8 +25,7 @@ module.exports = (repo) => {
         await Promise.all([repo.datastore.put(b, data), repo.datastore.put(b, data)])
       })
 
-      it('massive multiwrite', async function () {
-        this.timeout(15000) // add time for ci
+      it('massive multiwrite', async () => {
         await Promise.all(range(100).map((i) => {
           return repo.datastore.put(new Key('hello' + i), dataList[i])
         }))
@@ -39,14 +38,13 @@ module.exports = (repo) => {
         expect(val).to.be.eql(data)
       })
 
-      it('massive read', async function () {
-        this.timeout(15000) // add time for ci
+      it('massive read', async () => {
         await Promise.all(range(20 * 100).map(async (i) => {
           const j = i % dataList.length
           const val = await repo.datastore.get(new Key('hello' + j))
           expect(val).to.be.eql(dataList[j])
         }))
-      }).timeout(10 * 1000)
+      })
     })
 
     describe('.has', () => {
