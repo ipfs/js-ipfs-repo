@@ -1,7 +1,8 @@
 
-import type { Datastore, Options as DatastoreOptions, Query, KeyQuery, Key } from 'interface-datastore'
-import type CID from 'cids'
-import type Block from 'ipld-block'
+import type { Datastore } from 'interface-datastore'
+import type { Blockstore } from 'interface-blockstore'
+import type { CID } from 'multiformats/cid'
+import type { BlockCodec } from 'multiformats/codecs/interface'
 
 export type AwaitIterable<T> = Iterable<T> | AsyncIterable<T>
 export type Await<T> = Promise<T> | T
@@ -10,45 +11,158 @@ export interface Options {
   /**
    * Controls automatic migrations of repository. (defaults: true)
    */
-  autoMigrate?: boolean
+  autoMigrate: boolean
   /**
    * Callback function to be notified of migration progress
    */
-  onMigrationProgress?: (version: number, percentComplete: string, message: string) => void
-  /**
-   * What type of lock to use. Lock has to be acquired when opening.
-   */
-  lock?: Lock | 'fs' | 'memory'
+  onMigrationProgress: (version: number, percentComplete: string, message: string) => void
 
   /**
-   * Map for backends and implementation reference.
-   * - `root` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `blocks` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `keys` (defaults to `datastore-fs` in Node.js and `datastore-level` in the browser)
-   * - `datastore` (defaults to `datastore-level`)
-   * - `pins` (defaults to `datastore-level`)
+   * If multiple processes are accessing the same repo - e.g. via node cluster or browser UI and webworkers
+   * one instance must be designated the repo owner to hold the lock on shared resources like the datastore.
+   *
+   * Set this property to true on one instance only if this is how your application is set up.
    */
-  storageBackends?: Partial<Record<Backends, { new(...args: any[]): Datastore }>>
+  repoOwner: boolean
 
-  storageBackendOptions?: Partial<Record<Backends, unknown>>
+  /**
+   * A lock implementation that prevents multiple processes accessing the same repo
+   */
+  repoLock: RepoLock
 }
 
-export type Backends = 'root' | 'blocks' | 'keys' | 'datastore' | 'pins'
+export interface IPFSRepo {
+  closed: boolean
+  path: string
+  root: Datastore
+  datastore: Datastore
+  keys: Datastore
+  pins: Pins
+  blocks: Blockstore
 
-export interface Lock {
-  /**
-   * Sets the lock if one does not already exist. If a lock already exists, should throw an error.
-   */
-  lock: (dir: string) => Promise<LockCloser>
+  version: {
+    exists: () => Promise<any>
+    get: () => Promise<number>
+    set: (version: number) => Promise<void>
+    check: (expected: number) => Promise<boolean>
+  }
+
+  config: {
+    getAll: (options?: {
+      signal?: AbortSignal
+    }) => Promise<import('./types').Config>
+    get: (key: string, options?: {
+      signal?: AbortSignal
+    }) => Promise<any>
+    set: (key: string, value?: any, options?: {
+      signal?: AbortSignal
+    }) => Promise<void>
+    replace: (value?: import('./types').Config, options?: {
+      signal?: AbortSignal
+    }) => Promise<void>
+    exists: () => Promise<any>
+  }
+
+  spec: {
+    exists: () => Promise<boolean>
+    get: () => Promise<Uint8Array>
+    set: (spec: any) => Promise<void>
+  }
+
+  apiAddr: {
+    get: () => Promise<string>
+    set: (value: string) => Promise<void>
+    delete: () => Promise<void>
+  }
+
+  gcLock: GCLock
+
+  gc: () => AsyncGenerator<GCErrorResult | GCSuccessResult, void, unknown>
 
   /**
-   * Checks the existence of the lock.
+   * Initialize a new repo.
+   *
+   * @param {import('./types').Config} config - config to write into `config`.
+   * @returns {Promise<void>}
    */
-  locked: (dir: string) => Promise<boolean>
+  init: (config: Config) => Promise<void>
+
+  /**
+   * Check if the repo is already initialized.
+   *
+   * @returns {Promise<boolean>}
+   */
+  isInitialized: () => Promise<boolean>
+
+  /**
+   * Open the repo. If the repo is already open an error will be thrown.
+   * If the repo is not initialized it will throw an error.
+   *
+   * @returns {Promise<void>}
+   */
+  open: () => Promise<void>
+
+  /**
+   * Close the repo and cleanup.
+   *
+   * @returns {Promise<void>}
+   */
+  close: () => Promise<void>
+
+  /**
+   * Check if a repo exists.
+   *
+   * @returns {Promise<boolean>}
+   */
+  exists: () => Promise<boolean>
+
+  /**
+   * Get repo status.
+   *
+   * @returns {Promise<Stat>}
+   */
+  stat: () => Promise<Stat>
+}
+
+export interface Backends {
+  root: Datastore
+  blocks: Blockstore
+  keys: Datastore
+  datastore: Datastore
+  pins: Datastore
 }
 
 export interface LockCloser {
   close: () => Promise<void>
+}
+
+export interface RepoLock {
+  /**
+   * Sets the lock if one does not already exist. If a lock already exists, should throw an error.
+   */
+  lock: (path: string) => Promise<LockCloser>
+
+  /**
+   * Checks the existence of the lock.
+   */
+  locked: (path: string) => Promise<boolean>
+}
+
+export interface ReleaseLock { (): void }
+
+export interface GCLock {
+  readLock: () => Promise<ReleaseLock>
+  writeLock: () => Promise<ReleaseLock>
+}
+
+export interface GCErrorResult {
+  err: Error
+  cid?: undefined
+}
+
+export interface GCSuccessResult {
+  cid: CID
+  err?: undefined
 }
 
 export interface Stat {
@@ -59,63 +173,9 @@ export interface Stat {
   repoSize: BigInt
 }
 
-export interface Blockstore {
-  open: () => Promise<void>
-
-  /**
-   * Query the store
-   */
-  query: (query: Query, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Query the store, returning only keys
-   */
-   queryKeys: (query: KeyQuery, options?: DatastoreOptions) => AsyncIterable<CID>
-
-  /**
-   * Get a single block by CID
-   */
-  get: (cid: CID, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like get, but for more
-   */
-  getMany: (cids: AwaitIterable<CID>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Write a single block to the store
-   */
-  put: (block: Block, options?: DatastoreOptions) => Promise<Block>
-
-  /**
-   * Like put, but for more
-   */
-  putMany: (blocks: AwaitIterable<Block>, options?: DatastoreOptions) => AsyncIterable<Block>
-
-  /**
-   * Does the store contain block with this CID?
-   */
-  has: (cid: CID, options?: DatastoreOptions) => Promise<boolean>
-
-  /**
-   * Delete a block from the store
-   */
-  delete: (cid: CID, options?: DatastoreOptions) => Promise<void>
-
-  /**
-   * Delete a block from the store
-   */
-  deleteMany: (cids: AwaitIterable<any>, options?: DatastoreOptions) => AsyncIterable<CID>
-
-  /**
-   * Close the store
-   */
-  close: () => Promise<void>
-}
-
 export interface Config {
   Addresses?: AddressConfig
-  API?: APIConfig,
+  API?: APIConfig
   Profiles?: string
   Bootstrap?: string[]
   Discovery?: DiscoveryConfig
@@ -135,8 +195,8 @@ export interface AddressConfig {
   RPC?: string
   Delegates?: string[]
   Gateway?: string
-  Swarm?: string[],
-  Announce?: string[],
+  Swarm?: string[]
+  Announce?: string[]
   NoAnnounce?: string[]
 }
 
@@ -163,22 +223,22 @@ export interface DatastoreConfig {
 }
 
 export interface DatastoreType {
-  type: string,
-  path: string,
-  sync?: boolean,
-  shardFunc?: string,
+  type: string
+  path: string
+  sync?: boolean
+  shardFunc?: string
   compression?: string
 }
 
 export interface DatastoreMountPoint {
-  mountpoint: string,
-  type: string,
-  prefix: string,
+  mountpoint: string
+  type: string
+  prefix: string
   child: DatastoreType
 }
 
 export interface DatastoreSpec {
-  type?: string,
+  type?: string
   mounts?: DatastoreMountPoint[]
 }
 
@@ -225,3 +285,40 @@ export interface ConnMgrConfig {
 export interface RoutingConfig {
   Type?: string
 }
+
+export type PinType = 'recursive' | 'direct' | 'indirect' | 'all'
+
+export type PinQueryType = 'recursive' | 'direct' | 'indirect' | 'all'
+
+export interface PinOptions extends AbortOptions {
+  metadata?: Record<string, any>
+}
+
+export interface Pin {
+  cid: CID
+  metadata?: Record<string, any>
+}
+
+export interface PinnedWithTypeResult {
+  cid: CID
+  pinned: boolean
+  reason?: PinType
+  metadata?: Record<string, any>
+  parent?: CID
+}
+
+export interface Pins {
+  pinDirectly: (cid: CID, options?: PinOptions) => Promise<void>
+  pinRecursively: (cid: CID, options?: PinOptions) => Promise<void>
+  unpin: (cid: CID, options?: AbortOptions) => Promise<void>
+  directKeys: (options?: AbortOptions) => AsyncGenerator<Pin, void, undefined>
+  recursiveKeys: (options?: AbortOptions) => AsyncGenerator<Pin, void, undefined>
+  indirectKeys: (options?: AbortOptions) => AsyncGenerator<CID, void, undefined>
+  isPinnedWithType: (cid: CID, types: PinQueryType|PinQueryType[], options?: AbortOptions) => Promise<PinnedWithTypeResult>
+}
+
+export interface AbortOptions {
+  signal?: AbortSignal
+}
+
+export interface loadCodec { (codeOrName: number | string): Promise<BlockCodec<any, any>> }

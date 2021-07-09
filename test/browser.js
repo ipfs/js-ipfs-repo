@@ -2,13 +2,22 @@
 
 'use strict'
 
-const IPFSRepo = require('../src')
+const { createRepo } = require('../src')
+const loadCodec = require('./fixtures/load-codec')
+const { MemoryDatastore } = require('interface-datastore')
+const { MemoryBlockstore } = require('interface-blockstore')
 
 async function createTempRepo (options = {}) {
   const date = Date.now().toString()
   const repoPath = 'test-repo-for-' + date
 
-  const repo = new IPFSRepo(repoPath, options)
+  const repo = createRepo(repoPath, loadCodec, {
+    blocks: new MemoryBlockstore(),
+    datastore: new MemoryDatastore(),
+    root: new MemoryDatastore(),
+    keys: new MemoryDatastore(),
+    pins: new MemoryDatastore()
+  }, options)
   await repo.init({})
   await repo.open()
 
@@ -19,7 +28,13 @@ describe('IPFS Repo Tests on the Browser', () => {
   require('./options-test')
   require('./migrations-test')(createTempRepo)
 
-  const repo = new IPFSRepo('myrepo')
+  const repo = createRepo('myrepo', loadCodec, {
+    blocks: new MemoryBlockstore(),
+    datastore: new MemoryDatastore(),
+    root: new MemoryDatastore(),
+    keys: new MemoryDatastore(),
+    pins: new MemoryDatastore()
+  })
 
   before(async () => {
     await repo.init({})

@@ -2,6 +2,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+const sinon = require('sinon')
 const tempDir = require('ipfs-utils/src/temp-dir')
 const { isNode } = require('ipfs-utils/src/env')
 const rimraf = require('rimraf')
@@ -9,7 +10,9 @@ if (!rimraf.sync) {
   // browser
   rimraf.sync = noop
 }
-const Repo = require('../')
+const { createRepo } = require('../')
+const loadCodec = require('./fixtures/load-codec')
+const createBackend = require('./fixtures/create-backend')
 
 describe('custom options tests', () => {
   const repoPath = tempDir()
@@ -20,39 +23,49 @@ describe('custom options tests', () => {
   it('missing repoPath', () => {
     expect(
       // @ts-expect-error
-      () => new Repo()
-    ).to.throw('missing repoPath')
+      () => createRepo()
+    ).to.throw('missing repo path')
   })
 
   it('default options', () => {
-    const repo = new Repo(repoPath)
+    const repo = createRepo(repoPath, loadCodec, createBackend())
+    // @ts-expect-error options is a private field
     expect(repo.options).to.deep.equal(expectedRepoOptions())
   })
 
-  it('allows for a custom lock', () => {
+  it('allows for a custom lock', async () => {
+    const release = {
+      close () { return Promise.resolve() }
+    }
+
     const lock = {
       /**
-       * @param {any} path
+       * @param {string} path
        */
-      lock: async (path) => {
-        return Promise.resolve({
-          close () { return Promise.resolve() }
-        })
+      lock: (path) => {
+        return Promise.resolve(release)
       },
       /**
-       * @param {any} path
+       * @param {string} path
        */
-      locked: async (path) => {
+      locked: (path) => {
         return Promise.resolve(true)
       }
     }
 
-    const repo = new Repo(repoPath, {
-      lock
+    const lockSpy = sinon.spy(lock, 'lock')
+    const releaseSpy = sinon.spy(release, 'close')
+
+    const repo = createRepo(repoPath, loadCodec, createBackend(), {
+      repoLock: lock
     })
 
-    // @ts-ignore we should not be using private methods
-    expect(repo._getLocker()).to.deep.equal(lock)
+    await repo.init({})
+    await repo.open()
+    await repo.close()
+
+    expect(lockSpy.callCount).to.equal(1)
+    expect(releaseSpy.callCount).to.equal(1)
   })
 
   it('ensures a custom lock has a .close method', async () => {
@@ -73,9 +86,9 @@ describe('custom options tests', () => {
       }
     }
 
-    const repo = new Repo(repoPath, {
-      // @ts-expect-error
-      lock
+    const repo = createRepo(repoPath, loadCodec, createBackend(), {
+      // @ts-expect-error lock closer types are wrong
+      repoLock: lock
     })
     let error
     try {
@@ -94,5 +107,5 @@ function expectedRepoOptions () {
   if (isNode) {
     return require('../src/default-options')
   }
-  return require('../src/default-options-browser')
+  return require('../src/default-options.browser')
 }

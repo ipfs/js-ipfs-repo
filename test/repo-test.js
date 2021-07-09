@@ -2,18 +2,23 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+const sinon = require('sinon')
 const tempDir = require('ipfs-utils/src/temp-dir')
-const IPFSRepo = require('../')
+const { createRepo } = require('../')
 const Errors = require('../src/errors')
 const bytes = require('bytes')
-const { Adapter } = require('interface-datastore')
+const { Adapter, MemoryDatastore } = require('interface-datastore')
+const { MemoryBlockstore } = require('interface-blockstore')
+const loadCodec = require('./fixtures/load-codec')
+const MemoryLock = require('../src/locks/memory')
+const createBackend = require('./fixtures/create-backend')
 
 /**
- * @typedef {import('interface-datastore').Key} Key
+ * @typedef {import('../src/types').IPFSRepo} IPFSRepo
  */
 
 /**
- * @param {import('../src/index')} repo
+ * @param {IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('IPFS Repo Tests', () => {
@@ -127,65 +132,25 @@ module.exports = (repo) => {
       })
 
       it('should close all the datastores', async () => {
-        let count = 0
-        class FakeDatastore extends Adapter {
-          constructor () {
-            super()
-            /** @type {Record<string, Uint8Array>} */
-            this.data = {}
-          }
+        const memoryDs = new MemoryDatastore()
+        const memoryBs = new MemoryBlockstore()
+        const spyDs = sinon.spy(memoryDs, 'close')
+        const spyBs = sinon.spy(memoryBs, 'close')
 
-          async open () {}
-
-          /**
-           * @param {Key} key
-           * @param {Uint8Array} val
-           */
-          async put (key, val) {
-            this.data[key.toString()] = val
-          }
-
-          /**
-           * @param {Key} key
-           */
-          async get (key) {
-            const exists = await this.has(key)
-            if (!exists) throw new Errors.NotFoundError()
-            return this.data[key.toString()]
-          }
-
-          /**
-           * @param {Key} key
-           */
-          async has (key) {
-            return this.data[key.toString()] !== undefined
-          }
-
-          /**
-           * @param {Key} key
-           */
-          async delete (key) {
-            delete this.data[key.toString()]
-          }
-
-          async close () {
-            count++
-          }
-        }
-        const repo = new IPFSRepo(tempDir(), {
-          lock: 'memory',
-          storageBackends: {
-            root: FakeDatastore,
-            blocks: FakeDatastore,
-            keys: FakeDatastore,
-            datastore: FakeDatastore,
-            pins: FakeDatastore
-          }
+        const repo = createRepo(tempDir(), loadCodec, {
+          root: memoryDs,
+          blocks: memoryBs,
+          keys: memoryDs,
+          datastore: memoryDs,
+          pins: memoryDs
+        }, {
+          repoLock: MemoryLock
         })
         await repo.init({})
         await repo.open()
         await repo.close()
-        expect(count).to.be.eq(5)
+
+        expect(spyDs.callCount + spyBs.callCount).to.equal(5)
       })
 
       it('open twice throws error', async () => {
@@ -200,22 +165,22 @@ module.exports = (repo) => {
       })
 
       it('should throw non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(tempDir())
+        const otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
         const err = new Error('wat')
 
         otherRepo.root.open = () => {
           throw err
         }
 
-        try {
-          await otherRepo.init({})
-        } catch (err2) {
-          expect(err2).to.deep.equal(err)
-        }
+        return expect(otherRepo.init({})).to.eventually.be.rejectedWith(err)
       })
 
       it('should ignore non-already-open errors when opening the root', async () => {
-        const otherRepo = new IPFSRepo(tempDir())
+        const otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
 
         const err = new Error('Already open')
         let threwError = false
@@ -251,33 +216,24 @@ module.exports = (repo) => {
       })
 
       it('should remove the lockfile when opening the repo fails', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
-          storageBackends: {
-            datastore: ExplodingDatastore,
-            blocks: ExplodingDatastore,
-            pins: ExplodingDatastore,
-            keys: ExplodingDatastore
-            // root: ExplodingDatastore
-          }
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend({
+          datastore: new ExplodingDatastore()
+        }), {
+          repoLock: MemoryLock
         })
 
-        try {
-          await otherRepo.init({})
-          await otherRepo.open()
-        } catch (err) {
-          expect(otherRepo.lockfile).to.be.null()
-        }
+        await otherRepo.init({})
+        await expect(otherRepo.open()).to.eventually.be.rejectedWith('wat')
+
+        // @ts-expect-error - _lockfile not part of the interface
+        expect(otherRepo._lockfile).to.be.null()
       })
 
       it('should re-throw the original error even when removing the lockfile fails', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
-          storageBackends: {
-            datastore: ExplodingDatastore,
-            blocks: ExplodingDatastore,
-            pins: ExplodingDatastore,
-            keys: ExplodingDatastore,
-            root: ExplodingDatastore
-          }
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend({
+          datastore: new ExplodingDatastore()
+        }), {
+          repoLock: MemoryLock
         })
 
         // @ts-ignore we should not be using private stuff
@@ -294,14 +250,8 @@ module.exports = (repo) => {
       })
 
       it('should throw when repos are not initialised', async () => {
-        otherRepo = new IPFSRepo(tempDir(), {
-          storageBackends: {
-            datastore: ExplodingDatastore,
-            blocks: ExplodingDatastore,
-            pins: ExplodingDatastore,
-            keys: ExplodingDatastore
-            // root: ExplodingDatastore
-          }
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
         })
 
         try {
@@ -312,7 +262,9 @@ module.exports = (repo) => {
       })
 
       it('should throw when config is not set', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
         otherRepo.config.exists = async () => false
         otherRepo.spec.exists = async () => true
         otherRepo.version.check = async () => false
@@ -327,7 +279,9 @@ module.exports = (repo) => {
       it('should return the max storage stat when set', async () => {
         const maxStorage = '1GB'
 
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
         await otherRepo.init({})
         await otherRepo.open()
         await otherRepo.config.set('Datastore.StorageMax', maxStorage)
@@ -339,7 +293,9 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when closing', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -358,7 +314,9 @@ module.exports = (repo) => {
       })
 
       it('should swallow expected errors when closing', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
         await otherRepo.init({})
         await otherRepo.open()
 
@@ -372,7 +330,9 @@ module.exports = (repo) => {
       })
 
       it('should throw unexpected errors when checking if the repo has been initialised', async () => {
-        otherRepo = new IPFSRepo(tempDir())
+        otherRepo = createRepo(tempDir(), loadCodec, createBackend(), {
+          repoLock: MemoryLock
+        })
 
         otherRepo.config.exists = async () => {
           return true

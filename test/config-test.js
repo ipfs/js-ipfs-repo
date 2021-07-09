@@ -4,8 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 
 /**
- *
- * @param {import('../src')} repo
+ * @param {import('../src/types').IPFSRepo} repo
  */
 module.exports = (repo) => {
   describe('config', () => {

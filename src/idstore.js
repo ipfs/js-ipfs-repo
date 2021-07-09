@@ -1,18 +1,17 @@
 'use strict'
 
-const Block = require('ipld-block')
 const filter = require('it-filter')
-const mh = require('multihashes')
 const pushable = require('it-pushable')
 const drain = require('it-drain')
-const CID = require('cids')
-const errcode = require('err-code')
+const { CID } = require('multiformats/cid')
+const errCode = require('err-code')
+const { identity } = require('multiformats/hashes/identity')
 
 /**
  * @typedef {import('interface-datastore').Query} Query
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-datastore').Options} DatastoreOptions
- * @typedef {import('./types').Blockstore} Blockstore
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  */
 
 /**
@@ -31,6 +30,10 @@ function createIdStore (store) {
       return store.open()
     },
 
+    close () {
+      return store.close()
+    },
+
     query (query, options) {
       return store.query(query, options)
     },
@@ -42,7 +45,7 @@ function createIdStore (store) {
     async get (cid, options) {
       const extracted = extractContents(cid)
       if (extracted.isIdentity) {
-        return Promise.resolve(new Block(extracted.digest, cid))
+        return Promise.resolve(extracted.digest)
       }
       return store.get(cid, options)
     },
@@ -53,15 +56,17 @@ function createIdStore (store) {
       }
     },
 
-    async put (block, options) {
-      const { isIdentity } = extractContents(block.cid)
+    async put (cid, buf, options) {
+      const { isIdentity } = extractContents(cid)
+
       if (isIdentity) {
-        return Promise.resolve(block)
+        return
       }
-      return store.put(block, options)
+
+      await store.put(cid, buf, options)
     },
 
-    async * putMany (blocks, options) {
+    async * putMany (pairs, options) {
       // in order to return all blocks. we're going to assemble a seperate iterable
       // return rather than return the resolves of store.putMany using the same
       // process used by blockstore.putMany
@@ -74,12 +79,13 @@ function createIdStore (store) {
       runner(async () => {
         try {
           await drain(store.putMany(async function * () {
-            for await (const block of blocks) {
-              if (!extractContents(block.cid).isIdentity) {
-                yield block
+            for await (const { key, value } of pairs) {
+              if (!extractContents(key).isIdentity) {
+                yield { key, value }
               }
+
               // if non identity blocks successfully write, blocks are included in output
-              output.push(block)
+              output.push({ key, value })
             }
           }()))
 
@@ -112,8 +118,32 @@ function createIdStore (store) {
       return store.deleteMany(filter(cids, (cid) => !extractContents(cid).isIdentity), options)
     },
 
-    close () {
-      return store.close()
+    batch () {
+      const batch = store.batch()
+
+      return {
+        put (cid, buf) {
+          const { isIdentity } = extractContents(cid)
+
+          if (isIdentity) {
+            return
+          }
+
+          batch.put(cid, buf)
+        },
+        delete (cid) {
+          const { isIdentity } = extractContents(cid)
+
+          if (isIdentity) {
+            return
+          }
+
+          batch.delete(cid)
+        },
+        commit: (options) => {
+          return batch.commit(options)
+        }
+      }
     }
   }
 }
@@ -123,14 +153,13 @@ function createIdStore (store) {
  * @returns {{ isIdentity: false } | { isIdentity: true, digest: Uint8Array}}
  */
 function extractContents (k) {
-  if (!CID.isCID(k)) {
-    throw errcode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
+  const cid = CID.asCID(k)
+
+  if (cid == null) {
+    throw errCode(new Error('Not a valid cid'), 'ERR_INVALID_CID')
   }
 
-  // Pre-check by calling Prefix(), this much faster than extracting the hash.
-  const decoded = mh.decode(k.multihash)
-
-  if (decoded.name !== 'identity') {
+  if (cid.multihash.code !== identity.code) {
     return {
       isIdentity: false
     }
@@ -138,6 +167,6 @@ function extractContents (k) {
 
   return {
     isIdentity: true,
-    digest: decoded.digest
+    digest: cid.multihash.digest
   }
 }

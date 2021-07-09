@@ -1,9 +1,9 @@
 'use strict'
 
-const errors = require('./errors')
+const errors = require('../errors')
 const debug = require('debug')
 
-const log = debug('ipfs:repo:lock')
+const log = debug('ipfs:repo:lock:memory')
 
 const lockFile = 'repo.lock'
 
@@ -11,7 +11,7 @@ const lockFile = 'repo.lock'
 const LOCKS = {}
 
 /**
- * @typedef {import('./types').LockCloser} LockCloser
+ * @typedef {import('../types').LockCloser} LockCloser
  */
 
 /**
