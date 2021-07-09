@@ -1,3 +1,20 @@
+# [11.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v10.0.3...v11.0.0) (2021-07-09)
+
+
+### chore
+
+* upgrade repo to new multiformats module ([#313](https://github.com/ipfs/js-ipfs-repo/issues/313)) ([4144a93](https://github.com/ipfs/js-ipfs-repo/commit/4144a93db9964b74d89970bcf5a7d393f1f885b1))
+
+
+### BREAKING CHANGES
+
+* The blockstore now takes instances of the new `CID` class and returns `Uint8Arrays`
+
+Co-authored-by: Vasco Santos <vasco.santos@moxy.studio>
+Co-authored-by: Rod Vagg <rod@vagg.org>
+
+
+
 ## [10.0.3](https://github.com/ipfs/js-ipfs-repo/compare/v10.0.2...v10.0.3) (2021-05-04)
 
 
