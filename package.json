@@ -89,7 +89,7 @@
     "merge-options": "^3.0.4",
     "mortice": "^2.0.1",
     "multiformats": "^9.0.4",
-    "p-queue": "^6.0.0",
+    "p-queue": "^7.1.0",
     "proper-lockfile": "^4.0.0",
     "sort-keys": "^4.0.0",
     "uint8arrays": "^2.1.3"
