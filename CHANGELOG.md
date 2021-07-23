@@ -1,3 +1,12 @@
+## [11.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v11.0.0...v11.0.1) (2021-07-23)
+
+
+### Bug Fixes
+
+* walk dag for all supported codecs ([#329](https://github.com/ipfs/js-ipfs-repo/issues/329)) ([57faff9](https://github.com/ipfs/js-ipfs-repo/commit/57faff99e68ffdbba642a514d0348e22a6c0ae2d))
+
+
+
 # [11.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v10.0.3...v11.0.0) (2021-07-09)
 
 
