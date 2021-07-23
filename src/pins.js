@@ -5,7 +5,7 @@ const { CID } = require('multiformats/cid')
 const errCode = require('err-code')
 const debug = require('debug')
 const first = require('it-first')
-const drain = require('it-drain')
+const Block = require('multiformats/block')
 const cborg = require('cborg')
 const dagPb = require('@ipld/dag-pb')
 const {
@@ -285,7 +285,29 @@ class PinManager {
    * @param {AbortOptions} options
    */
   async fetchCompleteDag (cid, options) {
-    await drain(walkDag(cid, this.blockstore, this.loadCodec, options))
+    const seen = new Set()
+
+    /**
+     * @param {CID} cid
+     * @param {AbortOptions} options
+     */
+    const walkDag = async (cid, options) => {
+      if (seen.has(cid.toString())) {
+        return
+      }
+
+      seen.add(cid.toString())
+
+      const bytes = await this.blockstore.get(cid, options)
+      const codec = await this.loadCodec(cid.code)
+      const block = Block.createUnsafe({ bytes, cid, codec })
+
+      await Promise.all(
+        [...block.links()].map(([, childCid]) => walkDag(childCid, options))
+      )
+    }
+
+    await walkDag(cid, options)
   }
 
   /**
