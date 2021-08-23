@@ -3,7 +3,7 @@
 
 // const { expect } = require('aegir/utils/chai')
 // const apiAddr = require('../src/api-addr')
-// const uint8ArrayFromString = require('uint8arrays/from-string')
+// const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 // TODO this should all be refactor
 module.exports = () => {
