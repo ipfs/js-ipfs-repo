@@ -11,7 +11,7 @@ const all = require('it-all')
 const {
   PinTypes
 } = require('../src/pins')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 /**
  * @param {import('@ipld/dag-pb').PBNode} node

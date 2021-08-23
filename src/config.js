@@ -6,8 +6,8 @@ const _get = require('just-safe-get')
 const _set = require('just-safe-set')
 const errCode = require('err-code')
 const errors = require('./errors')
-const uint8ArrayToString = require('uint8arrays/to-string')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const {
   hasWithFallback,
   getWithFallback

@@ -3,7 +3,7 @@
 
 const { expect } = require('aegir/utils/chai')
 const { CID } = require('multiformats/cid')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 /**
  * @param {import('../src/types').IPFSRepo} repo
