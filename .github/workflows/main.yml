@@ -49,11 +49,11 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          project: ${{ matrix.project }}
       - run: npm install
       - run: npm run pretest
       - run: npx xvfb-maybe aegir test -t electron-main --bail -f dist/cjs/node-test/*js
-        with:
-          project: ${{ matrix.project }}
   test-electron-renderer:
     needs: check
     runs-on: ubuntu-latest
@@ -65,8 +65,9 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          project: ${{ matrix.project }}
       - run: npm install
       - run: npm run pretest
       - run: npx xvfb-maybe aegir test -t electron-renderer --bail -f dist/cjs/browser-test/*js
-        with:
-          project: ${{ matrix.project }}
+
