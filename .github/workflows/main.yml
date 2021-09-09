@@ -46,7 +46,7 @@ jobs:
       matrix:
         project:
           - ipfs-repo
-          - ipfs-repo-migrations
+#          - ipfs-repo-migrations
         browser:
           - chromium
           - firefox
