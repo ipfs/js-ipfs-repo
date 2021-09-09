@@ -119,7 +119,7 @@ function withLevel (store, LevelImpl) {
  */
 module.exports = (setup, cleanup) => {
   describe('migration 10', function () {
-    this.timeout(240 * 1000)
+    this.timeout(580 * 1000)
     /** @type {string} */
     let dir
     /** @type {import('../../src/types').Backends} */
