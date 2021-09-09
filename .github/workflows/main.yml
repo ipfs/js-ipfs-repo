@@ -38,15 +38,21 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm run test -- --scope=${{ matrix.project }} -- -- --cov -t node
-  test-chrome:
+  test-browser:
     needs: check
     runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} browser
+    name: Test ${{ matrix.project }} ${{ matrix.browser }} ${{ matrix.type }}
     strategy:
       matrix:
         project:
           - ipfs-repo
           - ipfs-repo-migrations
+        browser:
+          - chrome
+          - firefox
+        type:
+          - browser
+          - webworker
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
@@ -54,52 +60,21 @@ jobs:
         with:
           node-version: 16
       - run: npm install
-      - run: npm run test -- --scope=${{ matrix.project }} -- --t browser
-  test-firefox:
+      - run: npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
+  test-electron:
     needs: check
     runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} browser
+    name: Test ${{ matrix.project }} ${{ matrix.type }}
     strategy:
       matrix:
         project:
           - ipfs-repo
           - ipfs-repo-migrations
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 16
-      - run: npm install
-      - run: npm run test -- --scope=${{ matrix.project }} -- --t browser -- --browser firefox
-  test-electron-main:
-    needs: check
-    runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} electron-main
-    strategy:
-      matrix:
-        project:
-          - ipfs-repo
-          - ipfs-repo-migrations
+        type:
+          - electron-main
+          - electron-renderer
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-main --bail -f dist/cjs/node-test/*js
-  test-electron-renderer:
-    needs: check
-    runs-on: ubuntu-latest
-    name: Test ${{ matrix.project }} electron-renderer
-    strategy:
-      matrix:
-        project:
-          - ipfs-repo
-          - ipfs-repo-migrations
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          project: ${{ matrix.project }}
-      - run: npm install
-      - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-renderer --bail -f dist/cjs/browser-test/*js
-
+      - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} --bail -f dist/cjs/node-test/*js
