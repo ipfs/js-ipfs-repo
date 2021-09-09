@@ -2,7 +2,7 @@
 
 const { CID } = require('multiformats/cid')
 const log = require('debug')('ipfs:repo:gc')
-const { Errors } = require('interface-datastore')
+const Errors = require('datastore-core/errors')
 const ERR_NOT_FOUND = Errors.notFoundError().code
 const parallelBatch = require('it-parallel-batch')
 const { pipe } = require('it-pipe')

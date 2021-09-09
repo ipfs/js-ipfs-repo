@@ -13,7 +13,7 @@ const first = require('it-first')
 const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
 const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
-const { BlockstoreAdapter } = require('interface-blockstore')
+const { BaseBlockstore } = require('blockstore-core/base')
 const { sha256 } = require('multiformats/hashes/sha2')
 const { identity } = require('multiformats/hashes/identity')
 const raw = require('multiformats/codecs/raw')
@@ -204,7 +204,7 @@ module.exports = (repo) => {
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
 
-        class ExplodingBlockStore extends BlockstoreAdapter {
+        class ExplodingBlockStore extends BaseBlockstore {
           /**
            *
            * @param {CID} c
@@ -324,7 +324,7 @@ module.exports = (repo) => {
         const digest = await sha256.digest(data)
         const cid = CID.createV0(digest)
 
-        class ExplodingBlockStore extends BlockstoreAdapter {
+        class ExplodingBlockStore extends BaseBlockstore {
           /**
            * @param {CID} c
            */

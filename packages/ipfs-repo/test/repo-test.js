@@ -7,8 +7,8 @@ const tempDir = require('ipfs-utils/src/temp-dir')
 const { createRepo } = require('../')
 const Errors = require('../src/errors')
 const bytes = require('bytes')
-const { Adapter, MemoryDatastore } = require('interface-datastore')
-const { MemoryBlockstore } = require('interface-blockstore')
+const { BaseDatastore, MemoryDatastore } = require('datastore-core')
+const { MemoryBlockstore } = require('blockstore-core')
 const loadCodec = require('./fixtures/load-codec')
 const MemoryLock = require('../src/locks/memory')
 const createBackend = require('./fixtures/create-backend')
@@ -198,7 +198,7 @@ module.exports = (repo) => {
     })
 
     describe('locking', () => {
-      class ExplodingDatastore extends Adapter {
+      class ExplodingDatastore extends BaseDatastore {
         async open () {
           throw new Error('wat')
         }

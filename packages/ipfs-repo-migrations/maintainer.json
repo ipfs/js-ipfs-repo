@@ -1,0 +1,11 @@
+{
+  "repoLeadMaintainer": {
+    "name": "Adam Uhlíř",
+    "email": "adam@uhlir.dev",
+    "username": "auhau"
+  },
+  "workingGroup": {
+    "name": "JS IPFS",
+    "entryPoint": "https://github.com/ipfs/js-core"
+  }
+}

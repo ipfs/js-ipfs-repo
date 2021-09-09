@@ -14,13 +14,9 @@ jobs:
     - uses: actions/checkout@v2
     - run: npm install
     - run: npm run lint
-    # or
-    # - uses: gozala/typescript-error-reporter-action@v1.0.8
-    - run: npx aegir build
-    - run: npx aegir dep-check
-    - uses: ipfs/aegir/actions/bundle-size@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: gozala/typescript-error-reporter-action@v1.0.8
+    - run: npm run build
+    - run: npm run depcheck
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
@@ -28,6 +24,9 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node: [14, 16]
+        project:
+          - packages/ipfs-repo
+          - packages/ipfs-repo-migrations
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
@@ -35,44 +34,39 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
-      - run: npx aegir test -t node --bail --cov
+      - run: npm run test -- -- -- --cov -t node
       - uses: codecov/codecov-action@v1
-  test-chrome:
+        with:
+            project: ${{ matrix.project }}
+  test-electron-main:
     needs: check
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - packages/ipfs-repo
+          - packages/ipfs-repo-migrations
+      fail-fast: true
     steps:
       - uses: actions/checkout@v2
-      - uses: microsoft/playwright-github-action@v1
       - run: npm install
-      - run: npx aegir test -t browser -t webworker --bail
-      - uses: codecov/codecov-action@v1
-  test-firefox:
+      - run: npm run pretest
+      - run: npx xvfb-maybe aegir test -t electron-main --bail -f dist/cjs/node-test/*js
+        with:
+          project: ${{ matrix.project }}
+  test-electron-renderer:
     needs: check
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - packages/ipfs-repo
+          - packages/ipfs-repo-migrations
+      fail-fast: true
     steps:
       - uses: actions/checkout@v2
-      - uses: microsoft/playwright-github-action@v1
       - run: npm install
-      - run: npx aegir test -t browser -t webworker --bail -- --browser firefox
-  test-webkit:
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: microsoft/playwright-github-action@v1
-      - run: npm install
-      - run: npx aegir test -t browser -t webworker --bail -- --browser webkit
-  # test-electron-main:
-  #   needs: check
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - run: npm install
-  #     - run: npx xvfb-maybe aegir test -t electron-main --bail
-  # test-electron-renderer:
-  #   needs: check
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - run: npm install
-  #     - run: npx xvfb-maybe aegir test -t electron-renderer --bail
+      - run: npm run pretest
+      - run: npx xvfb-maybe aegir test -t electron-renderer --bail -f dist/cjs/browser-test/*js
+        with:
+          project: ${{ matrix.project }}

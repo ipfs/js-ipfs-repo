@@ -4,8 +4,8 @@
 
 const { createRepo } = require('../src')
 const loadCodec = require('./fixtures/load-codec')
-const { MemoryDatastore } = require('interface-datastore')
-const { MemoryBlockstore } = require('interface-blockstore')
+const { MemoryDatastore } = require('datastore-core/memory')
+const { MemoryBlockstore } = require('blockstore-core/memory')
 
 async function createTempRepo (options = {}) {
   const date = Date.now().toString()

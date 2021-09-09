@@ -1,7 +1,7 @@
 'use strict'
 
-const { MemoryDatastore } = require('interface-datastore')
-const BlockstoreDatastoreAdapter = require(('blockstore-datastore-adapter'))
+const { MemoryDatastore } = require('datastore-core/memory')
+const { BlockstoreDatastoreAdapter } = require('blockstore-datastore-adapter')
 
 function createBackend (overrides = {}) {
   return {
