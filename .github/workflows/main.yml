@@ -50,8 +50,8 @@ jobs:
     strategy:
       matrix:
         project:
-          - packages/ipfs-repo
-          - packages/ipfs-repo-migrations
+          - ipfs-repo
+          - ipfs-repo-migrations
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
@@ -65,8 +65,8 @@ jobs:
     strategy:
       matrix:
         project:
-          - packages/ipfs-repo
-          - packages/ipfs-repo-migrations
+          - ipfs-repo
+          - ipfs-repo-migrations
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
