@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run pretest
-      - run: npx xvfb-maybe aegir test -t electron-main --bail -f dist/cjs/node-test/*js
+      - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-main --bail -f dist/cjs/node-test/*js
   test-electron-renderer:
     needs: check
     runs-on: ubuntu-latest
@@ -74,5 +74,5 @@ jobs:
           project: ${{ matrix.project }}
       - run: npm install
       - run: npm run pretest
-      - run: npx xvfb-maybe aegir test -t electron-renderer --bail -f dist/cjs/browser-test/*js
+      - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-renderer --bail -f dist/cjs/browser-test/*js
 
