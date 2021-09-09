@@ -117,7 +117,7 @@ async function validateBlocks (backends, migrated) {
  */
 module.exports = (setup, cleanup) => {
   describe('migration 8', function () {
-    this.timeout(240 * 1000)
+    this.timeout(1024 * 1000)
     /** @type {string} */
     let dir
     /** @type {import('../../src/types').Backends} */

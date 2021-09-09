@@ -52,7 +52,7 @@ jobs:
           - firefox
         type:
           - browser
-#         - webworker
+          - webworker
       fail-fast: true
     steps:
       - uses: actions/checkout@v2

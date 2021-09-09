@@ -16,7 +16,7 @@ const MFS_ROOT = CID.parse('Qmc42sn2WBHYeAShU3nx8mYkhKVq4sRLapawTaGh4XH4iE')
  */
 module.exports = (setup, cleanup) => {
   describe('migration 11', function () {
-    this.timeout(240 * 1000)
+    this.timeout(1024 * 1000)
     /** @type {string} */
     let dir
     /** @type {import('../../src/types').Backends} */
