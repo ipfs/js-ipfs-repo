@@ -18,9 +18,6 @@
   "scripts": {
     "clean": "rimraf types dist",
     "test": "aegir test",
-    "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser",
-    "test:webworker": "aegir test -t webworker",
     "build": "aegir build",
     "lint": "aegir ts -p check && aegir lint",
     "release": "aegir release",

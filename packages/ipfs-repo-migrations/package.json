@@ -33,8 +33,6 @@
     "build:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
     "build:source": "aegir build",
     "test": "aegir test",
-    "test:node": "aegir test --target node",
-    "test:browser": "aegir test --target browser",
     "lint": "aegir ts -p check && aegir lint",
     "release": "aegir release",
     "release-minor": "aegir release --type minor",
