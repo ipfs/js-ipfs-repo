@@ -18,6 +18,7 @@ jobs:
     - run: npm install
     - run: npm run build
     - run: npm run lint
+    - run: npm run depcheck
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
@@ -37,6 +38,40 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm run test -- --scope=${{ matrix.project }} -- -- --cov -t node
+  test-chrome:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Test ${{ matrix.project }} browser
+    strategy:
+      matrix:
+        project:
+          - ipfs-repo
+          - ipfs-repo-migrations
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run test -- --scope=${{ matrix.project }} -- --t browser
+  test-firefox:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Test ${{ matrix.project }} browser
+    strategy:
+      matrix:
+        project:
+          - ipfs-repo
+          - ipfs-repo-migrations
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run test -- --scope=${{ matrix.project }} -- --t browser -- --browser firefox
   test-electron-main:
     needs: check
     runs-on: ubuntu-latest
@@ -50,7 +85,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npm run pretest
       - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-main --bail -f dist/cjs/node-test/*js
   test-electron-renderer:
     needs: check
@@ -67,6 +101,5 @@ jobs:
         with:
           project: ${{ matrix.project }}
       - run: npm install
-      - run: npm run pretest
       - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t electron-renderer --bail -f dist/cjs/browser-test/*js
 
