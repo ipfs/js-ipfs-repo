@@ -27,11 +27,10 @@
     "url": "https://github.com/ipfs/js-ipfs-repo.git"
   },
   "scripts": {
-    "prepare": "run-s prepare:*",
-    "prepare:proto": "pbjs -t static-module -w commonjs --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
-    "prepare:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
-    "prepare:types": "aegir build",
-    "build": "aegir build --no-bundle",
+    "build": "run-s prepare:*",
+    "build:proto": "pbjs -t static-module -w commonjs --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
+    "build:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
+    "build:source": "aegir build",
     "test": "aegir test",
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser",
