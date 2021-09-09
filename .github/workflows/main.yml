@@ -10,6 +10,13 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        matrix:
+        project:
+          - packages/ipfs-repo
+          - packages/ipfs-repo-migrations
+      fail-fast: true
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -18,8 +25,10 @@ jobs:
     - run: npm install
     - run: npm run build
     - run: npm run lint
-    - uses: gozala/typescript-error-reporter-action@v1.0.8
     - run: npm run depcheck
+    - uses: gozala/typescript-error-reporter-action@v1.0.8
+      with:
+        project: ${{ matrix.project }}
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
