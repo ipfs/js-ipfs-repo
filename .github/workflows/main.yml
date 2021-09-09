@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        matrix:
         project:
           - packages/ipfs-repo
           - packages/ipfs-repo-migrations
