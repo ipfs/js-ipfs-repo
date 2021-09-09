@@ -24,20 +24,17 @@ jobs:
     - run: npm install
     - run: npm run build
     - run: npm run lint
-    - run: npm run depcheck
-    - uses: gozala/typescript-error-reporter-action@v1.0.8
-      with:
-        project: ${{ matrix.project }}
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}
+    name: Test ${{ matrix.project }} node
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node: [14, 16]
         project:
-          - packages/ipfs-repo
-          - packages/ipfs-repo-migrations
+          - ipfs-repo
+          - ipfs-repo-migrations
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
@@ -45,13 +42,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
-      - run: npm run test -- -- -- --cov -t node
-      - uses: codecov/codecov-action@v1
-        with:
-            project: ${{ matrix.project }}
+      - run: npm run test -- --scope=${{ matrix.project }} -- -- --cov -t node
   test-electron-main:
     needs: check
     runs-on: ubuntu-latest
+    name: Test ${{ matrix.project }} electron-main
     strategy:
       matrix:
         project:
@@ -60,14 +55,13 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
-        with:
-          project: ${{ matrix.project }}
       - run: npm install
       - run: npm run pretest
       - run: npx xvfb-maybe aegir test -t electron-main --bail -f dist/cjs/node-test/*js
   test-electron-renderer:
     needs: check
     runs-on: ubuntu-latest
+    name: Test ${{ matrix.project }} electron-renderer
     strategy:
       matrix:
         project:
