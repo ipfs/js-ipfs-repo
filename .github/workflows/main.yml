@@ -76,5 +76,8 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
       - run: npm install
       - run: npx xvfb-maybe npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} --bail -f dist/cjs/node-test/*js
