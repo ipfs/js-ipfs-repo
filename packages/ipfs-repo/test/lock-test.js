@@ -1,16 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { createRepo } = require('../')
-const lockMemory = require('../src/locks/memory')
-const { LockExistsError } = require('./../src/errors')
-const loadCodec = require('./fixtures/load-codec')
+import { expect } from 'aegir/utils/chai.js'
+import { createRepo } from '../src/index.js'
+import * as lockMemory from '../src/locks/memory.js'
+import { LockExistsError } from './../src/errors/index.js'
+import { loadCodec } from './fixtures/load-codec.js'
 
 /**
  * @param {import('../src/types').IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('Repo lock tests', () => {
     it('should handle locking for a repo lifecycle', async () => {
       // @ts-expect-error lockfile is not part of the interface
@@ -33,7 +32,7 @@ module.exports = (repo) => {
       try {
         await repoClone.init({})
         await repoClone.open()
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         expect(err.code)
           .to.equal(LockExistsError.code)
       }

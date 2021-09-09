@@ -1,7 +1,6 @@
-'use strict'
 
 // Default configuration for the datastore spec in node.js
-module.exports = {
+export default {
   Spec: {
     type: 'mount',
     mounts: [

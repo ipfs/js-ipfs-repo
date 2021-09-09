@@ -1,19 +1,19 @@
-'use strict'
 
 /* eslint-disable no-console */
 
 // nb. must be ipfs@0.48.0 or below
 // @ts-expect-error not in package.json
-const IPFS = require('ipfs')
+import IPFS from 'ipfs'
+import { Key } from 'interface-datastore/key'
+import fs from 'fs'
+import { CarWriter } from '@ipld/car'
+import path from 'path'
+import { Readable } from 'stream'
+
+const PIN_DS_KEY = new Key('/local/pins')
 const {
   CID
 } = IPFS
-const { Key } = require('interface-datastore')
-const PIN_DS_KEY = new Key('/local/pins')
-const fs = require('fs')
-const { CarWriter } = require('@ipld/car')
-const path = require('path')
-const { Readable } = require('stream')
 
 const TO_PIN = 9000
 

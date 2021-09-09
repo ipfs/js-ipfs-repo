@@ -1,10 +1,7 @@
-'use strict'
 
-const {
-  findLevelJs
-} = require('../../src/utils')
-const { fromString } = require('uint8arrays/from-string')
-const { toString } = require('uint8arrays/to-string')
+import { findLevelJs } from '../../src/utils.js'
+import { fromString } from 'uint8arrays/from-string'
+import { toString } from 'uint8arrays/to-string'
 
 /**
  * @typedef {import('../../src/types').Migration} Migration
@@ -131,7 +128,7 @@ async function process (backends, onProgress, fn) {
 }
 
 /** @type {Migration} */
-module.exports = {
+export const migration = {
   version: 10,
   description: 'Migrates datastore-level keys to binary',
   migrate: (backends, onProgress = () => {}) => {
@@ -174,7 +171,7 @@ function withEach (db, fn) {
 
       try {
         req = op.type === 'del' ? store.delete(key) : store.put(op.value, key)
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         error = err
         transaction.abort()
         return

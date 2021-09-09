@@ -1,13 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
+import { expect } from 'aegir/utils/chai.js'
 
 /**
  * @param {import('../src/types').IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('keystore', () => {
     it('exists', () => {
       expect(repo).to.have.property('keys')

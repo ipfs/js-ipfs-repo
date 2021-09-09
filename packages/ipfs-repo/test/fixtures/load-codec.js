@@ -1,8 +1,5 @@
-/* eslint-env mocha */
-'use strict'
-
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
+import * as dagPb from '@ipld/dag-pb'
+import * as dagCbor from '@ipld/dag-cbor'
 
 /**
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
@@ -11,7 +8,7 @@ const dagCbor = require('@ipld/dag-cbor')
 /**
  * @type {import('../../src/types').loadCodec}
  */
-const loadCodec = (codeOrName) => {
+export function loadCodec (codeOrName) {
   /** @type {Record<string | number, BlockCodec>} */
   const lookup = {
     [dagPb.code]: dagPb,
@@ -22,5 +19,3 @@ const loadCodec = (codeOrName) => {
 
   return Promise.resolve(lookup[codeOrName])
 }
-
-module.exports = loadCodec

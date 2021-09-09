@@ -1,36 +1,10 @@
 
-import { Key } from 'interface-datastore/key'
-import { notFoundError } from 'datastore-core/errors'
+import { NotFoundError } from '../errors/index.js'
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-datastore').Key} Key
  */
-
-export const CONFIG_KEY = new Key('/config')
-export const VERSION_KEY = new Key('/version')
-
-/**
- * Level dbs wrap level dbs that wrap level dbs. Find a level-js
- * instance in the chain if one exists.
- *
- * @param {Datastore} store
- * @returns {Datastore | undefined}
- */
-export function findLevelJs (store) {
-  let db = store
-
-  // @ts-ignore
-  while (db.db || db.child) {
-    // @ts-ignore
-    db = db.db || db.child
-
-    // `Level` is only present in the browser, in node it is LevelDOWN
-    // @ts-ignore
-    if (db.type === 'level-js' || db.constructor.name === 'Level') {
-      return db
-    }
-  }
-}
 
 /**
  * @param {Key} key
@@ -74,7 +48,7 @@ export async function hasWithFallback (key, has, store) {
  * @param {import('interface-datastore').Datastore} store
  * @returns {Promise<Uint8Array>}
  */
-async function getWithFallback (key, get, has, store) {
+export async function getWithFallback (key, get, has, store) {
   if (await has(key)) {
     return get(key)
   }
@@ -85,7 +59,7 @@ async function getWithFallback (key, get, has, store) {
   const levelJs = findLevelJs(store)
 
   if (!levelJs) {
-    throw notFoundError()
+    throw new NotFoundError()
   }
 
   return new Promise((resolve, reject) => {
@@ -100,39 +74,30 @@ async function getWithFallback (key, get, has, store) {
         return resolve(req.result)
       }
 
-      reject(notFoundError())
+      reject(new NotFoundError())
     }
   })
 }
 
 /**
+ * Level dbs wrap level dbs that wrap level dbs. Find a level-js
+ * instance in the chain if one exists.
+ *
  * @param {Datastore} store
+ * @returns {Datastore | undefined}
  */
-function wrapStore (store) {
-  // necessary since level-js@5 cannot read keys from level-js@4 and earlier
-  const originalGet = store.get.bind(store)
-  const originalHas = store.has.bind(store)
-  /**
-   * @param {Key} key
-   */
-  store.get = (key) => getWithFallback(key, originalGet, originalHas, store)
-  /**
-   * @param {Key} key
-   */
-  store.has = (key) => hasWithFallback(key, originalHas, store)
+function findLevelJs (store) {
+  let db = store
 
-  return store
-}
+  // @ts-ignore
+  while (db.db || db.child) {
+    // @ts-ignore
+    db = db.db || db.child
 
-/**
- * @param {import('./types').Backends} backends
- */
-export function wrapBackends (backends) {
-  return {
-    ...backends,
-    root: wrapStore(backends.root),
-    datastore: wrapStore(backends.datastore),
-    pins: wrapStore(backends.pins),
-    keys: wrapStore(backends.keys)
+    // `Level` is only present in the browser, in node it is LevelDOWN
+    // @ts-ignore
+    if (db.type === 'level-js' || db.constructor.name === 'Level') {
+      return db
+    }
   }
 }

@@ -1,19 +1,17 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
-const { BaseBlockstore } = require('blockstore-core/base')
-
-const migration = require('../../migrations/migration-10')
-const Key = require('interface-datastore').Key
-const { fromString } = require('uint8arrays/from-string')
-const { equals } = require('uint8arrays/equals')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import { BaseBlockstore } from 'blockstore-core/base'
+import { migration } from '../../migrations/migration-10/index.js'
+import { Key } from 'interface-datastore/key'
+import { fromString } from 'uint8arrays/from-string'
+import { equals } from 'uint8arrays/equals'
 // @ts-expect-error no types
-const Level5 = require('level-5')
+import Level5 from 'level-5'
 // @ts-expect-error no types
-const Level6 = require('level-6')
+import Level6 from 'level-6'
 
 /**
  * @typedef {import('../../src/types').Backends} Backends
@@ -117,7 +115,7 @@ function withLevel (store, LevelImpl) {
  * @param {import('../types').SetupFunction} setup
  * @param {import('../types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   describe('migration 10', function () {
     this.timeout(1024 * 1000)
     /** @type {string} */

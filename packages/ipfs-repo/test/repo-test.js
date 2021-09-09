@@ -1,17 +1,18 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const tempDir = require('ipfs-utils/src/temp-dir')
-const { createRepo } = require('../')
-const Errors = require('../src/errors')
-const bytes = require('bytes')
-const { BaseDatastore, MemoryDatastore } = require('datastore-core')
-const { MemoryBlockstore } = require('blockstore-core')
-const loadCodec = require('./fixtures/load-codec')
-const MemoryLock = require('../src/locks/memory')
-const createBackend = require('./fixtures/create-backend')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import tempDir from 'ipfs-utils/src/temp-dir.js'
+import { createRepo } from '../src/index.js'
+import * as Errors from '../src/errors/index.js'
+import bytes from 'bytes'
+import { BaseDatastore } from 'datastore-core/base'
+import { MemoryDatastore } from 'datastore-core/memory'
+import { MemoryBlockstore } from 'blockstore-core/memory'
+import { loadCodec } from './fixtures/load-codec.js'
+import * as MemoryLock from '../src/locks/memory.js'
+import { createBackend } from './fixtures/create-backend.js'
+import { repoVersion } from '../src/constants.js'
 
 /**
  * @typedef {import('../src/types').IPFSRepo} IPFSRepo
@@ -20,7 +21,7 @@ const createBackend = require('./fixtures/create-backend')
 /**
  * @param {IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('IPFS Repo Tests', () => {
     it('check if Repo exists', async () => {
       const exists = await repo.exists()
@@ -70,12 +71,12 @@ module.exports = (repo) => {
 
     describe('version', () => {
       afterEach(async () => {
-        await repo.version.set(10)
+        await repo.version.set(repoVersion)
       })
 
       it('get version', async () => {
         const version = await repo.version.get()
-        expect(version).to.equal(10)
+        expect(version).to.equal(repoVersion)
       })
 
       it('set version', async () => {
@@ -124,7 +125,7 @@ module.exports = (repo) => {
         await repo.close()
         try {
           await repo.close()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           expect(err.code).to.eql(Errors.ERR_REPO_ALREADY_CLOSED)
           return
         }
@@ -157,7 +158,7 @@ module.exports = (repo) => {
         await repo.open()
         try {
           await repo.open()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           expect(err.code).to.eql(Errors.ERR_REPO_ALREADY_OPEN)
           return
         }
@@ -244,7 +245,7 @@ module.exports = (repo) => {
         try {
           await otherRepo.init({})
           await otherRepo.open()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           expect(err.message).to.equal('wat')
         }
       })
@@ -256,7 +257,7 @@ module.exports = (repo) => {
 
         try {
           await otherRepo.open()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           expect(err.code).to.equal(Errors.ERR_REPO_NOT_INITIALIZED)
         }
       })
@@ -271,7 +272,7 @@ module.exports = (repo) => {
 
         try {
           await otherRepo.open()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           expect(err.code).to.equal(Errors.ERR_REPO_NOT_INITIALIZED)
         }
       })

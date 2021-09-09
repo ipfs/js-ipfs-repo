@@ -1,14 +1,13 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @param {import('../src/types').IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('stat', () => {
     before(async () => {
       await repo.blocks.put(

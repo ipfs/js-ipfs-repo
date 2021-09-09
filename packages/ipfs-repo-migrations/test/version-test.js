@@ -1,11 +1,10 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { VERSION_KEY, CONFIG_KEY } = require('../src/utils')
-const version = require('../src/repo/version')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const errors = require('../src/errors')
+import { expect } from 'aegir/utils/chai.js'
+import { VERSION_KEY, CONFIG_KEY } from '../src/utils.js'
+import * as version from '../src/repo/version.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import * as errors from '../src/errors.js'
 
 // When new versioning mechanism is introduced in new version don't forget to update
 // the range (from/to) of the previous version test's description
@@ -14,7 +13,7 @@ const errors = require('../src/errors')
  * @param {import('./types').SetupFunction} setup
  * @param {import('./types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   /** @type {string} */
   let dir
   /** @type {import('../src/types').Backends} */

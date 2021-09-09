@@ -1,15 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const { MemoryBlockstore } = require('blockstore-core/memory')
-const { MemoryDatastore } = require('datastore-core')
-
-const migrator = require('../src/index')
-const repoVersion = require('../src/repo/version')
-const repoInit = require('../src/repo/init')
-const errors = require('../src/errors')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { MemoryBlockstore } from 'blockstore-core/memory'
+import { MemoryDatastore } from 'datastore-core/memory'
+import * as migrator from '../src/index.js'
+import * as repoVersion from '../src/repo/version.js'
+import * as repoInit from '../src/repo/init.js'
+import {
+  RequiredParameterError,
+  InvalidValueError,
+  NonReversibleMigrationError
+} from '../src/errors.js'
 
 /**
  * @typedef {import('../src/types').Migration} Migration
@@ -138,7 +140,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.revert(undefined, undefined, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error without backends argument', () => {
@@ -146,7 +148,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', undefined, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error without repo options argument', () => {
@@ -154,7 +156,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', backends, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error without toVersion argument', () => {
@@ -162,7 +164,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', backends, {}, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -172,7 +174,7 @@ describe('index.js', () => {
       return Promise.all(
         // @ts-expect-error invalid params
         invalidValues.map((value) => expect(migrator.revert('/some/path', backends, repoOptions, value, options))
-          .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
+          .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code))
       )
     })
 
@@ -191,7 +193,7 @@ describe('index.js', () => {
       const options = createOptions()
 
       await expect(migrator.revert('/some/path', backends, repoOptions, 3, options))
-        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+        .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code)
 
       expect(lockStub).to.have.property('called', false)
     })
@@ -205,8 +207,8 @@ describe('index.js', () => {
       getVersionStub.returns(4)
       return expect(
         migrator.revert('/some/path', backends, repoOptions, 1, options)
-      ).to.eventually.be.rejectedWith(errors.NonReversibleMigrationError)
-        .with.property('code', errors.NonReversibleMigrationError.code)
+      ).to.eventually.be.rejectedWith(NonReversibleMigrationError)
+        .with.property('code', NonReversibleMigrationError.code)
     })
 
     it('should revert expected migrations', async () => {
@@ -342,7 +344,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.migrate(undefined, undefined, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error with out backends argument', () => {
@@ -350,7 +352,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', undefined, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error with out repoOptions argument', () => {
@@ -358,7 +360,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', backends, undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error with out toVersion argument', () => {
@@ -366,7 +368,7 @@ describe('index.js', () => {
 
       // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', backends, repoOptions, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(RequiredParameterError).with.property('code', RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -375,7 +377,7 @@ describe('index.js', () => {
       return Promise.all(
         // @ts-expect-error invalid params
         invalidValues.map((invalidValue) => expect(migrator.migrate('/some/path', backends, repoOptions, invalidValue, createOptions()))
-          .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
+          .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code))
       )
     })
 
@@ -400,7 +402,7 @@ describe('index.js', () => {
       getVersionStub.returns(1)
 
       return expect(migrator.migrate('/some/path', backends, repoOptions, 3, options))
-        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+        .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code)
     })
 
     it('should verify that all migrations are available', () => {
@@ -424,7 +426,7 @@ describe('index.js', () => {
       getVersionStub.returns(3)
 
       return expect(migrator.migrate('/some/path', backends, repoOptions, 5, options))
-        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+        .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code)
     })
 
     it('should not migrate if current repo version and toVersion matches', async () => {
@@ -442,7 +444,7 @@ describe('index.js', () => {
       const options = createOptions()
 
       await expect(migrator.migrate('/some/path', backends, repoOptions, 2, options))
-        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+        .to.eventually.be.rejectedWith(InvalidValueError).with.property('code', InvalidValueError.code)
 
       expect(lockStub).to.have.property('called', false)
     })

@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats/cid')
-const migration = require('../../migrations/migration-11')
-const { Key } = require('interface-datastore')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import { migration } from '../../migrations/migration-11/index.js'
+import { Key } from 'interface-datastore/key'
 
 const MFS_ROOT_KEY = new Key('/local/filesroot')
 const MFS_ROOT = CID.parse('Qmc42sn2WBHYeAShU3nx8mYkhKVq4sRLapawTaGh4XH4iE')
@@ -14,7 +13,7 @@ const MFS_ROOT = CID.parse('Qmc42sn2WBHYeAShU3nx8mYkhKVq4sRLapawTaGh4XH4iE')
  * @param {import('../types').SetupFunction} setup
  * @param {import('../types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   describe('migration 11', function () {
     this.timeout(1024 * 1000)
     /** @type {string} */

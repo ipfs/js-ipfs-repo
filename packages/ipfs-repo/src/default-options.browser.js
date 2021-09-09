@@ -1,9 +1,9 @@
-'use strict'
+import * as MemoryLock from './locks/memory.js'
 
 // Default configuration for a repo in the browser
-module.exports = {
+export default {
   autoMigrate: true,
   onMigrationProgress: () => {},
   repoOwner: true,
-  repoLock: require('./locks/memory')
+  repoLock: MemoryLock
 }

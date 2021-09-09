@@ -120,13 +120,13 @@ This provides a well defined interface for creating and interacting with an IPFS
 ### Use in Node.js
 
 ```js
-var IPFSRepo = require('ipfs-repo')
+var IPFSRepo from 'ipfs-repo')
 ```
 
 ### Use in a browser with browserify, webpack or any other bundler
 
 ```js
-var IPFSRepo = require('ipfs-repo')
+var IPFSRepo from 'ipfs-repo')
 ```
 
 ### Use in a browser Using a script tag
@@ -142,7 +142,7 @@ Loading this module through a script tag will make the `IpfsRepo` obj available 
 Example:
 
 ```js
-const Repo = require('ipfs-repo')
+const Repo from 'ipfs-repo')
 const repo = new Repo('/tmp/ipfs-repo')
 
 await repo.init({ cool: 'config' })
@@ -367,8 +367,8 @@ Returned promise resolves to an `Object` with the following keys:
 IPFS Repo comes with two built in locks: memory and fs. These can be imported via the following:
 
 ```js
-const fsLock = require('ipfs-repo/src/lock')  // Default in Node.js
-const memoryLock = require('ipfs-repo/src/lock-memory')  // Default in browser
+const fsLock from 'ipfs-repo/src/lock')  // Default in Node.js
+const memoryLock from 'ipfs-repo/src/lock-memory')  // Default in browser
 ```
 
 You can also provide your own custom Lock. It must be an object with the following interface:

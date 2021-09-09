@@ -1,8 +1,7 @@
-'use strict'
 
-const map = require('it-map')
-const errCode = require('err-code')
-const { PinTypes } = require('./pins')
+import map from 'it-map'
+import errCode from 'err-code'
+import { PinTypes } from './pins.js'
 
 /**
  * @typedef {import('interface-datastore').Query} Query
@@ -14,17 +13,11 @@ const { PinTypes } = require('./pins')
  */
 
 /**
- *
- * @param {Blockstore} blockstore
- */
-module.exports = createPinnedBlockstore
-
-/**
  * @param {Pins} pins
  * @param {Blockstore} store
  * @returns {Blockstore}
  */
-function createPinnedBlockstore (pins, store) {
+export function createPinnedBlockstore (pins, store) {
   return {
     open () {
       return store.open()

@@ -1,10 +1,8 @@
-'use strict'
 
-const errors = require('../errors')
-const debug = require('debug')
+import { LockExistsError } from '../errors/index.js'
+import debug from 'debug'
 
 const log = debug('ipfs:repo:lock:memory')
-
 const lockFile = 'repo.lock'
 
 /** @type {Record<string,boolean>} */
@@ -20,12 +18,12 @@ const LOCKS = {}
  * @param {string} dir
  * @returns {Promise<LockCloser>}
  */
-exports.lock = async (dir) => {
+export async function lock (dir) {
   const file = dir + '/' + lockFile
   log('locking %s', file)
 
   if (LOCKS[file] === true) {
-    throw new errors.LockExistsError(`Lock already being held for file: ${file}`)
+    throw new LockExistsError(`Lock already being held for file: ${file}`)
   }
 
   LOCKS[file] = true
@@ -45,7 +43,7 @@ exports.lock = async (dir) => {
  * @param {string} dir
  * @returns {Promise<boolean>}
  */
-exports.locked = async (dir) => {
+export async function locked (dir) {
   const file = dir + '/' + lockFile
   log(`checking lock: ${file}`)
 

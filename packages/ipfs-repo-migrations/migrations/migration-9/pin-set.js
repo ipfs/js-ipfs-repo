@@ -1,24 +1,18 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const {
-  ipfs: {
-    pin: {
-      Set: PinSet
-    }
-  }
-} = require('./pin')
-
+import { CID } from 'multiformats/cid'
+import { ipfs } from './pin.js'
 // @ts-ignore
-const fnv1a = require('fnv1a')
-const varint = require('varint')
-const dagPb = require('@ipld/dag-pb')
-const { DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
-const { concat: uint8ArrayConcat } = require('uint8arrays/concat')
-const { compare: uint8ArrayCompare } = require('uint8arrays/compare')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { sha256 } = require('multiformats/hashes/sha2')
+import fnv1a from 'fnv1a'
+import varint from 'varint'
+import * as dagPb from '@ipld/dag-pb'
+import { DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } from './utils.js'
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat'
+import { compare as uint8ArrayCompare } from 'uint8arrays/compare'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { sha256 } from 'multiformats/hashes/sha2'
+
+const PinSet = ipfs.pin.Set
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -125,7 +119,7 @@ async function * walkItems (blockstore, node) {
  * @param {PBNode} rootNode
  * @param {string} name
  */
-async function * loadSet (blockstore, rootNode, name) {
+export async function * loadSet (blockstore, rootNode, name) {
   const link = rootNode.Links.find(l => l.Name === name)
 
   if (!link) {
@@ -253,7 +247,7 @@ function storeItems (blockstore, items) {
  * @param {string} type
  * @param {CID[]} cids
  */
-async function storeSet (blockstore, type, cids) {
+export async function storeSet (blockstore, type, cids) {
   const rootNode = await storeItems(blockstore, cids.map(cid => {
     return {
       key: cid
@@ -272,9 +266,4 @@ async function storeSet (blockstore, type, cids) {
     Tsize: size,
     Hash: cid
   }
-}
-
-module.exports = {
-  loadSet,
-  storeSet
 }

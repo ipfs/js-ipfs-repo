@@ -1,7 +1,6 @@
-'use strict'
 
-const loadFixture = require('aegir/utils/fixtures')
-const { CONFIG_KEY, VERSION_KEY } = require('../../src/utils')
+import loadFixture from 'aegir/utils/fixtures.js'
+import { CONFIG_KEY, VERSION_KEY } from '../../src/utils.js'
 
 /**
  * @typedef {import('../../src/types').Backends} Backends
@@ -13,7 +12,7 @@ const { CONFIG_KEY, VERSION_KEY } = require('../../src/utils')
  * @param {*} prefix
  * @returns
  */
-async function createRepo (createBackends, prefix) {
+export async function createRepo (createBackends, prefix) {
   const dir = `${prefix ? `${prefix}/` : ''}test-repo-for-${Date.now()}`
   const backends = createBackends(dir)
 
@@ -29,15 +28,10 @@ async function createRepo (createBackends, prefix) {
 /**
  * @param {Backends} backends
  */
-async function initRepo (backends) {
+export async function initRepo (backends) {
   const store = backends.root
   await store.open()
   await store.put(VERSION_KEY, loadFixture('test/fixtures/test-repo/version'))
   await store.put(CONFIG_KEY, loadFixture('test/fixtures/test-repo/config'))
   await store.close()
-}
-
-module.exports = {
-  createRepo,
-  initRepo
 }

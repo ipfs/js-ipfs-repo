@@ -1,13 +1,13 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const Key = require('interface-datastore').Key
-const log = require('debug')('ipfs:repo:migrator:migration-8')
+import { CID } from 'multiformats/cid'
+import { Key } from 'interface-datastore/key'
+import debug from 'debug'
+import length from 'it-length'
+import { base32 } from 'multiformats/bases/base32'
+import * as raw from 'multiformats/codecs/raw'
+import * as mhd from 'multiformats/hashes/digest'
 
-const length = require('it-length')
-const { base32 } = require('multiformats/bases/base32')
-const raw = require('multiformats/codecs/raw')
-const mhd = require('multiformats/hashes/digest')
+const log = debug('ipfs:repo:migrator:migration-8')
 
 /**
  * @typedef {import('../../src/types').Migration} Migration
@@ -41,7 +41,7 @@ function keyToMultihash (key) {
     const multihashStr = base32.encode(multihash).slice(1).toUpperCase()
 
     return new Key(`/${multihashStr}`, false)
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     return key
   }
 }
@@ -105,7 +105,7 @@ async function process (backends, onProgress, keyFunction) {
 }
 
 /** @type {Migration} */
-module.exports = {
+export const migration = {
   version: 8,
   description: 'Transforms key names into base32 encoding and converts Block store to use bare multihashes encoded as base32',
   migrate: (backends, onProgress = () => {}) => {

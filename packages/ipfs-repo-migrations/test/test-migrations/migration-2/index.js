@@ -1,8 +1,7 @@
-'use strict'
 
-const Key = require('interface-datastore').Key
-const _set = require('just-safe-set')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { Key } from 'interface-datastore/key'
+import _set from 'just-safe-set'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @typedef {import('../../../src/types').Backends} Backends
@@ -117,7 +116,7 @@ async function revert (backends, onProgress) {
   onProgress(100, 'done!')
 }
 
-module.exports = {
+export const migration = {
   version: 2,
   description: 'Updates config',
   migrate,

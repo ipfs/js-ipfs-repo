@@ -1,5 +1,2 @@
-'use strict'
 
-module.exports = {
-  repoVersion: 10
-}
+export const repoVersion = 11

@@ -1,14 +1,12 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-
-const migrator = require('ipfs-repo-migrations')
-const constants = require('../src/constants')
-const errors = require('../src/errors')
-const { createRepo } = require('../src')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { InvalidRepoVersionError } from '../src/errors/index.js'
+import { createRepo } from '../src/index.js'
+import { repoVersion } from '../src/constants.js'
+import { migrations } from 'ipfs-repo-migrations'
 
 /**
  * @typedef {import('../src/types').IPFSRepo} IPFSRepo
@@ -18,36 +16,13 @@ const { createRepo } = require('../src')
 /**
  * @param {(options?: Partial<Options>)=> Promise<IPFSRepo>} createTempRepo
  */
-module.exports = (createTempRepo) => {
+export default (createTempRepo) => {
   describe('Migrations tests', () => {
     /** @type {IPFSRepo} */
     let repo
-    /** @type {sinon.SinonStub<any[], any>} */
-    let migrateStub
-    /** @type {sinon.SinonStub<any[], any>} */
-    let revertStub
-    /** @type {sinon.SinonStub<any[], any>} */
-    let repoVersionStub
-    /** @type {sinon.SinonStub<any[], any>} */
-    let getLatestMigrationVersionStub
-
-    before(() => {
-      repoVersionStub = sinon.stub(constants, 'repoVersion')
-      migrateStub = sinon.stub(migrator, 'migrate')
-      revertStub = sinon.stub(migrator, 'revert')
-      getLatestMigrationVersionStub = sinon.stub(migrator, 'getLatestMigrationVersion')
-    })
-
-    after(() => {
-      repoVersionStub.restore()
-      migrateStub.restore()
-      revertStub.restore()
-      getLatestMigrationVersionStub.restore()
-    })
 
     beforeEach(async () => {
       repo = await createTempRepo()
-      sinon.reset()
     })
 
     // Testing migration logic
@@ -65,14 +40,10 @@ module.exports = (createTempRepo) => {
 
     migrationLogic.forEach(({ config, option, result }) => {
       it(`should ${result ? '' : 'not '}migrate when config=${config} and option=${option}`, async () => {
-        migrateStub.resolves()
-        repoVersionStub.value(8)
-        getLatestMigrationVersionStub.returns(9)
-
         if (config !== undefined) {
           await repo.config.set('repoAutoMigrate', config)
         }
-        await repo.version.set(7)
+        await repo.version.set(repoVersion - 1)
         await repo.close()
 
         // @ts-expect-error options is a private field
@@ -89,103 +60,97 @@ module.exports = (createTempRepo) => {
           pins: repo.pins.pinstore
         }, newOpts)
 
-        expect(migrateStub.called).to.be.false()
+        const p = newRepo.open()
 
-        try {
-          await newRepo.open()
-          if (!result) expect.fail('should have thrown error')
-        } catch (err) {
-          expect(err.code).to.equal(errors.InvalidRepoVersionError.code)
+        if (!result) {
+          await expect(p).to.eventually.be.rejected().with.property('code', InvalidRepoVersionError.code)
+        } else {
+          await p
         }
 
-        expect(migrateStub.called).to.eq(result)
+        await expect(repo.version.get()).to.eventually.equal(result ? repoVersion : repoVersion - 1)
       })
     })
 
     it('should migrate by default', async () => {
-      migrateStub.resolves()
-      repoVersionStub.value(8)
-      getLatestMigrationVersionStub.returns(9)
-
-      await repo.version.set(7)
+      await repo.version.set(repoVersion - 1)
       await repo.close()
-
-      expect(migrateStub.called).to.be.false()
 
       await repo.open()
 
-      expect(migrateStub.called).to.be.true()
+      await expect(repo.version.get()).to.eventually.equal(repoVersion)
     })
 
     it('should migrate with progress', async () => {
-      migrateStub.resolves()
-      repoVersionStub.value(8)
-      getLatestMigrationVersionStub.returns(9)
-
-      await repo.version.set(7)
+      await repo.version.set(repoVersion - 1)
       await repo.close()
-
-      expect(migrateStub.called).to.be.false()
 
       // @ts-expect-error options is a private field
       repo.options.onMigrationProgress = sinon.stub()
 
       await repo.open()
 
-      expect(migrateStub.called).to.be.true()
       // @ts-expect-error options is a private field
-      expect(migrateStub.getCall(0).args[4]).to.have.property('onProgress', repo.options.onMigrationProgress)
+      expect(repo.options.onMigrationProgress.called).to.be.true()
+
+      await expect(repo.version.get()).to.eventually.equal(repoVersion)
     })
 
     it('should not migrate when versions matches', async () => {
-      migrateStub.resolves()
-      repoVersionStub.value(8)
+      await repo.version.set(repoVersion)
 
-      await repo.version.set(8)
       await repo.close()
-
-      expect(migrateStub.called).to.be.false()
-
       await repo.open()
 
-      expect(migrateStub.called).to.be.false()
+      await expect(repo.version.get()).to.eventually.equal(repoVersion)
     })
 
     it('should revert when current repo versions is higher then expected', async () => {
-      revertStub.resolves()
-      repoVersionStub.value(8)
+      migrations.push({
+        version: repoVersion + 1,
+        description: '',
+        migrate: async (backends, progress) => {
+          progress(100, 'done')
+        },
+        revert: async (backends, progress) => {
+          progress(100, 'done')
+        }
+      })
 
-      expect(revertStub.called).to.be.false()
-
-      await repo.version.set(9)
+      await repo.version.set(repoVersion + 1)
       await repo.close()
-
-      expect(migrateStub.called).to.be.false()
-      expect(revertStub.called).to.be.false()
 
       await repo.open()
 
-      expect(revertStub.called).to.be.true()
-      expect(migrateStub.called).to.be.false()
+      await expect(repo.version.get()).to.eventually.equal(repoVersion)
+
+      migrations.pop()
     })
 
     it('should revert with progress', async () => {
-      revertStub.resolves()
-      repoVersionStub.value(8)
+      migrations.push({
+        version: repoVersion + 1,
+        description: '',
+        migrate: async (backends, progress) => {
+          progress(100, 'done')
+        },
+        revert: async (backends, progress) => {
+          progress(100, 'done')
+        }
+      })
 
-      await repo.version.set(9)
+      await repo.version.set(repoVersion + 1)
       await repo.close()
-
-      expect(revertStub.called).to.be.false()
 
       // @ts-expect-error options is a private field
       repo.options.onMigrationProgress = sinon.stub()
 
       await repo.open()
 
-      expect(revertStub.called).to.be.true()
       // @ts-expect-error options is a private field
-      expect(revertStub.getCall(0).args[4]).to.have.property('onProgress', repo.options.onMigrationProgress)
+      expect(repo.options.onMigrationProgress.called).to.be.true()
+
+      migrations.pop()
     })
   })
 }
