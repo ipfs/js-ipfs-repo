@@ -27,7 +27,8 @@
     "url": "https://github.com/ipfs/js-ipfs-repo.git"
   },
   "scripts": {
-    "build": "run-s prepare:*",
+    "clean": "rimraf types dist",
+    "build": "run-s build:*",
     "build:proto": "pbjs -t static-module -w commonjs --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
     "build:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
     "build:source": "aegir build",
@@ -37,7 +38,8 @@
     "lint": "aegir ts -p check && aegir lint",
     "release": "aegir release",
     "release-minor": "aegir release --type minor",
-    "release-major": "aegir release --type major"
+    "release-major": "aegir release --type major",
+    "depcheck": "aegir dep-check"
   },
   "dependencies": {
     "@ipld/dag-pb": "^2.0.0",

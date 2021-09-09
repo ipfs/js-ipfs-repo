@@ -36,4 +36,4 @@ build
 node_modules
 
 dist
-
+types

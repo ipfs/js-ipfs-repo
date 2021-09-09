@@ -16,9 +16,9 @@ jobs:
       with:
         node-version: 16
     - run: npm install
+    - run: npm run build
     - run: npm run lint
     - uses: gozala/typescript-error-reporter-action@v1.0.8
-    - run: npm run build
     - run: npm run depcheck
   test-node:
     needs: check
