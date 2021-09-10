@@ -1,27 +1,26 @@
-'use strict'
-
-const _get = require('just-safe-get')
-const debug = require('debug')
-const errCode = require('err-code')
-const migrator = require('ipfs-repo-migrations')
-const bytes = require('bytes')
-const merge = require('merge-options')
-const constants = require('./constants')
-const version = require('./version')
-const config = require('./config')
-const spec = require('./spec')
-const apiAddr = require('./api-addr')
-const createIdstore = require('./idstore')
-const defaultOptions = require('./default-options')
-const defaultDatastore = require('./default-datastore')
-const ERRORS = require('./errors')
-const { PinManager, PinTypes } = require('./pins')
-const createPinnedBlockstore = require('./pinned-blockstore')
+import _get from 'just-safe-get'
+import debug from 'debug'
+import errCode from 'err-code'
+import * as migrator from 'ipfs-repo-migrations'
+import bytes from 'bytes'
+import merge from 'merge-options'
+import * as CONSTANTS from './constants.js'
+import { version } from './version.js'
+import { config } from './config.js'
+import { spec } from './spec.js'
+import { apiAddr } from './api-addr.js'
+import { createIdStore } from './idstore.js'
+import defaultOptions from './default-options.js'
+import defaultDatastore from './default-datastore.js'
+import * as ERRORS from './errors/index.js'
+import { PinManager, PinTypes as PinTypesImport } from './pins.js'
+import { createPinnedBlockstore } from './pinned-blockstore.js'
 // @ts-ignore - no types
-const mortice = require('mortice')
-const gc = require('./gc')
-const MemoryLock = require('./locks/memory')
-const FSLock = require('./locks/fs')
+import mortice from 'mortice'
+import { gc } from './gc.js'
+import * as MemoryLock from './locks/memory.js'
+import * as FSLock from './locks/fs.js'
+import * as BlockstoreUtils from './utils/blockstore.js'
 
 const log = debug('ipfs:repo')
 
@@ -77,7 +76,7 @@ class Repo {
     const pinnedBlockstore = createPinnedBlockstore(this.pins, blockstore)
 
     // this blockstore will extract blocks from multihashes with the identity codec
-    this.blocks = createIdstore(pinnedBlockstore)
+    this.blocks = createIdStore(pinnedBlockstore)
 
     this.version = version(this.root)
     this.config = config(this.root)
@@ -103,7 +102,7 @@ class Repo {
     await this._openRoot()
     await this.config.replace(buildConfig(config))
     await this.spec.set(buildDatastoreSpec(config))
-    await this.version.set(constants.repoVersion)
+    await this.version.set(CONSTANTS.repoVersion)
   }
 
   /**
@@ -125,7 +124,7 @@ class Repo {
       await this.root.close()
 
       return true
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       // FIXME: do not use exceptions for flow control
       return false
     }
@@ -151,11 +150,11 @@ class Repo {
       this._lockfile = await this._openLock()
       log('acquired repo.lock')
 
-      const isCompatible = await this.version.check(constants.repoVersion)
+      const isCompatible = await this.version.check(CONSTANTS.repoVersion)
 
       if (!isCompatible) {
         if (await this._isAutoMigrationEnabled()) {
-          await this._migrate(constants.repoVersion, {
+          await this._migrate(CONSTANTS.repoVersion, {
             root: this.root,
             datastore: this.datastore,
             pins: this.pins.pinstore,
@@ -181,7 +180,7 @@ class Repo {
 
       this.closed = false
       log('all opened')
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (this._lockfile) {
         try {
           await this._closeLock()
@@ -203,7 +202,7 @@ class Repo {
   async _openRoot () {
     try {
       await this.root.open()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.message !== 'Already open') {
         throw err
       }
@@ -250,7 +249,7 @@ class Repo {
         this.spec.exists(),
         this.version.exists()
       ])
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === 'ERR_NOT_FOUND') {
         throw errCode(new Error('repo is not initialized yet'), ERRORS.ERR_REPO_NOT_INITIALIZED, {
           path: this.path
@@ -281,7 +280,7 @@ class Repo {
     try {
       // Delete api, ignoring irrelevant errors
       await this.apiAddr.delete()
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code !== ERRORS.ERR_REPO_NOT_INITIALIZED && !err.message.startsWith('ENOENT')) {
         throw err
       }
@@ -350,7 +349,7 @@ class Repo {
     let autoMigrateConfig
     try {
       autoMigrateConfig = await this.config.get(AUTO_MIGRATE_CONFIG_KEY)
-    } catch (e) {
+    } catch (/** @type {any} */ e) {
       if (e.code === ERRORS.NotFoundError.code) {
         autoMigrateConfig = true // Config's default value is True
       } else {
@@ -393,7 +392,7 @@ class Repo {
     try {
       const max = /** @type {number} */(await this.config.get('Datastore.StorageMax'))
       return BigInt(bytes(max))
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       return BigInt(noLimit)
     }
   }
@@ -436,21 +435,24 @@ async function getSize (datastore) {
  * @param {Partial<Options>} [options] - Configuration
  * @returns {import('./types').IPFSRepo}
  */
-function createRepo (path, loadCodec, backends, options) {
+export function createRepo (path, loadCodec, backends, options) {
   return new Repo(path, loadCodec, backends, options)
 }
 
-module.exports = {
-  createRepo,
-  repoVersion: constants.repoVersion,
-  errors: ERRORS,
-  utils: { blockstore: require('./utils/blockstore') },
-  locks: {
-    memory: MemoryLock,
-    fs: FSLock
-  },
-  PinTypes
+export const repoVersion = CONSTANTS.repoVersion
+
+export const errors = ERRORS
+
+export const utils = {
+  blockstore: BlockstoreUtils
 }
+
+export const locks = {
+  memory: MemoryLock,
+  fs: FSLock
+}
+
+export const PinTypes = PinTypesImport
 
 /**
  * @param {import('./types').Config} _config

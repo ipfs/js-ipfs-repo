@@ -1,18 +1,17 @@
 /* eslint max-nested-callbacks: ["error", 8] */
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const errCode = require('err-code')
-const debug = require('debug')
-const first = require('it-first')
-const Block = require('multiformats/block')
-const cborg = require('cborg')
-const dagPb = require('@ipld/dag-pb')
-const {
+import { CID } from 'multiformats/cid'
+import errCode from 'err-code'
+import debug from 'debug'
+import first from 'it-first'
+import { createUnsafe } from 'multiformats/block'
+import * as cborg from 'cborg'
+import * as dagPb from '@ipld/dag-pb'
+import {
   cidToKey,
   keyToMultihash
-} = require('./utils/blockstore')
-const walkDag = require('./utils/walk-dag')
+} from './utils/blockstore.js'
+import { walkDag } from './utils/walk-dag.js'
 
 /**
  * @typedef {object} PinInternal
@@ -39,7 +38,7 @@ function invalidPinTypeErr (type) {
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
 }
 
-const PinTypes = {
+export const PinTypes = {
   /** @type {'direct'} */
   direct: ('direct'),
   /** @type {'recursive'} */
@@ -53,7 +52,7 @@ const PinTypes = {
 /**
  * @implements {Pins}
  */
-class PinManager {
+export class PinManager {
   /**
    * @param {Object} config
    * @param {import('interface-datastore').Datastore} config.pinstore
@@ -300,7 +299,7 @@ class PinManager {
 
       const bytes = await this.blockstore.get(cid, options)
       const codec = await this.loadCodec(cid.code)
-      const block = Block.createUnsafe({ bytes, cid, codec })
+      const block = createUnsafe({ bytes, cid, codec })
 
       await Promise.all(
         [...block.links()].map(([, childCid]) => walkDag(childCid, options))
@@ -322,9 +321,4 @@ class PinManager {
     }
     return true
   }
-}
-
-module.exports = {
-  PinManager,
-  PinTypes
 }

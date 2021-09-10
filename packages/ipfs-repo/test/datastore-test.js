@@ -1,16 +1,15 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const range = require('just-range')
-const Key = require('interface-datastore').Key
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { expect } from 'aegir/utils/chai.js'
+import range from 'just-range'
+import { Key } from 'interface-datastore/key'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @param {import('../src/types').IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('datastore', () => {
     const dataList = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
     const data = uint8ArrayFromString('hello world')

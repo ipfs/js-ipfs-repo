@@ -1,11 +1,10 @@
-'use strict'
 
-const filter = require('it-filter')
-const pushable = require('it-pushable')
-const drain = require('it-drain')
-const { CID } = require('multiformats/cid')
-const errCode = require('err-code')
-const { identity } = require('multiformats/hashes/identity')
+import filter from 'it-filter'
+import pushable from 'it-pushable'
+import drain from 'it-drain'
+import { CID } from 'multiformats/cid'
+import errCode from 'err-code'
+import { identity } from 'multiformats/hashes/identity'
 
 /**
  * @typedef {import('interface-datastore').Query} Query
@@ -15,16 +14,10 @@ const { identity } = require('multiformats/hashes/identity')
  */
 
 /**
- *
- * @param {Blockstore} blockstore
- */
-module.exports = createIdStore
-
-/**
  * @param {Blockstore} store
  * @returns {Blockstore}
  */
-function createIdStore (store) {
+export function createIdStore (store) {
   return {
     open () {
       return store.open()
@@ -90,7 +83,7 @@ function createIdStore (store) {
           }()))
 
           output.end()
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           output.end(err)
         }
       })

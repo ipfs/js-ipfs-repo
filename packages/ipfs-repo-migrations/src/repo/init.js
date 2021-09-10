@@ -1,13 +1,14 @@
-'use strict'
 
-const log = require('debug')('ipfs:repo:migrator:repo:init')
-const { CONFIG_KEY, VERSION_KEY } = require('../utils')
-const { MissingRepoOptionsError } = require('../errors')
+import debug from 'debug'
+import { CONFIG_KEY, VERSION_KEY } from '../utils.js'
+import { MissingRepoOptionsError } from '../errors.js'
+
+const log = debug('ipfs:repo:migrator:repo:init')
 
 /**
  * @param {import('../types').Backends} backends
  */
-async function isRepoInitialized (backends) {
+export async function isRepoInitialized (backends) {
   if (!backends) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
@@ -25,7 +26,7 @@ async function isRepoInitialized (backends) {
     }
 
     return true
-  } catch (e) {
+  } catch (/** @type {any} */ e) {
     log('While checking if repo is initialized error was thrown: ' + e.message)
     return false
   } finally {
@@ -35,8 +36,4 @@ async function isRepoInitialized (backends) {
       } catch {}
     }
   }
-}
-
-module.exports = {
-  isRepoInitialized
 }

@@ -1,14 +1,17 @@
 /* eslint-env mocha */
-'use strict'
 
-const { LevelDatastore } = require('datastore-level')
-const { S3Datastore } = require('datastore-s3')
-const { ShardingDatastore } = require('datastore-core/sharding')
-const { NextToLast } = require('datastore-core/shard')
-const { BlockstoreDatastoreAdapter } = require('blockstore-datastore-adapter')
-const mockS3 = require('./fixtures/mock-s3')
-const S3 = require('aws-sdk').S3
-const { createRepo } = require('./fixtures/repo')
+import { LevelDatastore } from 'datastore-level'
+import { S3Datastore } from 'datastore-s3'
+import { ShardingDatastore } from 'datastore-core/sharding'
+import { NextToLast } from 'datastore-core/shard'
+import { BlockstoreDatastoreAdapter } from 'blockstore-datastore-adapter'
+import { mockS3 } from './fixtures/mock-s3.js'
+import S3 from 'aws-sdk/clients/s3.js'
+import { createRepo } from './fixtures/repo.js'
+import { test as versionTests } from './version-test.js'
+import { test as migrationTests } from './migrations/index.js'
+import { test as initTests } from './init-test.js'
+import { test as integrationTests } from './integration-test.js'
 
 /**
  * @typedef {import('../src/types').Backends} Backends
@@ -132,19 +135,19 @@ CONFIGURATIONS.forEach(({ name, createBackends, cleanup }) => {
 
   describe(name, () => {
     describe('version tests', () => {
-      require('./version-test')(setup, cleanup)
+      versionTests(setup, cleanup)
     })
 
     describe('migrations tests', () => {
-      require('./migrations')(setup, cleanup)
+      migrationTests(setup, cleanup)
     })
 
     describe('init tests', () => {
-      require('./init-test')(setup, cleanup)
+      initTests(setup, cleanup)
     })
 
     describe('integration tests', () => {
-      require('./integration-test')(setup, cleanup)
+      integrationTests(setup, cleanup)
     })
   })
 })

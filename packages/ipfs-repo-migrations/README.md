@@ -77,13 +77,13 @@ This framework:
 ### Use in Node.js
 
 ```js
-const migrations = require('ipfs-repo-migrations')
+const migrations from 'ipfs-repo-migrations')
 ```
 
 ### Use in a browser with browserify, webpack or any other bundler
 
 ```js
-const migrations = require('ipfs-repo-migrations')
+const migrations from 'ipfs-repo-migrations')
 ```
 
 ## Usage
@@ -91,7 +91,7 @@ const migrations = require('ipfs-repo-migrations')
 Example:
 
 ```js
-const migrations = require('ipfs-repo-migrations')
+const migrations from 'ipfs-repo-migrations')
 
 const repoPath = 'some/repo/path'
 const currentRepoVersion = 7

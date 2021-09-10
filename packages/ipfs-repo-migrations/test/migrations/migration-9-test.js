@@ -1,17 +1,16 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const cbor = require('cborg')
-const migration = require('../../migrations/migration-9')
-const { PIN_DS_KEY } = require('../../migrations/migration-9/utils')
-const { CID } = require('multiformats/cid')
-const { CarReader } = require('@ipld/car')
-const loadFixture = require('aegir/utils/fixtures')
-const dagPb = require('@ipld/dag-pb')
-const mhd = require('multiformats/hashes/digest')
-const { base32 } = require('multiformats/bases/base32')
+import { expect } from 'aegir/utils/chai.js'
+import * as cbor from 'cborg'
+import { migration } from '../../migrations/migration-9/index.js'
+import { PIN_DS_KEY } from '../../migrations/migration-9/utils.js'
+import { CID } from 'multiformats/cid'
+import { CarReader } from '@ipld/car'
+import loadFixture from 'aegir/utils/fixtures.js'
+import * as dagPb from '@ipld/dag-pb'
+import * as mhd from 'multiformats/hashes/digest'
+import { base32 } from 'multiformats/bases/base32'
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -132,7 +131,7 @@ async function assertPinsetRootIsPresent (datastore, pinset) {
  * @param {import('../types').SetupFunction} setup
  * @param {import('../types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   describe('migration 9', function () {
     this.timeout(1024 * 1000)
     /** @type {string} */

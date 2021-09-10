@@ -1,9 +1,8 @@
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const sinon = require('sinon')
-const { Buffer } = require('buffer')
-const AWS = require('aws-sdk')
+import { expect } from 'aegir/utils/chai.js'
+import sinon from 'sinon'
+import { Buffer } from 'buffer'
+import AWS from 'aws-sdk'
 
 class S3Error extends Error {
   /**
@@ -51,7 +50,7 @@ const s3Reject = (err) => {
  * @param {import('aws-sdk/clients/s3')} s3
  * @returns {void}
  */
-module.exports = function (s3) {
+export function mockS3 (s3) {
   /** @type {Record<string, any>} */
   const storage = {}
 

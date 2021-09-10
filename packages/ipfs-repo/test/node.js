@@ -1,16 +1,28 @@
 /* eslint-env mocha */
-'use strict'
 
-const loadCodec = require('./fixtures/load-codec')
-const MemoryLock = require('../src/locks/memory')
-const createBackend = require('./fixtures/create-backend')
+import { loadCodec } from './fixtures/load-codec.js'
+import * as MemoryLock from '../src/locks/memory.js'
+import { createBackend } from './fixtures/create-backend.js'
+import optionsTests from './options-test.js'
+import migrationsTests from './migrations-test.js'
+import repoTests from './repo-test.js'
+import blockstoreTests from './blockstore-test.js'
+import datastoreTests from './datastore-test.js'
+import keystoreTests from './keystore-test.js'
+import statTests from './stat-test.js'
+import lockTests from './lock-test.js'
+import configTests from './config-test.js'
+import apiAddrTests from './api-addr-test.js'
+import pinsTests from './pins-test.js'
+import isInitializedTests from './is-initialized.js'
+import blockstoreUtilsTests from './blockstore-utils-test.js'
 
 /**
  * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
  * @typedef {import('../src/types').Options} Options
  */
 
-const { createRepo } = require('../src')
+import { createRepo } from '../src/index.js'
 
 /**
  * @param {Partial<Options>} [options]
@@ -26,8 +38,8 @@ async function createTempRepo (options = {}) {
 }
 
 describe('IPFS Repo Tests onNode.js', () => {
-  require('./options-test')
-  require('./migrations-test')(createTempRepo)
+  optionsTests()
+  migrationsTests(createTempRepo)
 
   /**
    * @type {Array<{name: string, opts?: Options}>}
@@ -62,17 +74,17 @@ describe('IPFS Repo Tests onNode.js', () => {
       await repo.close()
     })
 
-    require('./repo-test')(repo)
-    require('./blockstore-test')(repo)
-    require('./datastore-test')(repo)
-    require('./keystore-test')(repo)
-    require('./stat-test')(repo)
-    require('./lock-test')(repo)
-    require('./config-test')(repo)
-    require('./api-addr-test')()
-    require('./pins-test')(repo)
-    require('./is-initialized')
+    repoTests(repo)
+    blockstoreTests(repo)
+    datastoreTests(repo)
+    keystoreTests(repo)
+    statTests(repo)
+    lockTests(repo)
+    configTests(repo)
+    apiAddrTests()
+    pinsTests(repo)
+    isInitializedTests()
   }))
 
-  require('./blockstore-utils-test')()
+  blockstoreUtilsTests()
 })

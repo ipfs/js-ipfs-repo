@@ -1,9 +1,7 @@
-'use strict'
-
-const { LockExistsError } = require('../errors')
-const path = require('path')
-const debug = require('debug')
-const { lock: properLock, check } = require('proper-lockfile')
+import { LockExistsError } from '../errors/index.js'
+import path from 'path'
+import debug from 'debug'
+import { lock as properLock, check } from 'proper-lockfile'
 
 const log = debug('ipfs:repo:lock:fs')
 const lockFile = 'repo.lock'
@@ -30,13 +28,13 @@ const STALE_TIME = 20000
  * @param {string} dir
  * @returns {Promise<LockCloser>}
  */
-const lock = async (dir) => {
+export const lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
   let release
   try {
     release = await properLock(dir, { lockfilePath: file, stale: STALE_TIME })
-  } catch (err) {
+  } catch (/** @type {any} */ err) {
     if (err.code === 'ELOCKED') {
       throw new LockExistsError(`Lock already being held for file: ${file}`)
     } else {
@@ -54,13 +52,8 @@ const lock = async (dir) => {
  * @param {string} dir
  * @returns {Promise<boolean>}
  */
-const locked = (dir) => {
+export const locked = (dir) => {
   const file = path.join(dir, lockFile)
 
   return check(dir, { lockfilePath: file, stale: STALE_TIME })
-}
-
-module.exports = {
-  locked,
-  lock
 }

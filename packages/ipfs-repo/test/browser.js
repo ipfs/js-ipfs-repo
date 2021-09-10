@@ -1,11 +1,21 @@
 /* eslint-env mocha */
 
-'use strict'
-
-const { createRepo } = require('../src')
-const loadCodec = require('./fixtures/load-codec')
-const { MemoryDatastore } = require('datastore-core/memory')
-const { MemoryBlockstore } = require('blockstore-core/memory')
+import { createRepo } from '../src/index.js'
+import { loadCodec } from './fixtures/load-codec.js'
+import { MemoryDatastore } from 'datastore-core/memory'
+import { MemoryBlockstore } from 'blockstore-core/memory'
+import optionsTests from './options-test.js'
+import migrationsTests from './migrations-test.js'
+import repoTests from './repo-test.js'
+import blockstoreTests from './blockstore-test.js'
+import datastoreTests from './datastore-test.js'
+import keystoreTests from './keystore-test.js'
+import lockTests from './lock-test.js'
+import configTests from './config-test.js'
+import apiAddrTests from './api-addr-test.js'
+import pinsTests from './pins-test.js'
+import isInitializedTests from './is-initialized.js'
+import blockstoreUtilsTests from './blockstore-utils-test.js'
 
 async function createTempRepo (options = {}) {
   const date = Date.now().toString()
@@ -25,8 +35,8 @@ async function createTempRepo (options = {}) {
 }
 
 describe('IPFS Repo Tests on the Browser', () => {
-  require('./options-test')
-  require('./migrations-test')(createTempRepo)
+  optionsTests()
+  migrationsTests(createTempRepo)
 
   const repo = createRepo('myrepo', loadCodec, {
     blocks: new MemoryBlockstore(),
@@ -45,14 +55,14 @@ describe('IPFS Repo Tests on the Browser', () => {
     await repo.close()
   })
 
-  require('./repo-test')(repo)
-  require('./blockstore-test')(repo)
-  require('./blockstore-utils-test')()
-  require('./datastore-test')(repo)
-  require('./keystore-test')(repo)
-  require('./config-test')(repo)
-  require('./api-addr-test')()
-  require('./lock-test')(repo)
-  require('./pins-test')(repo)
-  require('./is-initialized')
+  repoTests(repo)
+  blockstoreTests(repo)
+  blockstoreUtilsTests()
+  datastoreTests(repo)
+  keystoreTests(repo)
+  configTests(repo)
+  apiAddrTests()
+  lockTests(repo)
+  pinsTests(repo)
+  isInitializedTests()
 })

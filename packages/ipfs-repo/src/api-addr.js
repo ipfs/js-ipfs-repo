@@ -1,7 +1,6 @@
-'use strict'
 
-const Key = require('interface-datastore').Key
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { Key } from 'interface-datastore/key'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 const apiFile = new Key('api')
 
@@ -9,7 +8,7 @@ const apiFile = new Key('api')
  *
  * @param {import('interface-datastore').Datastore} store
  */
-module.exports = (store) => {
+export function apiAddr (store) {
   return {
     /**
      * Get the current configuration from the repo.

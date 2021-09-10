@@ -1,27 +1,26 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { CID } = require('multiformats')
-const range = require('just-range')
-const tempDir = require('ipfs-utils/src/temp-dir')
-const { createRepo } = require('../src')
-const drain = require('it-drain')
-const all = require('it-all')
-const first = require('it-first')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { equals: uint8ArrayEquals } = require('uint8arrays/equals')
-const { BaseBlockstore } = require('blockstore-core/base')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { identity } = require('multiformats/hashes/identity')
-const raw = require('multiformats/codecs/raw')
-const dagCbor = require('@ipld/dag-cbor')
-const dagPb = require('@ipld/dag-pb')
-const loadCodec = require('./fixtures/load-codec')
-const createBackend = require('./fixtures/create-backend')
-const MemoryLock = require('../src/locks/memory')
+import { expect } from 'aegir/utils/chai.js'
+import { CID } from 'multiformats/cid'
+import range from 'just-range'
+import tempDir from 'ipfs-utils/src/temp-dir.js'
+import { createRepo } from '../src/index.js'
+import drain from 'it-drain'
+import all from 'it-all'
+import first from 'it-first'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { equals as uint8ArrayEquals } from 'uint8arrays/equals'
+import { BaseBlockstore } from 'blockstore-core/base'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { identity } from 'multiformats/hashes/identity'
+import * as raw from 'multiformats/codecs/raw'
+import * as dagCbor from '@ipld/dag-cbor'
+import * as dagPb from '@ipld/dag-pb'
+import { loadCodec } from './fixtures/load-codec.js'
+import { createBackend } from './fixtures/create-backend.js'
+import * as MemoryLock from '../src/locks/memory.js'
 
 async function makePair () {
   const data = new TextEncoder().encode(`hello-${Math.random()}`)
@@ -41,7 +40,7 @@ async function makePair () {
  *
  * @param {IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('blockstore', () => {
     const blockData = range(100).map((i) => uint8ArrayFromString(`hello-${i}-${Math.random()}`))
     const bData = uint8ArrayFromString('hello world')

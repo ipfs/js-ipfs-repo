@@ -1,22 +1,20 @@
 /*eslint-disable*/
-"use strict";
-
-var $protobuf = require("protobufjs/minimal");
+import $protobuf from "protobufjs/minimal.js";
 
 // Common aliases
-var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
+const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
 
 // Exported root namespace
-var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
+const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
 
-$root.ipfs = (function() {
+export const ipfs = $root.ipfs = (() => {
 
     /**
      * Namespace ipfs.
      * @exports ipfs
      * @namespace
      */
-    var ipfs = {};
+    const ipfs = {};
 
     ipfs.pin = (function() {
 
@@ -25,7 +23,7 @@ $root.ipfs = (function() {
          * @memberof ipfs
          * @namespace
          */
-        var pin = {};
+        const pin = {};
 
         pin.Set = (function() {
 
@@ -207,4 +205,4 @@ $root.ipfs = (function() {
     return ipfs;
 })();
 
-module.exports = $root;
+export { $root as default };

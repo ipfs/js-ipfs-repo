@@ -1,17 +1,18 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const log = require('debug')('ipfs:repo:gc')
-const Errors = require('datastore-core/errors')
-const ERR_NOT_FOUND = Errors.notFoundError().code
-const parallelBatch = require('it-parallel-batch')
-const { pipe } = require('it-pipe')
-const merge = require('it-merge')
-const map = require('it-map')
-const filter = require('it-filter')
-const { Key } = require('interface-datastore')
-const { base32 } = require('multiformats/bases/base32')
-const walkDag = require('./utils/walk-dag')
+import { CID } from 'multiformats/cid'
+import debug from 'debug'
+import { notFoundError } from 'datastore-core/errors'
+import parallelBatch from 'it-parallel-batch'
+import { pipe } from 'it-pipe'
+import merge from 'it-merge'
+import map from 'it-map'
+import filter from 'it-filter'
+import { Key } from 'interface-datastore/key'
+import { base32 } from 'multiformats/bases/base32'
+import { walkDag } from './utils/walk-dag.js'
+
+const log = debug('ipfs:repo:gc')
+const ERR_NOT_FOUND = notFoundError().code
 
 // Limit on the number of parallel block remove operations
 const BLOCK_RM_CONCURRENCY = 256
@@ -35,7 +36,7 @@ const MFS_ROOT_KEY = new Key('/local/filesroot')
  * @param {import('interface-datastore').Datastore} config.root
  * @param {loadCodec} config.loadCodec
  */
-module.exports = ({ gcLock, pins, blockstore, root, loadCodec }) => {
+export function gc ({ gcLock, pins, blockstore, root, loadCodec }) {
   /**
    * @returns {AsyncGenerator<GCErrorResult | GCSuccessResult, void, unknown>}
    */
@@ -78,7 +79,7 @@ async function createMarkedSet ({ pins, blockstore, loadCodec, root }) {
     let mh
     try {
       mh = await root.get(MFS_ROOT_KEY)
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
       if (err.code === ERR_NOT_FOUND) {
         log('No blocks in MFS')
         return
@@ -139,14 +140,14 @@ async function * deleteUnmarkedBlocks ({ blockstore }, markedSet, blockKeys) {
         try {
           await blockstore.delete(cid)
           removedBlocksCount++
-        } catch (err) {
+        } catch (/** @type {any} */ err) {
           return {
             err: new Error(`Could not delete block with CID ${cid}: ${err.message}`)
           }
         }
 
         return { cid }
-      } catch (err) {
+      } catch (/** @type {any} */ err) {
         const msg = `Could delete block with CID ${cid}`
         log(msg, err)
         return { err: new Error(msg + `: ${err.message}`) }

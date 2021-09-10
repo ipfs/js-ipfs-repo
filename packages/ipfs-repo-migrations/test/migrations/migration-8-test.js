@@ -1,12 +1,10 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-
-const migration = require('../../migrations/migration-8')
-const Key = require('interface-datastore').Key
+import { expect } from 'aegir/utils/chai.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { migration } from '../../migrations/migration-8/index.js'
+import { Key } from 'interface-datastore/key'
 
 /**
  * @typedef {import('../../src/types').Backends} Backends
@@ -115,7 +113,7 @@ async function validateBlocks (backends, migrated) {
  * @param {import('../types').SetupFunction} setup
  * @param {import('../types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   describe('migration 8', function () {
     this.timeout(1024 * 1000)
     /** @type {string} */

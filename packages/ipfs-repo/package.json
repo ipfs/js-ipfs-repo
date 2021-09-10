@@ -4,11 +4,21 @@
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
   "main": "src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "types/src/index.d.ts",
+  "type": "module",
   "files": [
-    "src",
-    "dist"
+    "*",
+    "!**/*.tsbuildinfo"
   ],
+  "eslintConfig": {
+    "extends": "ipfs",
+    "parserOptions": {
+      "sourceType": "module"
+    }
+  },
+  "publishConfig": {
+    "directory": "dist"
+  },
   "browser": {
     "rimraf": false,
     "datastore-fs": "datastore-level",
@@ -16,14 +26,15 @@
     "./src/default-options.js": "./src/default-options.browser.js"
   },
   "scripts": {
-    "clean": "rimraf types dist",
-    "test": "aegir test",
-    "build": "aegir build",
+    "clean": "rimraf dist types",
     "lint": "aegir ts -p check && aegir lint",
-    "release": "aegir release",
-    "release-minor": "aegir release --type minor",
-    "release-major": "aegir release --type major",
-    "depcheck": "aegir dep-check"
+    "build": "aegir build --no-bundle",
+    "release": "aegir release --target node",
+    "release-minor": "aegir release --type minor --target node",
+    "release-major": "aegir release --type major --target node",
+    "pretest": "aegir build --esm-tests",
+    "test": "aegir test",
+    "dep-check": "aegir dep-check -i rimraf"
   },
   "repository": {
     "type": "git",
@@ -79,15 +90,9 @@
     "merge-options": "^3.0.4",
     "mortice": "^2.0.1",
     "multiformats": "^9.0.4",
-    "p-queue": "^6.0.0",
+    "p-queue": "^7.1.0",
     "proper-lockfile": "^4.0.0",
-    "sort-keys": "^4.0.0",
+    "sort-keys": "^5.0.0",
     "uint8arrays": "^3.0.0"
-  },
-  "eslintConfig": {
-    "extends": "ipfs",
-    "ignorePatterns": [
-      "!.aegir.js"
-    ]
   }
 }

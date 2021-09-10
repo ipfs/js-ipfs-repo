@@ -1,12 +1,11 @@
 /* eslint-env mocha */
-'use strict'
 
-// const { expect } = require('aegir/utils/chai')
-// const apiAddr = require('../src/api-addr')
-// const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+// import { expect } from 'aegir/utils/chai.js'
+// const apiAddr from '../src/api-addr')
+// import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 // TODO this should all be refactor
-module.exports = () => {
+export default () => {
   describe('api-addr', () => {
     // describe('.get', () => {
     //   it('should get a value from the store', async () => {

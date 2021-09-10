@@ -1,18 +1,16 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-
-const migrator = require('../src')
-const migrations = require('./test-migrations')
-const { VERSION_KEY, CONFIG_KEY } = require('../src/utils')
-const { initRepo } = require('./fixtures/repo')
+import { expect } from 'aegir/utils/chai.js'
+import * as migrator from '../src/index.js'
+import migrations from './test-migrations/index.js'
+import { VERSION_KEY, CONFIG_KEY } from '../src/utils.js'
+import { initRepo } from './fixtures/repo.js'
 
 /**
  * @param {import('./types').SetupFunction} setup
  * @param {import('./types').CleanupFunction} cleanup
  */
-module.exports = (setup, cleanup) => {
+export function test (setup, cleanup) {
   /** @type {string} */
   let dir
   /** @type {import('../src/types').Backends} */

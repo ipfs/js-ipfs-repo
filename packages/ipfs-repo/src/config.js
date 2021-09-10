@@ -1,29 +1,25 @@
-'use strict'
 
-const { Key } = require('interface-datastore')
-const { default: Queue } = require('p-queue')
-const _get = require('just-safe-get')
-const _set = require('just-safe-set')
-const errCode = require('err-code')
-const errors = require('./errors')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const {
-  hasWithFallback,
-  getWithFallback
-// @ts-ignore
-} = require('ipfs-repo-migrations/src/utils')
+import { Key } from 'interface-datastore/key'
+import Queue from 'p-queue'
+import _get from 'just-safe-get'
+import _set from 'just-safe-set'
+import errCode from 'err-code'
+import { NotFoundError } from './errors/index.js'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { getWithFallback, hasWithFallback } from './utils/level.js'
 
 const configKey = new Key('config')
 
 /**
  * @typedef {import('./types').Config} Config
+ * @typedef {import('interface-datastore').Datastore} Datastore
  */
 
 /**
- * @param {import('interface-datastore').Datastore} store
+ * @param {Datastore} store
  */
-module.exports = (store) => {
+export function config (store) {
   const setQueue = new Queue({ concurrency: 1 })
 
   const configStore = {
@@ -38,9 +34,7 @@ module.exports = (store) => {
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
       // using IndexedDB API with string keys - only necessary until we do
       // the migratiion to v10 or above
-      const encodedValue = await getWithFallback(configKey, store.get.bind(store), store.has.bind(store), store, {
-        signal: options.signal
-      })
+      const encodedValue = await getWithFallback(configKey, store.get.bind(store), store.has.bind(store), store)
 
       return JSON.parse(uint8ArrayToString(encodedValue))
     },
@@ -54,14 +48,14 @@ module.exports = (store) => {
      */
     async get (key, options = {}) {
       if (key == null) {
-        throw new errors.NotFoundError(`Key ${key} does not exist in config`)
+        throw new NotFoundError(`Key ${key} does not exist in config`)
       }
 
       const config = await this.getAll(options)
       const value = _get(config, key)
 
       if (value === undefined) {
-        throw new errors.NotFoundError(`Key ${key} does not exist in config`)
+        throw new NotFoundError(`Key ${key} does not exist in config`)
       }
 
       return value
@@ -116,7 +110,7 @@ module.exports = (store) => {
     async exists () { // eslint-disable-line require-await
       // level-js@5.x cannot read keys from level-js@4.x dbs so fall back to
       // using IndexedDB API with string keys - only necessary until we do
-      // the migratiion to v10 or above
+      // the migration to v10 or above
       return hasWithFallback(configKey, store.has.bind(store), store)
     }
   }

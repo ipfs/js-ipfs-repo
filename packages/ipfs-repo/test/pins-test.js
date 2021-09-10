@@ -1,17 +1,14 @@
 /* eslint max-nested-callbacks: ["error", 8] */
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const dagPb = require('@ipld/dag-pb')
-const dagCbor = require('@ipld/dag-cbor')
-const { sha256 } = require('multiformats/hashes/sha2')
-const { CID } = require('multiformats/cid')
-const all = require('it-all')
-const {
-  PinTypes
-} = require('../src/pins')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { expect } from 'aegir/utils/chai.js'
+import * as dagPb from '@ipld/dag-pb'
+import * as dagCbor from '@ipld/dag-cbor'
+import { sha256 } from 'multiformats/hashes/sha2'
+import { CID } from 'multiformats/cid'
+import all from 'it-all'
+import { PinTypes } from '../src/pins.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**
  * @param {import('@ipld/dag-pb').PBNode} node
@@ -46,7 +43,7 @@ async function createDagCborNode (node = { Data: uint8ArrayFromString(`data-${Ma
 /**
  * @param {import('../src/types').IPFSRepo} repo
  */
-module.exports = (repo) => {
+export default (repo) => {
   describe('pins', () => {
     it('exists', () => {
       expect(repo).to.have.property('pins')

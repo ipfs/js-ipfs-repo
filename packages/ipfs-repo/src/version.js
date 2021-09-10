@@ -1,23 +1,18 @@
-'use strict'
 
-const Key = require('interface-datastore').Key
-const debug = require('debug')
+import { Key } from 'interface-datastore/key'
+import debug from 'debug'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { getWithFallback, hasWithFallback } from './utils/level.js'
+
 const log = debug('ipfs:repo:version')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const {
-  hasWithFallback,
-  getWithFallback
-// @ts-ignore
-} = require('ipfs-repo-migrations/src/utils')
-
 const versionKey = new Key('version')
 
 /**
  *
  * @param {import('interface-datastore').Datastore} store
  */
-module.exports = (store) => {
+export function version (store) {
   return {
     /**
      * Check if a version file exists.

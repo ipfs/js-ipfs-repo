@@ -1,11 +1,12 @@
 /* eslint complexity: ["error", 27] */
-'use strict'
 
-const defaultMigrations = require('../migrations')
-const repoVersion = require('./repo/version')
-const errors = require('./errors')
-const { wrapBackends } = require('./utils')
-const log = require('debug')('ipfs:repo:migrator')
+import defaultMigrations from '../migrations/index.js'
+import * as repoVersion from './repo/version.js'
+import * as Errors from './errors.js'
+import { wrapBackends } from './utils.js'
+import debug from 'debug'
+
+const log = debug('ipfs:repo:migrator')
 
 /**
  * @typedef {import('./types').Migration} Migration
@@ -20,7 +21,7 @@ const log = require('debug')('ipfs:repo:migrator')
  *
  * @param {Migration[]} [migrations] - Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
  */
-function getLatestMigrationVersion (migrations) {
+export function getLatestMigrationVersion (migrations) {
   migrations = migrations || defaultMigrations
 
   if (!Array.isArray(migrations) || migrations.length === 0) {
@@ -42,7 +43,7 @@ function getLatestMigrationVersion (migrations) {
  * @param {number} toVersion - Version to which the repo should be migrated.
  * @param {MigrationOptions} [options] - Options for migration
  */
-async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
+export async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
 
   if (!path) {
@@ -106,7 +107,7 @@ async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = f
 
           await migration.migrate(backends, progressCallback)
         }
-      } catch (e) {
+      } catch (/** @type {any} */ e) {
         const lastSuccessfullyMigratedVersion = migration.version - 1
 
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully migrated version: ${lastSuccessfullyMigratedVersion}`)
@@ -142,7 +143,7 @@ async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = f
  * @param {number} toVersion - Version to which the repo will be reverted.
  * @param {MigrationOptions} [options] - Options for the reversion
  */
-async function revert (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
+export async function revert (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
 
   if (!path) {
@@ -209,7 +210,7 @@ async function revert (path, backends, repoOptions, toVersion, { ignoreLock = fa
 
           await migration.revert(backends, progressCallback)
         }
-      } catch (e) {
+      } catch (/** @type {any} */ e) {
         const lastSuccessfullyRevertedVersion = migration.version
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)
         await repoVersion.setVersion(lastSuccessfullyRevertedVersion, backends)
@@ -262,10 +263,6 @@ function verifyAvailableMigrations (migrations, fromVersion, toVersion, checkRev
   }
 }
 
-module.exports = {
-  getCurrentRepoVersion: repoVersion.getVersion,
-  getLatestMigrationVersion,
-  errors,
-  migrate,
-  revert
-}
+export const getCurrentRepoVersion = repoVersion.getVersion
+export const errors = Errors
+export const migrations = defaultMigrations

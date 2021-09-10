@@ -1,9 +1,8 @@
-'use strict'
 
-const Key = require('interface-datastore').Key
-const sortKeys = require('sort-keys')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
+import { Key } from 'interface-datastore'
+import sortKeys from 'sort-keys'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 const specKey = new Key('datastore_spec')
 
@@ -11,7 +10,7 @@ const specKey = new Key('datastore_spec')
  *
  * @param {import('interface-datastore').Datastore} store
  */
-module.exports = (store) => {
+export function spec (store) {
   return {
     /**
      * Check if a datastore spec file exists.

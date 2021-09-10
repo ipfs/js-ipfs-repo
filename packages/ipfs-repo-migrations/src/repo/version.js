@@ -1,10 +1,9 @@
-'use strict'
 
-const repoInit = require('./init')
-const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
-const { VERSION_KEY } = require('../utils')
-const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
-const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
+import { isRepoInitialized } from './init.js'
+import { MissingRepoOptionsError, NotInitializedRepoError } from '../errors.js'
+import { VERSION_KEY } from '../utils.js'
+import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
 /**
  * Function that has responsibility to retrieve version of repo from its root datastore's instance.
@@ -13,8 +12,8 @@ const { toString: uint8ArrayToString } = require('uint8arrays/to-string')
  *
  * @param {import('../types').Backends} backends
  */
-async function getVersion (backends) {
-  if (!(await repoInit.isRepoInitialized(backends))) {
+export async function getVersion (backends) {
+  if (!(await isRepoInitialized(backends))) {
     throw new NotInitializedRepoError('Repo is not initialized!')
   }
 
@@ -34,7 +33,7 @@ async function getVersion (backends) {
  * @param {number} version
  * @param {import('../types').Backends} backends
  */
-async function setVersion (version, backends) {
+export async function setVersion (version, backends) {
   if (!backends) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
@@ -43,9 +42,4 @@ async function setVersion (version, backends) {
   await store.open()
   await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()
-}
-
-module.exports = {
-  getVersion,
-  setVersion
 }

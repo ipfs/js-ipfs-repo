@@ -1,14 +1,13 @@
-'use strict'
 
-const { CID } = require('multiformats/cid')
-const dagPb = require('@ipld/dag-pb')
-const cbor = require('cborg')
-const pinset = require('./pin-set')
-const { cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
-const length = require('it-length')
-const { sha256 } = require('multiformats/hashes/sha2')
-const mhd = require('multiformats/hashes/digest')
-const { base32 } = require('multiformats/bases/base32')
+import { CID } from 'multiformats/cid'
+import * as dagPb from '@ipld/dag-pb'
+import * as cbor from 'cborg'
+import * as pinset from './pin-set.js'
+import { cidToKey, PIN_DS_KEY, PinTypes } from './utils.js'
+import length from 'it-length'
+import { sha256 } from 'multiformats/hashes/sha2'
+import * as mhd from 'multiformats/hashes/digest'
+import { base32 } from 'multiformats/bases/base32'
 
 /**
  * @typedef {import('../../src/types').Migration} Migration
@@ -153,7 +152,7 @@ async function process (backends, onProgress, fn) {
 }
 
 /** @type {Migration} */
-module.exports = {
+export const migration = {
   version: 9,
   description: 'Migrates pins to datastore',
   migrate: (backends, onProgress = () => {}) => {

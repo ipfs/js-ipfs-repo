@@ -1,18 +1,16 @@
-'use strict'
-
-const { Key } = require('interface-datastore')
-const { CID } = require('multiformats')
-const raw = require('multiformats/codecs/raw')
-const errCode = require('err-code')
-const { base32 } = require('multiformats/bases/base32')
-const Digest = require('multiformats/hashes/digest')
+import { Key } from 'interface-datastore/key'
+import { CID } from 'multiformats'
+import * as raw from 'multiformats/codecs/raw'
+import errCode from 'err-code'
+import { base32 } from 'multiformats/bases/base32'
+import * as Digest from 'multiformats/hashes/digest'
 
 /**
  * Transform a cid to the appropriate datastore key.
  *
  * @param {CID} c
  */
-function cidToKey (c) {
+export function cidToKey (c) {
   const cid = CID.asCID(c)
 
   if (cid == null) {
@@ -31,7 +29,7 @@ function cidToKey (c) {
  *
  * @param {Key} key
  */
-function keyToCid (key) {
+export function keyToCid (key) {
   // Block key is of the form /<base32 encoded string>
   return CID.createV1(raw.code, keyToMultihash(key))
 }
@@ -39,12 +37,6 @@ function keyToCid (key) {
 /**
  * @param {Key | string} key
  */
-function keyToMultihash (key) {
+export function keyToMultihash (key) {
   return Digest.decode(base32.decode(`b${key.toString().toLowerCase().substring(1)}`))
-}
-
-module.exports = {
-  cidToKey,
-  keyToCid,
-  keyToMultihash
 }
