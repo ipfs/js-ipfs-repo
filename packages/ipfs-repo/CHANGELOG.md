@@ -1,3 +1,24 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 13.0.0 (2021-09-10)
+
+
+### chore
+
+* switch to esm ([#339](https://github.com/ipfs/js-ipfs-repo/issues/339)) ([8d673ba](https://github.com/ipfs/js-ipfs-repo/commit/8d673ba72c599259110c09e90353f05473f05616))
+
+
+### BREAKING CHANGES
+
+* only named exports are used, deep imports/requires are not possible
+
+
+
+
+
 # [12.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v11.0.2...v12.0.0) (2021-08-23)
 
 
@@ -891,6 +912,3 @@ array which is iterable, but it does change the API.
 
 <a name="0.1.0"></a>
 # 0.1.0 (2015-12-10)
-
-
-

@@ -1,3 +1,24 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 11.0.0 (2021-09-10)
+
+
+### chore
+
+* switch to esm ([#339](https://github.com/ipfs/js-ipfs-repo/issues/339)) ([8d673ba](https://github.com/ipfs/js-ipfs-repo/commit/8d673ba72c599259110c09e90353f05473f05616))
+
+
+### BREAKING CHANGES
+
+* only named exports are used, deep imports/requires are not possible
+
+
+
+
+
 # [10.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v9.0.1...v10.0.0) (2021-08-23)
 
 
@@ -279,6 +300,3 @@ Co-authored-by: Rod Vagg <rod@vagg.org>
 * release metadata mentioned in README ([cf2409a](https://github.com/ipfs/js-ipfs-repo-migrations/commit/cf2409a))
 * require toVersion in migrate() ([1596dfe](https://github.com/ipfs/js-ipfs-repo-migrations/commit/1596dfe))
 * using browser field for browsers environment ([1474d5e](https://github.com/ipfs/js-ipfs-repo-migrations/commit/1474d5e))
-
-
-
