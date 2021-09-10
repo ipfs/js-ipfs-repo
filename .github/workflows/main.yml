@@ -37,6 +37,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
+      - run: npm build
       - run: npm run test -- --scope=${{ matrix.project }} -- -- --cov -t node
   test-browser:
     needs: check
@@ -60,6 +61,7 @@ jobs:
         with:
           node-version: 16
       - run: npm install
+      - run: npm build
       - run: npm run test -- --scope=${{ matrix.project }} -- -- -t ${{ matrix.type }} -- --browser ${{ matrix.browser }}
 #   test-electron:
 #     needs: check
