@@ -40,6 +40,7 @@
     "generate": "run-s generate:*",
     "generate:proto": "pbjs -t static-module -w es6 --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
     "generate:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
+    "prepublishOnly": "npm run build",
     "build": "aegir build",
     "pretest": "aegir build --esm-tests",
     "test": "aegir test",

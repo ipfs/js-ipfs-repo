@@ -28,6 +28,7 @@
   "scripts": {
     "clean": "rimraf dist types",
     "lint": "aegir ts -p check && aegir lint",
+    "prepublishOnly": "npm run build",
     "build": "aegir build --no-bundle",
     "release": "aegir release --target node",
     "release-minor": "aegir release --type minor --target node",
