@@ -1,3 +1,12 @@
+## [12.0.1](https://github.com/ipfs/js-ipfs-repo/compare/v12.0.0...v12.0.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* update repo version ([#340](https://github.com/ipfs/js-ipfs-repo/issues/340)) ([7f86a6e](https://github.com/ipfs/js-ipfs-repo/commit/7f86a6e2ec69b23195c7eb8eee4d5c64892f9ee8))
+
+
+
 # [12.0.0](https://github.com/ipfs/js-ipfs-repo/compare/v11.0.2...v12.0.0) (2021-08-23)
 
 
