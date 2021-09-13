@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { loadCodec } from './fixtures/load-codec.js'
-import * as MemoryLock from '../src/locks/memory.js'
+import { MemoryLock } from '../src/locks/memory.js'
 import { createBackend } from './fixtures/create-backend.js'
 import optionsTests from './options-test.js'
 import migrationsTests from './migrations-test.js'

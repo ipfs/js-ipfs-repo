@@ -20,7 +20,7 @@ import * as dagCbor from '@ipld/dag-cbor'
 import * as dagPb from '@ipld/dag-pb'
 import { loadCodec } from './fixtures/load-codec.js'
 import { createBackend } from './fixtures/create-backend.js'
-import * as MemoryLock from '../src/locks/memory.js'
+import { MemoryLock } from '../src/locks/memory.js'
 
 async function makePair () {
   const data = new TextEncoder().encode(`hello-${Math.random()}`)

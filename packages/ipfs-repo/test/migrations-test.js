@@ -3,7 +3,7 @@
 
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
-import { InvalidRepoVersionError } from '../src/errors/index.js'
+import { InvalidRepoVersionError } from '../src/errors.js'
 import { createRepo } from '../src/index.js'
 import { repoVersion } from '../src/constants.js'
 import { migrations } from 'ipfs-repo-migrations'

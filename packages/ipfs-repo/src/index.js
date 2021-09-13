@@ -12,15 +12,12 @@ import { apiAddr } from './api-addr.js'
 import { createIdStore } from './idstore.js'
 import defaultOptions from './default-options.js'
 import defaultDatastore from './default-datastore.js'
-import * as ERRORS from './errors/index.js'
-import { PinManager, PinTypes as PinTypesImport } from './pins.js'
+import * as ERRORS from './errors.js'
+import { PinManager } from './pin-manager.js'
 import { createPinnedBlockstore } from './pinned-blockstore.js'
 // @ts-ignore - no types
 import mortice from 'mortice'
 import { gc } from './gc.js'
-import * as MemoryLock from './locks/memory.js'
-import * as FSLock from './locks/fs.js'
-import * as BlockstoreUtils from './utils/blockstore.js'
 
 const log = debug('ipfs:repo')
 
@@ -438,21 +435,6 @@ async function getSize (datastore) {
 export function createRepo (path, loadCodec, backends, options) {
   return new Repo(path, loadCodec, backends, options)
 }
-
-export const repoVersion = CONSTANTS.repoVersion
-
-export const errors = ERRORS
-
-export const utils = {
-  blockstore: BlockstoreUtils
-}
-
-export const locks = {
-  memory: MemoryLock,
-  fs: FSLock
-}
-
-export const PinTypes = PinTypesImport
 
 /**
  * @param {import('./types').Config} _config

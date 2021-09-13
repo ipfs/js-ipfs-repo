@@ -1,7 +1,7 @@
 
 import map from 'it-map'
 import errCode from 'err-code'
-import { PinTypes } from './pins.js'
+import { PinTypes } from './pin-types.js'
 
 /**
  * @typedef {import('interface-datastore').Query} Query
@@ -9,7 +9,7 @@ import { PinTypes } from './pins.js'
  * @typedef {import('interface-datastore').Options} DatastoreOptions
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('multiformats/cid').CID} CID
- * @typedef {import('./pins').Pins} Pins
+ * @typedef {import('./pin-manager').Pins} Pins
  */
 
 /**

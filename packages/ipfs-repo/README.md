@@ -21,13 +21,10 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
 - [Background](#background)
 - [Install](#install)
   - [npm](#npm)
-  - [Use in Node.js](#use-in-nodejs)
-  - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
-  - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
 - [API](#api)
   - [Setup](#setup)
-    - [`new Repo(path[, options])`](#new-repopath-options)
+    - [`createRepo(path[, options])`](#createrepopath-options)
     - [`Promise repo.init()`](#promise-repoinit)
     - [`Promise repo.open()`](#promise-repoopen)
     - [`Promise repo.close()`](#promise-repoclose)
@@ -117,24 +114,8 @@ This provides a well defined interface for creating and interacting with an IPFS
 > npm install ipfs-repo
 ```
 
-### Use in Node.js
-
 ```js
-var IPFSRepo from 'ipfs-repo')
-```
-
-### Use in a browser with browserify, webpack or any other bundler
-
-```js
-var IPFSRepo from 'ipfs-repo')
-```
-
-### Use in a browser Using a script tag
-
-Loading this module through a script tag will make the `IpfsRepo` obj available in the global namespace.
-
-```html
-<script src="https://unpkg.com/ipfs-repo/dist/index.min.js"></script>
+import { createRepo } from 'ipfs-repo'
 ```
 
 ## Usage
@@ -142,8 +123,9 @@ Loading this module through a script tag will make the `IpfsRepo` obj available 
 Example:
 
 ```js
-const Repo from 'ipfs-repo')
-const repo = new Repo('/tmp/ipfs-repo')
+import { createRepo } from 'ipfs-repo'
+
+const repo = createRepo('/tmp/ipfs-repo')
 
 await repo.init({ cool: 'config' })
 await repo.open()
@@ -166,7 +148,7 @@ This now has created the following structure, either on disk or as an in memory 
 
 ### Setup
 
-#### `new Repo(path[, options])`
+#### `createRepo(path[, options])`
 
 Creates an IPFS Repo.
 
@@ -184,7 +166,7 @@ Arguments:
     * `datastore` (defaults to [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme)). Defines the back-end type used as the key-value store used for gets and puts of values at `repo.datastore`.
 
 ```js
-const repo = new Repo('path/to/repo')
+const repo = createRepo('path/to/repo')
 ```
 
 #### `Promise repo.init()`
@@ -367,8 +349,8 @@ Returned promise resolves to an `Object` with the following keys:
 IPFS Repo comes with two built in locks: memory and fs. These can be imported via the following:
 
 ```js
-const fsLock from 'ipfs-repo/src/lock')  // Default in Node.js
-const memoryLock from 'ipfs-repo/src/lock-memory')  // Default in browser
+import { FSLock } from 'ipfs-repo/locks/fs'  // Default in Node.js
+import { MemoryLock } from 'ipfs-repo/locks/memory'  // Default in browser
 ```
 
 You can also provide your own custom Lock. It must be an object with the following interface:

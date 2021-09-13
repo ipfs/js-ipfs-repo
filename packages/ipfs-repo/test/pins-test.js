@@ -7,7 +7,7 @@ import * as dagCbor from '@ipld/dag-cbor'
 import { sha256 } from 'multiformats/hashes/sha2'
 import { CID } from 'multiformats/cid'
 import all from 'it-all'
-import { PinTypes } from '../src/pins.js'
+import { PinTypes } from '../src/pin-types.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 
 /**

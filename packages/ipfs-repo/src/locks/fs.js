@@ -1,4 +1,4 @@
-import { LockExistsError } from '../errors/index.js'
+import { LockExistsError } from '../errors.js'
 import path from 'path'
 import debug from 'debug'
 import { lock as properLock, check } from 'proper-lockfile'
@@ -28,7 +28,7 @@ const STALE_TIME = 20000
  * @param {string} dir
  * @returns {Promise<LockCloser>}
  */
-export const lock = async (dir) => {
+const lock = async (dir) => {
   const file = path.join(dir, lockFile)
   log('locking %s', file)
   let release
@@ -52,8 +52,13 @@ export const lock = async (dir) => {
  * @param {string} dir
  * @returns {Promise<boolean>}
  */
-export const locked = (dir) => {
+const locked = (dir) => {
   const file = path.join(dir, lockFile)
 
   return check(dir, { lockfilePath: file, stale: STALE_TIME })
+}
+
+export const FSLock = {
+  lock,
+  locked
 }
