@@ -11,8 +11,8 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "depcheck": "lerna run depcheck",
-    "release": "npm run update-contributors && lerna publish",
-    "release:rc": "lerna publish --canary --preid rc --dist-tag next",
+    "release": "npm run update-contributors && lerna run build && lerna publish",
+    "release:rc": "lerna run build && lerna publish --canary --preid rc --dist-tag next",
     "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"
   },
   "devDependencies": {
