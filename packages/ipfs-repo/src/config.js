@@ -1,6 +1,6 @@
 
 import { Key } from 'interface-datastore/key'
-import Queue from 'p-queue'
+import PQueue from 'p-queue'
 import _get from 'just-safe-get'
 import _set from 'just-safe-set'
 import errCode from 'err-code'
@@ -8,6 +8,10 @@ import { NotFoundError } from './errors/index.js'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { getWithFallback, hasWithFallback } from './utils/level.js'
+
+// @ts-ignore types are broken in p-queue@6.x.x - also, if we imported via esm
+// we can use the default, if via cjs we need to get the default via prop access
+const Queue = PQueue.default ? PQueue.default : PQueue
 
 const configKey = new Key('config')
 
