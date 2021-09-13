@@ -93,7 +93,7 @@
     "multiformats": "^9.0.4",
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
-    "sort-keys": "^5.0.0",
+    "sort-keys": "^4.2.0",
     "uint8arrays": "^3.0.0"
   }
 }
