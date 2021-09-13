@@ -3,13 +3,10 @@
 import { expect } from 'aegir/utils/chai.js'
 import sinon from 'sinon'
 import tempDir from 'ipfs-utils/src/temp-dir.js'
-import { isNode } from 'ipfs-utils/src/env.js'
 import rimraf from 'rimraf'
 import { createRepo } from '../src/index.js'
 import { loadCodec } from './fixtures/load-codec.js'
 import { createBackend } from './fixtures/create-backend.js'
-import defaultOptions from '../src/default-options.js'
-import defaultOptionsBrowser from '../src/default-options.browser.js'
 
 if (!rimraf.sync) {
   // browser
@@ -28,12 +25,6 @@ export default () => {
         // @ts-expect-error
         () => createRepo()
       ).to.throw('missing repo path')
-    })
-
-    it('default options', () => {
-      const repo = createRepo(repoPath, loadCodec, createBackend())
-      // @ts-expect-error options is a private field
-      expect(repo.options).to.deep.equal(expectedRepoOptions())
     })
 
     it('allows for a custom lock', async () => {
@@ -106,10 +97,3 @@ export default () => {
 }
 
 function noop () {}
-
-function expectedRepoOptions () {
-  if (isNode) {
-    return defaultOptions
-  }
-  return defaultOptionsBrowser
-}

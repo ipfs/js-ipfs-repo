@@ -6,7 +6,7 @@ import tempDir from 'ipfs-utils/src/temp-dir.js'
 import { createRepo } from '../src/index.js'
 import { loadCodec } from './fixtures/load-codec.js'
 import { createBackend } from './fixtures/create-backend.js'
-import * as MemoryLock from '../src/locks/memory.js'
+import { MemoryLock } from '../src/locks/memory.js'
 
 export default () => {
   describe('isInitialized', () => {

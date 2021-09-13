@@ -12,6 +12,7 @@ import {
   keyToMultihash
 } from './utils/blockstore.js'
 import { walkDag } from './utils/walk-dag.js'
+import { PinTypes } from './pin-types.js'
 
 /**
  * @typedef {object} PinInternal
@@ -36,17 +37,6 @@ import { walkDag } from './utils/walk-dag.js'
 function invalidPinTypeErr (type) {
   const errMsg = `Invalid type '${type}', must be one of {direct, indirect, recursive, all}`
   return errCode(new Error(errMsg), 'ERR_INVALID_PIN_TYPE')
-}
-
-export const PinTypes = {
-  /** @type {'direct'} */
-  direct: ('direct'),
-  /** @type {'recursive'} */
-  recursive: ('recursive'),
-  /** @type {'indirect'} */
-  indirect: ('indirect'),
-  /** @type {'all'} */
-  all: ('all')
 }
 
 /**

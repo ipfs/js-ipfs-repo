@@ -3,9 +3,21 @@
   "version": "13.0.2",
   "description": "IPFS Repo implementation",
   "leadMaintainer": "Alex Potsides <alex@achingbrain.net>",
+  "type": "module",
   "main": "src/index.js",
   "types": "types/src/index.d.ts",
-  "type": "module",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "types/*",
+        "types/src/*"
+      ],
+      "types/*": [
+        "types/*",
+        "types/src/*"
+      ]
+    }
+  },
   "files": [
     "*",
     "!**/*.tsbuildinfo"
@@ -19,11 +31,35 @@
   "publishConfig": {
     "directory": "dist"
   },
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./constants": {
+      "import": "./src/constants.js"
+    },
+    "./errors": {
+      "import": "./src/errors.js"
+    },
+    "./pin-types": {
+      "import": "./src/pin-types.js"
+    },
+    "./locks/memory": {
+      "import": "./src/locks/memory.js"
+    },
+    "./locks/fs": {
+      "browser": "./src/locks/memory.js",
+      "import": "./src/locks/fs.js"
+    },
+    "./utils/blockstore": {
+      "import": "./src/utils/blockstore.js"
+    },
+    "./utils/level": {
+      "import": "./src/utils/level.js"
+    }
+  },
   "browser": {
-    "rimraf": false,
-    "datastore-fs": "datastore-level",
-    "./src/locks/fs.js": "./src/locks/memory.js",
-    "./src/default-options.js": "./src/default-options.browser.js"
+    "rimraf": false
   },
   "scripts": {
     "clean": "rimraf dist types",

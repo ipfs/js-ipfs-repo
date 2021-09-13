@@ -1,5 +1,5 @@
 
-import { NotFoundError } from '../errors/index.js'
+import { NotFoundError } from '../errors.js'
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore

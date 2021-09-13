@@ -1,5 +1,5 @@
 
-import { LockExistsError } from '../errors/index.js'
+import { LockExistsError } from '../errors.js'
 import debug from 'debug'
 
 const log = debug('ipfs:repo:lock:memory')
@@ -18,7 +18,7 @@ const LOCKS = {}
  * @param {string} dir
  * @returns {Promise<LockCloser>}
  */
-export async function lock (dir) {
+async function lock (dir) {
   const file = dir + '/' + lockFile
   log('locking %s', file)
 
@@ -43,9 +43,14 @@ export async function lock (dir) {
  * @param {string} dir
  * @returns {Promise<boolean>}
  */
-export async function locked (dir) {
+async function locked (dir) {
   const file = dir + '/' + lockFile
   log(`checking lock: ${file}`)
 
   return Boolean(LOCKS[file])
+}
+
+export const MemoryLock = {
+  lock,
+  locked
 }
