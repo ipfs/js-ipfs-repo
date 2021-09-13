@@ -70,12 +70,12 @@ module.exports = (repo) => {
 
     describe('version', () => {
       afterEach(async () => {
-        await repo.version.set(10)
+        await repo.version.set(11)
       })
 
       it('get version', async () => {
         const version = await repo.version.get()
-        expect(version).to.equal(10)
+        expect(version).to.equal(11)
       })
 
       it('set version', async () => {
