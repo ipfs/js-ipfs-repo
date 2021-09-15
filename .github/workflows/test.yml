@@ -74,6 +74,8 @@ jobs:
           - ipfs-repo-migrations
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
@@ -112,6 +114,8 @@ jobs:
           - webworker
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
       - uses: actions/setup-node@v1
         with:
           node-version: 16
@@ -147,6 +151,8 @@ jobs:
 #           - electron-renderer
 #     steps:
 #       - uses: actions/checkout@v2
+#         with:
+#           fetch-depth: ${{ github.event.pull_request.commits }}
 #       - uses: actions/setup-node@v1
 #         with:
 #           node-version: 16
