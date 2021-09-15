@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations@11.0.0...ipfs-repo-migrations@11.0.1) (2021-09-15)
+
+**Note:** Version bump only for package ipfs-repo-migrations
+
+
+
+
+
 # 11.0.0 (2021-09-10)
 
 

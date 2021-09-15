@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.0.4](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.3...ipfs-repo@13.0.4) (2021-09-15)
+
+**Note:** Version bump only for package ipfs-repo
+
+
+
+
+
 ## [13.0.3](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.2...ipfs-repo@13.0.3) (2021-09-13)
 
 **Note:** Version bump only for package ipfs-repo
