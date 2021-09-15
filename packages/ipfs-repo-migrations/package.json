@@ -48,7 +48,7 @@
     "release": "aegir release",
     "release-minor": "aegir release --type minor",
     "release-major": "aegir release --type major",
-    "depcheck": "aegir dep-check"
+    "dep-check": "aegir dep-check -i interface-blockstore -i assert -i events -i npm-run-all -i util"
   },
   "dependencies": {
     "@ipld/dag-pb": "^2.0.0",
@@ -60,7 +60,6 @@
     "interface-datastore": "^6.0.2",
     "it-length": "^1.0.1",
     "multiformats": "^9.0.0",
-    "proper-lockfile": "^4.1.1",
     "protobufjs": "^6.10.2",
     "uint8arrays": "^3.0.0",
     "varint": "^6.0.0"
@@ -79,11 +78,9 @@
     "datastore-level": "^7.0.1",
     "datastore-s3": "^8.0.0",
     "events": "^3.2.0",
-    "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "level-5": "npm:level@^5.0.0",
     "level-6": "npm:level@^6.0.0",
-    "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.0",
     "sinon": "^11.1.1",
