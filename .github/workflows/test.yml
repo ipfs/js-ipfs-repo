@@ -1,8 +1,5 @@
 name: Test
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -26,10 +23,12 @@ jobs:
             ./packages/*/node_modules
             ./packages/*/dist
           key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ github.event.pull_request.head.sha }}
-      - run: |
-          npm install
-          npm run build
-          npx lerna link
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+           npm install
+           npm run build
+           npx lerna link
 
   check:
     name: Check
