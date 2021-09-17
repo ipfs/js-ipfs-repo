@@ -73,7 +73,7 @@
     "assert": "^2.0.0",
     "aws-sdk": "^2.884.0",
     "blockstore-core": "^1.0.2",
-    "blockstore-datastore-adapter": "2.0.1",
+    "blockstore-datastore-adapter": "2.0.2",
     "datastore-fs": "^6.0.1",
     "datastore-level": "^7.0.1",
     "datastore-s3": "^8.0.0",
