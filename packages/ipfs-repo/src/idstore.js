@@ -67,7 +67,7 @@ export function createIdStore (store) {
 
       // process.nextTick runs on the microtask queue, setImmediate runs on the next
       // event loop iteration so is slower. Use process.nextTick if it is available.
-      const runner = process && process.nextTick ? process.nextTick : setImmediate
+      const runner = globalThis.process && globalThis.process.nextTick ? globalThis.process.nextTick : (globalThis.setImmediate || globalThis.setTimeout)
 
       runner(async () => {
         try {
