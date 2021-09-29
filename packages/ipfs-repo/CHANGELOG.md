@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.0.5](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.4...ipfs-repo@13.0.5) (2021-09-29)
+
+
+### Bug Fixes
+
+* access process from globalThis ([#348](https://github.com/ipfs/js-ipfs-repo/issues/348)) ([ec96623](https://github.com/ipfs/js-ipfs-repo/commit/ec966237911d3ef438214518f4131dbbaa6f4d4a))
+
+
+
+
+
 ## [13.0.4](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.3...ipfs-repo@13.0.4) (2021-09-15)
 
 **Note:** Version bump only for package ipfs-repo
