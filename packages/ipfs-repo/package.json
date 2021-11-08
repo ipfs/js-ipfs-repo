@@ -90,7 +90,7 @@
     "@types/debug": "^4.1.5",
     "@types/proper-lockfile": "^4.1.1",
     "@types/rimraf": "^3.0.0",
-    "aegir": "^35.0.2",
+    "aegir": "^36.0.0",
     "assert": "^2.0.0",
     "blockstore-core": "^1.0.2",
     "blockstore-datastore-adapter": "^2.0.1",
