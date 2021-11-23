@@ -167,7 +167,7 @@ class Repo {
       await this.datastore.open()
 
       log('creating blocks')
-      this.blocks.open()
+      await this.blocks.open()
 
       log('creating keystore')
       await this.keys.open()

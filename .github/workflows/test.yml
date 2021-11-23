@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
+          fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
@@ -114,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: ${{ github.event.pull_request.commits }}
+          fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: 16
@@ -151,7 +151,7 @@ jobs:
 #     steps:
 #       - uses: actions/checkout@v2
 #         with:
-#           fetch-depth: ${{ github.event.pull_request.commits }}
+#           fetch-depth: 0
 #       - uses: actions/setup-node@v1
 #         with:
 #           node-version: 16
