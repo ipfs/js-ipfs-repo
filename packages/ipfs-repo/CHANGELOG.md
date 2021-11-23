@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.0.6](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.5...ipfs-repo@13.0.6) (2021-11-23)
+
+
+### Bug Fixes
+
+* await opening blockstore ([#366](https://github.com/ipfs/js-ipfs-repo/issues/366)) ([995a4a9](https://github.com/ipfs/js-ipfs-repo/commit/995a4a992f6641c17b5ef911e87e563815138b87))
+
+
+
+
+
 ## [13.0.5](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.4...ipfs-repo@13.0.5) (2021-09-29)
 
 
