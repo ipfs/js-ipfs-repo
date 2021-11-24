@@ -211,7 +211,7 @@ export default (repo) => {
       afterEach(async () => {
         try {
           await otherRepo.close()
-        } catch (_) {
+        } catch (/** @type {any} */ _) {
           // ignore error
         }
       })
@@ -309,7 +309,7 @@ export default (repo) => {
         try {
           await otherRepo.close()
           throw new Error('Should have thrown')
-        } catch (err2) {
+        } catch (/** @type {any} */ err2) {
           expect(err2).to.equal(err)
         }
       })
@@ -352,7 +352,7 @@ export default (repo) => {
         try {
           await otherRepo.open()
           throw new Error('Should have thrown')
-        } catch (err2) {
+        } catch (/** @type {any} */ err2) {
           expect(err2).to.equal(err)
         }
       })
