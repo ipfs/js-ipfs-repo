@@ -182,7 +182,7 @@ class Repo {
         try {
           await this._closeLock()
           this._lockfile = null
-        } catch (err2) {
+        } catch (/** @type {any} */ err2) {
           log('error removing lock', err2)
         }
       }

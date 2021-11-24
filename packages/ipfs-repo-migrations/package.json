@@ -69,7 +69,7 @@
     "@types/debug": "^4.1.5",
     "@types/rimraf": "^3.0.2",
     "@types/varint": "^6.0.0",
-    "aegir": "^35.0.1",
+    "aegir": "^36.0.1",
     "assert": "^2.0.0",
     "aws-sdk": "^2.884.0",
     "blockstore-core": "^1.0.2",
