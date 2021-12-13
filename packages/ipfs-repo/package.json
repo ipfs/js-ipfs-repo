@@ -85,7 +85,7 @@
   "license": "(Apache-2.0 OR MIT)",
   "homepage": "https://github.com/ipfs/js-ipfs-repo/tree/master/packages/ipfs-repo",
   "devDependencies": {
-    "@ipld/dag-cbor": "^6.0.4",
+    "@ipld/dag-cbor": "^7.0.0",
     "@types/bytes": "^3.1.0",
     "@types/debug": "^4.1.5",
     "@types/proper-lockfile": "^4.1.1",
