@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.7...ipfs-repo@14.0.0) (2022-01-18)
+
+
+### Features
+
+* libp2p async peerstore migration ([#375](https://github.com/ipfs/js-ipfs-repo/issues/375)) ([5c9eb4b](https://github.com/ipfs/js-ipfs-repo/commit/5c9eb4b135687b27865e9929405e50d730524aa6))
+
+
+### BREAKING CHANGES
+
+* updates repo version and migrates repo
+
+
+
+
+
 ## [13.0.7](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo@13.0.6...ipfs-repo@13.0.7) (2021-11-24)
 
 **Note:** Version bump only for package ipfs-repo
