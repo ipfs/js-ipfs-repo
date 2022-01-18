@@ -2,6 +2,7 @@ import { migration as migration8 } from './migration-8/index.js'
 import { migration as migration9 } from './migration-9/index.js'
 import { migration as migration10 } from './migration-10/index.js'
 import { migration as migration11 } from './migration-11/index.js'
+import { migration as migration12 } from './migration-12/index.js'
 
 /**
  * @type {import('../src/types').Migration}
@@ -26,5 +27,6 @@ export default [
   migration8,
   migration9,
   migration10,
-  migration11
+  migration11,
+  migration12
 ]
