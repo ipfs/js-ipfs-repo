@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations@12.0.0...ipfs-repo-migrations@12.0.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* remove console output from migration ([#376](https://github.com/ipfs/js-ipfs-repo/issues/376)) ([b383845](https://github.com/ipfs/js-ipfs-repo/commit/b3838457984a61582b8857fcf63ec133ce74e1bb))
+
+
+
+
+
 # [12.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations@11.0.2...ipfs-repo-migrations@12.0.0) (2022-01-18)
 
 
