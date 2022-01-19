@@ -34,17 +34,14 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
     const [_, prefix, type, peerId, metadataKey] = keyStr.split('/')
 
     if (prefix !== 'peers') {
-      console.info('unknown prefix', prefix)
       continue
     }
 
     if (!['protos', 'addrs', 'metadata', 'keys'].includes(type)) {
-      console.info('unknown type', type)
       continue
     }
 
     if (!peerId) {
-      console.info('no peerid')
       continue
     }
 
