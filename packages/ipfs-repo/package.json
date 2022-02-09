@@ -123,7 +123,7 @@
     "just-safe-get": "^2.0.0",
     "just-safe-set": "^2.1.0",
     "merge-options": "^3.0.4",
-    "mortice": "^2.0.1",
+    "mortice": "^3.0.0",
     "multiformats": "^9.0.4",
     "p-queue": "^6.0.0",
     "proper-lockfile": "^4.0.0",
