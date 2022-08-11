@@ -1,10 +1,16 @@
 {
-    "extends": "aegir/src/config/tsconfig.aegir.json",
-    "compilerOptions": {
-      "outDir": "types"
-    },
-    "include": [
-      "src",
-      "test"
-    ]
+  "extends": "aegir/src/config/tsconfig.aegir.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "src",
+    "test"
+  ],
+  "references": [
+    {
+      "path": "../ipfs-repo-migrations"
+    }
+  ]
 }

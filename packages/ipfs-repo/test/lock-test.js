@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { createRepo } from '../src/index.js'
 import { MemoryLock } from '../src/locks/memory.js'
 import { LockExistsError } from '../src/errors.js'

@@ -1,26 +1,17 @@
-# IPFS Repo JavaScript Implementation <!-- omit in toc -->
+# ipfs-repo <!-- omit in toc -->
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo)](https://travis-ci.com/ipfs/js-ipfs-repo)
-[![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo) [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-repo.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs-repo.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-repo)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs-repo/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs-repo/actions/workflows/js-test-and-release.yml)
 
-> Implementation of the IPFS repo spec (https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript
+> IPFS Repo implementation
 
-This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript.
+## Table of contents <!-- omit in toc -->
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
-## Table of Contents <!-- omit in toc -->
-
-- [Background](#background)
 - [Install](#install)
-  - [npm](#npm)
+- [Background](#background)
 - [Usage](#usage)
 - [API](#api)
   - [Setup](#setup)
@@ -67,6 +58,19 @@ This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs
   - [Migrations](#migrations)
 - [Contribute](#contribute)
 - [License](#license)
+- [Contribute](#contribute-1)
+
+## Install
+
+```console
+$ npm i ipfs-repo
+```
+
+This is the implementation of the [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md) in JavaScript.
+
+## Lead Maintainer <!-- omit in toc -->
+
+[Alex Potsides](https://github.com/achingbrain)
 
 ## Background
 
@@ -106,10 +110,6 @@ Here is the architectural reasoning for this repo:
 
 This provides a well defined interface for creating and interacting with an IPFS repo.
 
-## Install
-
-### npm
-
 ```sh
 > npm install ipfs-repo
 ```
@@ -134,15 +134,13 @@ console.log('repo is ready')
 
 This now has created the following structure, either on disk or as an in memory representation:
 
-```
-├── blocks
-│   ├── SHARDING
-│   └── _README
-├── config
-├── datastore
-├── keys
-└── version
-```
+    ├── blocks
+    │   ├── SHARDING
+    │   └── _README
+    ├── config
+    ├── datastore
+    ├── keys
+    └── version
 
 ## API
 
@@ -154,16 +152,16 @@ Creates an IPFS Repo.
 
 Arguments:
 
-* `path` (string, mandatory): the path for this repo
-* `options` (object, optional): may contain the following values
-  * `autoMigrate` (bool, defaults to `true`): controls automatic migrations of repository.
-  * `onMigrationProgress` (function(version, percentComplete, message)): callback function to be notified of migration progress
-  * `lock` ([Lock](#lock) or string *Deprecated*): what type of lock to use. Lock has to be acquired when opening. string can be `"fs"` or `"memory"`.
-  * `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
-    * `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at the root (`repo.set()`, `repo.get()`)
-    * `blocks` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at `repo.blocks`.
-    * `keys` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of encrypted keys at `repo.keys`
-    * `datastore` (defaults to [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme)). Defines the back-end type used as the key-value store used for gets and puts of values at `repo.datastore`.
+- `path` (string, mandatory): the path for this repo
+- `options` (object, optional): may contain the following values
+  - `autoMigrate` (bool, defaults to `true`): controls automatic migrations of repository.
+  - `onMigrationProgress` (function(version, percentComplete, message)): callback function to be notified of migration progress
+  - `lock` ([Lock](#lock) or string *Deprecated*): what type of lock to use. Lock has to be acquired when opening. string can be `"fs"` or `"memory"`.
+  - `storageBackends` (object, optional): may contain the following values, which should each be a class implementing the [datastore interface](https://github.com/ipfs/interface-datastore#readme):
+    - `root` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at the root (`repo.set()`, `repo.get()`)
+    - `blocks` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of values at `repo.blocks`.
+    - `keys` (defaults to [`datastore-fs`](https://github.com/ipfs/js-datastore-fs#readme) in Node.js and [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme) in the browser). Defines the back-end type used for gets and puts of encrypted keys at `repo.keys`
+    - `datastore` (defaults to [`datastore-level`](https://github.com/ipfs/js-datastore-level#readme)). Defines the back-end type used as the key-value store used for gets and puts of values at `repo.datastore`.
 
 ```js
 const repo = createRepo('path/to/repo')
@@ -197,49 +195,49 @@ Root repo:
 
 Put a value at the root of the repo
 
-* `key` can be a Uint8Array, a string or a [Key][]
+- `key` can be a Uint8Array, a string or a [Key][]
 
 #### `Promise<Uint8Array> repo.get(key)`
 
 Get a value at the root of the repo
 
-* `key` can be a Uint8Array, a string or a [Key][]
+- `key` can be a Uint8Array, a string or a [Key][]
 
 ### Blocks
 
 #### `Promise<Block> repo.blocks.put(block:Block)`
 
-* `block` should be of type [Block][]
+- `block` should be of type [Block][]
 
 #### `AsyncIterator<Block> repo.blocks.putMany(source:AsyncIterable<Block>)`
 
 Put many blocks.
 
-* `source` should be an AsyncIterable that yields entries of type [Block][]
+- `source` should be an AsyncIterable that yields entries of type [Block][]
 
 #### `Promise<Block> repo.blocks.get(cid:CID)`
 
 Get block.
 
-* `cid` is the content id of type [CID][]
+- `cid` is the content id of type [CID][]
 
 #### `AsyncIterable<Block> repo.blocks.getMany(source:AsyncIterable<CID>)`
 
 Get many blocks
 
-* `source` should be an AsyncIterable that yields entries of type [CID][]
+- `source` should be an AsyncIterable that yields entries of type [CID][]
 
 #### `Promise<boolean> repo.blocks.has (cid:CID)`
 
 Indicate if a block is present for the passed CID
 
-* `cid` should be of the type [CID][]
+- `cid` should be of the type [CID][]
 
 #### `Promise<boolean> repo.blocks.delete (cid:CID)`
 
 Deletes a block
 
-* `cid` should be of the type [CID][]
+- `cid` should be of the type [CID][]
 
 #### `AsyncIterator<Block|CID> repo.blocks.query (query)`
 
@@ -247,19 +245,19 @@ Query what blocks are available in blockstore.
 
 If `query.keysOnly` is true, the returned iterator will yield [CID][]s, otherwise it will yield [Block][]s
 
-* `query` is a object as specified in [interface-datastore](https://github.com/ipfs/interface-datastore#query).
+- `query` is a object as specified in [interface-datastore](https://github.com/ipfs/interface-datastore#query).
 
 Datastore:
 
 #### `Promise<CID> repo.blocks.delete(cid:CID)`
 
-* `cid` should be of the type [CID][]
+- `cid` should be of the type [CID][]
 
 Delete a block
 
 #### `AsyncIterator<CID> repo.blocks.deleteMany(source:AsyncIterable<CID>)`
 
-* `source` should be an Iterable or AsyncIterable that yields entries of the type [CID][]
+- `source` should be an Iterable or AsyncIterable that yields entries of the type [CID][]
 
 Delete many blocks
 
@@ -277,7 +275,7 @@ Instead of using `repo.set('config')` this exposes an API that allows you to set
 
 Set a config value. `value` can be any object that is serializable to JSON.
 
-* `key` is a string specifying the object path. Example:
+- `key` is a string specifying the object path. Example:
 
 ```js
 await repo.config.set('a.b.c', 'c value')
@@ -293,7 +291,7 @@ Set the whole config value. `value` can be any object that is serializable to JS
 
 Get a config value. Returned promise resolves to the same type that was set before.
 
-* `key` is a string specifying the object path. Example:
+- `key` is a string specifying the object path. Example:
 
 ```js
 const value = await repo.config.get('a.b.c')
@@ -328,7 +326,7 @@ Gets the API address.
 
 Sets the API address.
 
-* `value` should be a [Multiaddr][] or a String representing a valid one.
+- `value` should be a [Multiaddr][] or a String representing a valid one.
 
 ### Status
 
@@ -403,7 +401,18 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 ## License
 
-[Apache-2.0](LICENSE-APACHE) OR [MIT](LICENSE-MIT)
+Licensed under either of
+
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs-unixfs-importer/issues)!
+
+This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
 [CID]: https://github.com/multiformats/js-cid
 [Key]: https://github.com/ipfs/interface-datastore#keys

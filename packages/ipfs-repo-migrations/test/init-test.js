@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { CONFIG_KEY, VERSION_KEY } from '../src/utils.js'
 import { isRepoInitialized } from '../src/repo/init.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'

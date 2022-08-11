@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import * as cbor from 'cborg'
 import { migration } from '../../migrations/migration-9/index.js'
 import { PIN_DS_KEY } from '../../migrations/migration-9/utils.js'
 import { CID } from 'multiformats/cid'
 import { CarReader } from '@ipld/car'
-import loadFixture from 'aegir/utils/fixtures.js'
+import loadFixture from 'aegir/fixtures'
 import * as dagPb from '@ipld/dag-pb'
 import * as mhd from 'multiformats/hashes/digest'
 import { base32 } from 'multiformats/bases/base32'

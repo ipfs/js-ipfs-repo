@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-// import { expect } from 'aegir/utils/chai.js'
+// import { expect } from 'aegir/chai'
 // const apiAddr from '../src/api-addr')
 // import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 

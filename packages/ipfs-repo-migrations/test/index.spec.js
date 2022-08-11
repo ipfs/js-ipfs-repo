@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import sinon from 'sinon'
 import { MemoryBlockstore } from 'blockstore-core/memory'
 import { MemoryDatastore } from 'datastore-core/memory'
