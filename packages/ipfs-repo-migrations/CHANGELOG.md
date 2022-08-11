@@ -1,3 +1,43 @@
+## ipfs-repo-migrations-v1.0.0 (2022-08-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* this module used to be dual published as CJS/ESM now it is just ESM
+* updates repo version and migrates repo
+* only named exports are used, deep imports/requires are not possible
+
+### Features
+
+* libp2p async peerstore migration ([#375](https://github.com/ipfs/js-ipfs-repo/issues/375)) ([5c9eb4b](https://github.com/ipfs/js-ipfs-repo/commit/5c9eb4b135687b27865e9929405e50d730524aa6))
+
+
+### Bug Fixes
+
+* remove console output from migration ([#376](https://github.com/ipfs/js-ipfs-repo/issues/376)) ([b383845](https://github.com/ipfs/js-ipfs-repo/commit/b3838457984a61582b8857fcf63ec133ce74e1bb))
+
+
+### Dependencies
+
+* update aegir to 37.x.x ([#400](https://github.com/ipfs/js-ipfs-repo/issues/400)) ([7bdc912](https://github.com/ipfs/js-ipfs-repo/commit/7bdc9124c18c9a4792295704cac25510d4694b46))
+* update all deps ([#401](https://github.com/ipfs/js-ipfs-repo/issues/401)) ([9218212](https://github.com/ipfs/js-ipfs-repo/commit/9218212a67963c31efd4c2a3223d249f249406bc))
+
+
+### Trivial Changes
+
+* add missing deps, remove redundant deps ([#344](https://github.com/ipfs/js-ipfs-repo/issues/344)) ([f91018c](https://github.com/ipfs/js-ipfs-repo/commit/f91018cbd1cdb80b5d490790f5c9069c4513cce5))
+* add prepublish step to build dist folder ([1d191ba](https://github.com/ipfs/js-ipfs-repo/commit/1d191ba422d0233b4b67528ae2bdb59c4f14549f))
+* convert to monorepo ([#335](https://github.com/ipfs/js-ipfs-repo/issues/335)) ([0658ccc](https://github.com/ipfs/js-ipfs-repo/commit/0658cccaf0718e5af6fb1fb44c9c7d043ce2918b))
+* fix release script ([#404](https://github.com/ipfs/js-ipfs-repo/issues/404)) ([b2610d6](https://github.com/ipfs/js-ipfs-repo/commit/b2610d6b63274325422208c5730503992b002608))
+* publish ([bfabfdc](https://github.com/ipfs/js-ipfs-repo/commit/bfabfdcc44db80b264496ca43f3fae38ebc486ea))
+* publish ([d75379e](https://github.com/ipfs/js-ipfs-repo/commit/d75379eaff9ba938f71b12a9e8008236dc34c276))
+* publish ([f36c922](https://github.com/ipfs/js-ipfs-repo/commit/f36c922a2cd3a308a2d1fb7f397243488730bdf5))
+* publish ([e324b28](https://github.com/ipfs/js-ipfs-repo/commit/e324b28a7c90e8a37ec89c68764cac7918a3ca55))
+* publish ([17142a8](https://github.com/ipfs/js-ipfs-repo/commit/17142a8623705a4ac5ba2bc0ce75945cc9167f7e))
+* switch to esm ([#339](https://github.com/ipfs/js-ipfs-repo/issues/339)) ([8d673ba](https://github.com/ipfs/js-ipfs-repo/commit/8d673ba72c599259110c09e90353f05473f05616))
+* update aegir ([#367](https://github.com/ipfs/js-ipfs-repo/issues/367)) ([2229ab4](https://github.com/ipfs/js-ipfs-repo/commit/2229ab48b3748e99e3539b61ff71a154f19b3fb8))
+* update datastore impls ([#377](https://github.com/ipfs/js-ipfs-repo/issues/377)) ([709a612](https://github.com/ipfs/js-ipfs-repo/commit/709a612c3145628d417c4d79f0921679a3bedf1b))
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
