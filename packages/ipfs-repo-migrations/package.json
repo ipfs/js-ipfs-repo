@@ -162,7 +162,7 @@
     "test:chrome": "aegir test -t browser --cov",
     "lint": "aegir lint",
     "release": "aegir release",
-    "dep-check": "aegir dep-check -i interface-blockstore"
+    "dep-check": "aegir dep-check -i interface-blockstore -i npm-run-all"
   },
   "dependencies": {
     "@ipld/dag-pb": "^2.1.0",
