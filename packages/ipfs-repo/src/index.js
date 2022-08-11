@@ -81,7 +81,8 @@ class Repo {
     this.apiAddr = apiAddr(this.root)
 
     /** @type {GCLock} */
-    this.gcLock = mortice(path, {
+    this.gcLock = mortice({
+      name: path,
       singleProcess: this.options.repoOwner !== false
     })
 

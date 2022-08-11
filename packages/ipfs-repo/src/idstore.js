@@ -1,6 +1,6 @@
 
 import filter from 'it-filter'
-import pushable from 'it-pushable'
+import { pushable } from 'it-pushable'
 import drain from 'it-drain'
 import { CID } from 'multiformats/cid'
 import errCode from 'err-code'
@@ -63,7 +63,9 @@ export function createIdStore (store) {
       // in order to return all blocks. we're going to assemble a seperate iterable
       // return rather than return the resolves of store.putMany using the same
       // process used by blockstore.putMany
-      const output = pushable()
+      const output = pushable({
+        objectMode: true
+      })
 
       // process.nextTick runs on the microtask queue, setImmediate runs on the next
       // event loop iteration so is slower. Use process.nextTick if it is available.
