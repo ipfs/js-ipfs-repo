@@ -1,3 +1,10 @@
+## [ipfs-repo-v15.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v15.0.0...ipfs-repo-v15.0.1) (2022-08-11)
+
+
+### Bug Fixes
+
+* update config ([1772185](https://github.com/ipfs/js-ipfs-repo/commit/1772185fe81418598beb77e768834c31ab1c09c2))
+
 ## [ipfs-repo-v15.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v14.0.1...ipfs-repo-v15.0.0) (2022-08-11)
 
 
