@@ -180,7 +180,7 @@
     "varint": "^6.0.0"
   },
   "devDependencies": {
-    "@ipld/car": "^3.0.0",
+    "@ipld/car": "^4.1.4",
     "@types/debug": "^4.1.5",
     "@types/rimraf": "^3.0.2",
     "@types/varint": "^6.0.0",
