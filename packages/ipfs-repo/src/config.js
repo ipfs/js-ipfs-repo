@@ -30,7 +30,7 @@ export function config (store) {
     /**
      * Get the current configuration from the repo.
      *
-     * @param {Object} [options] - options
+     * @param {object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config read
      * @returns {Promise<Config>}
      */
@@ -47,7 +47,7 @@ export function config (store) {
      * Get the value for the passed configuration key from the repo.
      *
      * @param {string} key - the config key to get
-     * @param {Object} [options] - options
+     * @param {object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config read
      */
     async get (key, options = {}) {
@@ -70,7 +70,7 @@ export function config (store) {
      *
      * @param {string} key - the config key to be written
      * @param {any} [value] - the config value to be written
-     * @param {Object} [options] - options
+     * @param {object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config write
      */
     set (key, value, options = {}) {
@@ -93,7 +93,7 @@ export function config (store) {
      * Set the current configuration for this repo.
      *
      * @param {Config} [value] - the config value to be written
-     * @param {Object} [options] - options
+     * @param {object} [options] - options
      * @param {AbortSignal} [options.signal] - abort this config write
      */
     replace (value, options = {}) {
