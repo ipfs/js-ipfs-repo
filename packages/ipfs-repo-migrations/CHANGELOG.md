@@ -1,3 +1,20 @@
+## [ipfs-repo-migrations-v13.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v12.0.1...ipfs-repo-migrations-v13.0.0) (2022-08-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* this module used to be dual published as CJS/ESM now it is just ESM
+
+### Dependencies
+
+* update aegir to 37.x.x ([#400](https://github.com/ipfs/js-ipfs-repo/issues/400)) ([7bdc912](https://github.com/ipfs/js-ipfs-repo/commit/7bdc9124c18c9a4792295704cac25510d4694b46))
+* update all deps ([#401](https://github.com/ipfs/js-ipfs-repo/issues/401)) ([9218212](https://github.com/ipfs/js-ipfs-repo/commit/9218212a67963c31efd4c2a3223d249f249406bc))
+
+
+### Trivial Changes
+
+* fix release script ([#404](https://github.com/ipfs/js-ipfs-repo/issues/404)) ([b2610d6](https://github.com/ipfs/js-ipfs-repo/commit/b2610d6b63274325422208c5730503992b002608))
+
 # Change Log
 
 All notable changes to this project will be documented in this file.

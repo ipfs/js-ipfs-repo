@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo-migrations",
-  "version": "12.0.1",
+  "version": "13.0.0",
   "description": "Migration framework for versioning of JS IPFS Repo",
   "license": "Apache-2.0 OR MIT",
   "homepage": "https://github.com/ipfs/js-ipfs-repo/tree/master/packages/ipfs-repo-migrations#readme",
