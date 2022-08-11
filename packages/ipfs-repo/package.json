@@ -177,7 +177,6 @@
     "release": "aegir release",
     "test": "aegir test",
     "test:node": "aegir test -t node --cov",
-    "test:chrome": "aegir test -t browser --cov",
     "dep-check": "aegir dep-check -i interface-blockstore"
   },
   "dependencies": {

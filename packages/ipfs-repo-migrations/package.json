@@ -159,7 +159,6 @@
     "build": "aegir build",
     "test": "aegir test",
     "test:node": "aegir test -t node --cov",
-    "test:chrome": "aegir test -t browser --cov",
     "lint": "aegir lint",
     "release": "aegir release",
     "dep-check": "aegir dep-check -i interface-blockstore -i npm-run-all"
