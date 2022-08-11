@@ -11,7 +11,6 @@
 ## Table of contents <!-- omit in toc -->
 
 - [Structure](#structure)
-- [Lead Maintainer <!-- omit in toc -->](#lead-maintainer----omit-in-toc---)
 - [Development](#development)
   - [Publishing new versions](#publishing-new-versions)
   - [Using prerelease versions](#using-prerelease-versions)
@@ -23,13 +22,6 @@
 
 - [`/packages/ipfs-repo`](./packages/ipfs-repo) IPFS Repo implementation
 - [`/packages/ipfs-repo-migrations`](./packages/ipfs-repo-migrations) Migration framework for versioning of JS IPFS Repo
-
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](https://github.com/achingbrain)
-
-- [`/packages/ipfs-repo`](./packages/ipfs-repo) The repo implementation
-- [`/packages/ipfs-repo-migrations`](./packages/ipfs-urepo-migrations) A tool for migrating between different repo versions
 
 ## Development
 
