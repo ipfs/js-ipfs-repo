@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import sinon from 'sinon'
 import tempDir from 'ipfs-utils/src/temp-dir.js'
 import { createRepo } from '../src/index.js'

@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { Key } from 'interface-datastore/key'
 import { CID } from 'multiformats/cid'
 import * as raw from 'multiformats/codecs/raw'

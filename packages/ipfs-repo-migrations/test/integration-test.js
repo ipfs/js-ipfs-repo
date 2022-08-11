@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import * as migrator from '../src/index.js'
 import migrations from './test-migrations/index.js'
 import { VERSION_KEY, CONFIG_KEY } from '../src/utils.js'

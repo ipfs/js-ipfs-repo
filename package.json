@@ -2,6 +2,20 @@
   "name": "ipfs-repo",
   "version": "1.0.0",
   "description": "The repo and migration tools used by IPFS",
+  "license": "Apache-2.0 OR MIT",
+  "homepage": "https://github.com/ipfs/js-ipfs-repo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs/js-ipfs-repo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs/js-ipfs-repo/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "private": true,
   "scripts": {
     "reset": "lerna run clean && rimraf packages/*/node_modules node_modules packages/*/package-lock.json package-lock.json",
     "test": "lerna run test",
@@ -16,55 +30,10 @@
     "update-contributors": "aegir release --lint=false --test=false --bump=false --build=false --changelog=false --commit=false --tag=false --push=false --ghrelease=false --docs=false --publish=false"
   },
   "devDependencies": {
-    "lerna": "^4.0.0",
+    "lerna": "^5.0.0",
     "rimraf": "^3.0.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ipfs/js-ipfs-repo.git"
-  },
-  "private": true,
-  "license": "(Apache-2.0 OR MIT)",
-  "contributors": [
-    "David Dias <daviddias.p@gmail.com>",
-    "achingbrain <alex@achingbrain.net>",
-    "Jacob Heun <jacobheun@gmail.com>",
-    "dignifiedquire <dignifiedquire@gmail.com>",
-    "Hugo Dias <hugomrdias@gmail.com>",
-    "Stephen Whitmore <stephen.whitmore@gmail.com>",
-    "Alan Shaw <alan.shaw@protocol.ai>",
-    "Adam Uhlíř <adam@uhlir.dev>",
-    "Vasco Santos <vasco.santos@moxy.studio>",
-    "Hector Sanjuan <code@hector.link>",
-    "Pau Ramon Revilla <masylum@gmail.com>",
-    "Richard Schneider <makaretu@gmail.com>",
-    "Lars-Magnus Skog <ralphtheninja@riseup.net>",
-    "Francisco Baio Dias <xicombd@gmail.com>",
-    "Dmitriy Ryajov <dryajov@gmail.com>",
-    "Pedro Santos <pedro.santos@moxy.studio>",
-    "nginnever <ginneversource@gmail.com>",
-    "ᴠɪᴄᴛᴏʀ ʙᴊᴇʟᴋʜᴏʟᴍ <victorbjelkholm@gmail.com>",
-    "Andrew Nesbitt <andrewnez@gmail.com>",
-    "Brian Hoffman <hoffmabc@users.noreply.github.com>",
-    "Bryan Stenson <bryan.stenson@gmail.com>",
-    "Hannah Howard <hannah@hannahhoward.net>",
-    "Henrique Dias <hacdias@gmail.com>",
-    "Jonah Weissman <jonahrweissman@gmail.com>",
-    "Jonathan <jkrone@vt.edu>",
-    "Joshua <62268199+minimalsm@users.noreply.github.com>",
-    "Justin Chase <justin.m.chase@gmail.com>",
-    "Linus Unnebäck <linus@folkdatorn.se>",
-    "Marcus Bernales <mboperator@gmail.com>",
-    "Pedro Teixeira <i@pgte.me>",
-    "Richard Littauer <richard.littauer@gmail.com>",
-    "Steef Min <steefmin@gmail.com>",
-    "Volker Mische <volker.mische@gmail.com>"
-  ],
   "workspaces": [
     "packages/*"
-  ],
-  "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=7.0.0"
-  }
+  ]
 }

@@ -44,7 +44,7 @@ function invalidPinTypeErr (type) {
  */
 export class PinManager {
   /**
-   * @param {Object} config
+   * @param {object} config
    * @param {import('interface-datastore').Datastore} config.pinstore
    * @param {import('interface-blockstore').Blockstore} config.blockstore
    * @param {import('./types').loadCodec} config.loadCodec

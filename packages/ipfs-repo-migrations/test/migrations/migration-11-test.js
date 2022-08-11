@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* eslint-disable max-nested-callbacks */
 
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import { CID } from 'multiformats/cid'
 import { migration } from '../../migrations/migration-11/index.js'
 import { Key } from 'interface-datastore/key'

@@ -1,29 +1,18 @@
-# Migration tool for JS IPFS Repo <!-- omit in toc -->
+# ipfs-repo-migrations <!-- omit in toc -->
 
-[![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo-migrations)](https://travis-ci.com/ipfs/js-ipfs-repo-migrations)
-[![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations)
-[![Dependency Status](https://david-dm.org/ipfs/js-ipfs-repo-migrations.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo-migrations)
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
-![](https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
+[![ipfs.io](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io)
+[![IRC](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Discord](https://img.shields.io/discord/806902334369824788?style=flat-square)](https://discord.gg/ipfs)
+[![codecov](https://img.shields.io/codecov/c/github/ipfs/js-ipfs-repo.svg?style=flat-square)](https://codecov.io/gh/ipfs/js-ipfs-repo)
+[![CI](https://img.shields.io/github/workflow/status/ipfs/js-ipfs-repo/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/ipfs/js-ipfs-repo/actions/workflows/js-test-and-release.yml)
 
 > Migration framework for versioning of JS IPFS Repo
 
-This package is inspired by the [go-ipfs repo migration tool](https://github.com/ipfs/fs-repo-migrations/)
+## Table of contents <!-- omit in toc -->
 
-## Lead Maintainer <!-- omit in toc -->
-
-[Alex Potsides](http://github.com/achingbrain)
-
-## Table of Contents <!-- omit in toc -->
-
-- [Background](#background)
 - [Install](#install)
-  - [npm](#npm)
+- [Lead Maintainer <!-- omit in toc -->](#lead-maintainer----omit-in-toc---)
+- [Background](#background)
   - [Use in Node.js](#use-in-nodejs)
   - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
 - [Usage](#usage)
@@ -51,6 +40,19 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
   - [Module versioning notes](#module-versioning-notes)
 - [Contribute](#contribute)
 - [License](#license)
+- [Contribute](#contribute-1)
+
+## Install
+
+```console
+$ npm i ipfs-repo-migrations
+```
+
+This package is inspired by the [go-ipfs repo migration tool](https://github.com/ipfs/fs-repo-migrations/)
+
+## Lead Maintainer <!-- omit in toc -->
+
+[Alex Potsides](http://github.com/achingbrain)
 
 ## Background
 
@@ -60,15 +62,12 @@ So the IPFS repo is versioned, and this package provides a framework to create m
 from one version of IPFS repo to the next/previous version.
 
 This framework:
- * Handles locking/unlocking of repository
- * Defines migrations API
- * Executes and reports migrations in both directions: forward and backward
- * Simplifies creation of new migrations
- * Works on the browser too!
 
-## Install
-
-### npm
+- Handles locking/unlocking of repository
+- Defines migrations API
+- Executes and reports migrations in both directions: forward and backward
+- Simplifies creation of new migrations
+- Works on the browser too!
 
 ```sh
 > npm install ipfs-repo-migrations
@@ -118,22 +117,23 @@ Executes a forward migration to a specific version, or to the latest version if 
 
 **Arguments:**
 
- * `path` (string, mandatory) - path to the repo to be migrated
- * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
- * `toVersion` (int, mandatory) - version to which the repo should be migrated.
- * `options` (object, optional) - options for the migration
- * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
- * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
+- `path` (string, mandatory) - path to the repo to be migrated
+- `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
+- `toVersion` (int, mandatory) - version to which the repo should be migrated.
+- `options` (object, optional) - options for the migration
+- `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
+- `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
+- `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
 #### `onProgress(version, percent, message)`
 
 Signature of the progress callback.
 
 **Arguments:**
- * `migration` (object) - object of migration that just successfully finished running. See [Architecture of migrations](#architecture-of-migrations) for details.
- * `counter` (int) - index of current migration.
- * `totalMigrations` (int) - total count of migrations that will be run.
+
+- `migration` (object) - object of migration that just successfully finished running. See [Architecture of migrations](#architecture-of-migrations) for details.
+- `counter` (int) - index of current migration.
+- `totalMigrations` (int) - total count of migrations that will be run.
 
 ### `.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`
 
@@ -141,13 +141,13 @@ Executes backward migration to a specific version.
 
 **Arguments:**
 
- * `path` (string, mandatory) - path to the repo to be reverted
- * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
- * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
- * `options` (object, optional) - options for the reversion
- * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
- * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
+- `path` (string, mandatory) - path to the repo to be reverted
+- `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
+- `toVersion` (int, mandatory) - version to which the repo should be reverted to.
+- `options` (object, optional) - options for the reversion
+- `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
+- `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
+- `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
 ### `getLatestMigrationVersion() -> int`
 
@@ -177,26 +177,28 @@ All migrations are collected in `/migrations/index.js`, which should not be edit
 
 Each migration must follow this API. It must export an object in its `index.js` that has following properties:
 
- * `version` (int) - Number that represents the version which the repo will migrate to (eg. `8` will move the repo to version 8).
- * `description` (string) - Brief description of what the migrations does.
- * `migrate` (function) - Function that performs the migration (see signature of this function below)
- * `revert` (function) - If defined then this function will revert the migration to the previous version. Otherwise it is assumed that it is not possible to revert this migration.
+- `version` (int) - Number that represents the version which the repo will migrate to (eg. `8` will move the repo to version 8).
+- `description` (string) - Brief description of what the migrations does.
+- `migrate` (function) - Function that performs the migration (see signature of this function below)
+- `revert` (function) - If defined then this function will revert the migration to the previous version. Otherwise it is assumed that it is not possible to revert this migration.
 
 #### `.migrate(repoPath, repoOptions)`
 
-_Do not confuse this function with the `require('ipfs-repo-migrations').migrate()` function that drives the whole migration process!_
+*Do not confuse this function with the `require('ipfs-repo-migrations').migrate()` function that drives the whole migration process!*
 
 Arguments:
- * `repoPath` (string) - absolute path to the root of the repo
- * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
+
+- `repoPath` (string) - absolute path to the root of the repo
+- `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
 
 #### `.revert(repoPath, repoOptions)`
 
-_Do not confuse this function with the `require('ipfs-repo-migrations').revert()` function that drives the whole backward migration process!_
+*Do not confuse this function with the `require('ipfs-repo-migrations').revert()` function that drives the whole backward migration process!*
 
 Arguments:
- * `repoPath` (string) - path to the root of the repo
- * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct the datastore instance.
+
+- `repoPath` (string) - path to the root of the repo
+- `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct the datastore instance.
 
 ### Browser vs. NodeJS environments
 
@@ -204,9 +206,7 @@ The migration might need to perform specific tasks in browser or NodeJS environm
 migration file `/migrations/migration-<number>/index_browser.js` which have to follow the same API is described before.
 Then add entry in `package.json` to the `browser` field as follow:
 
-```
-'./migrations/migration-<number>/index.js': './migrations/migration-<number>/index_browser.js'
-```
+    './migrations/migration-<number>/index.js': './migrations/migration-<number>/index_browser.js'
 
 In browser environments then `index.js` will be replaced with `index_browser.js`.
 
@@ -214,15 +214,16 @@ Simple migrations should not need to distinguish between
 these environments as the datastore implementation will handle the main differences.
 
 There are currently two main datastore implementations:
- 1. [`datastore-fs`](https://github.com/ipfs/js-datastore-fs) that is backed by file system and is used mainly in the NodeJS environment
- 2. [`datastore-idb`](https://github.com/ipfs/js-datastore-idb) that is backed by LevelDB and is used mainly in the browser environment
 
- Both implementations share the same API and hence are interchangeable.
+1. [`datastore-fs`](https://github.com/ipfs/js-datastore-fs) that is backed by file system and is used mainly in the NodeJS environment
+2. [`datastore-idb`](https://github.com/ipfs/js-datastore-idb) that is backed by LevelDB and is used mainly in the browser environment
 
- When the migration is run in a browser environment, `datastore-fs` is automatically replaced with `datastore-idb` even
- when it is directly imported (`require('datastore-fs')` will return `datastore-idb` in a browser).
- So with simple migrations you shouldn't worry about the difference between `datastore-fs` and `datastore-idb`
- and by default use the `datastore-fs` package (as the replace mechanism does not work vice versa).
+Both implementations share the same API and hence are interchangeable.
+
+When the migration is run in a browser environment, `datastore-fs` is automatically replaced with `datastore-idb` even
+when it is directly imported (`require('datastore-fs')` will return `datastore-idb` in a browser).
+So with simple migrations you shouldn't worry about the difference between `datastore-fs` and `datastore-idb`
+and by default use the `datastore-fs` package (as the replace mechanism does not work vice versa).
 
 ### Guidelines
 
@@ -243,11 +244,11 @@ together with the repo version that `IPFSRepo` expects. Then the updated version
 ### Tests
 
 If a migration affects any of the following functionality, it must provide tests for the following functions
- to work under the version of the repo that it migrates to:
+to work under the version of the repo that it migrates to:
 
-* `/src/repo/version.js`:`getVersion()` - retrieving repository's version
-* `/src/repo/lock.js`:`lock()` - locking repository that uses file system
-* `/src/repo/lock-memory.js`:`lock()` - locking repository that uses memory
+- `/src/repo/version.js`:`getVersion()` - retrieving repository's version
+- `/src/repo/lock.js`:`lock()` - locking repository that uses file system
+- `/src/repo/lock-memory.js`:`lock()` - locking repository that uses memory
 
 Every migration must have test coverage. Tests for migrations should be placed in the `/test/migrations/` folder. Most probably
 you will have to plug the tests into `browser.js`/`node.js` if they require specific bootstrapping on each platform.
@@ -267,11 +268,11 @@ This will create an empty migration with the next version.
 
 ### Migrations matrix
 
-| IPFS repo version  | JS IPFS version  |
-| -----------------: |:----------------:|
-|                  7 | v0.0.0           |
-|                  8 | v0.48.0          |
-|                  9 | v0.49.0          |
+| IPFS repo version | JS IPFS version |
+| ----------------: | :-------------: |
+|                 7 |      v0.0.0     |
+|                 8 |     v0.48.0     |
+|                 9 |     v0.49.0     |
 
 ### Migrations
 
@@ -312,4 +313,15 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 ## License
 
-[Apache-2.0](LICENSE-APACHE) OR [MIT](LICENSE-MIT)
+Licensed under either of
+
+- Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
+
+## Contribute
+
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/js-ipfs-unixfs-importer/issues)!
+
+This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)

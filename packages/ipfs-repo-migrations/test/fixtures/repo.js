@@ -1,5 +1,5 @@
 
-import loadFixture from 'aegir/utils/fixtures.js'
+import loadFixture from 'aegir/fixtures'
 import { CONFIG_KEY, VERSION_KEY } from '../../src/utils.js'
 
 /**
