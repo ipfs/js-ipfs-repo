@@ -175,12 +175,12 @@
     "it-length": "^1.0.1",
     "multiaddr": "^10.0.1",
     "multiformats": "^9.0.4",
-    "protobufjs": "^6.10.2",
+    "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",
     "varint": "^6.0.0"
   },
   "devDependencies": {
-    "@ipld/car": "^3.0.0",
+    "@ipld/car": "^4.1.4",
     "@types/debug": "^4.1.5",
     "@types/rimraf": "^3.0.2",
     "@types/varint": "^6.0.0",
@@ -191,12 +191,13 @@
     "datastore-fs": "^7.0.0",
     "datastore-level": "^8.0.0",
     "datastore-s3": "^9.0.0",
-    "just-safe-set": "^2.1.0",
+    "protobufjs-cli": "^1.0.0",
+    "just-safe-set": "^4.1.1",
     "level-5": "npm:level@^5.0.0",
     "level-6": "npm:level@^6.0.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "sinon": "^12.0.1"
+    "sinon": "^14.0.0"
   },
   "browser": {
     "datastore-fs": "datastore-level"
