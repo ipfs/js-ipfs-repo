@@ -221,7 +221,7 @@
     "it-all": "^1.0.2",
     "just-range": "^2.1.0",
     "rimraf": "^3.0.2",
-    "sinon": "^12.0.1"
+    "sinon": "^14.0.0"
   },
   "browser": {
     "rimraf": false
