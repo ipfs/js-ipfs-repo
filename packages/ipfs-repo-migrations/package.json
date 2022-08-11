@@ -35,12 +35,19 @@
         "dist/*",
         "dist/src/*",
         "dist/src/*/index"
+      ],
+      "migrations/*": [
+        "*",
+        "dist/*",
+        "dist/migrations/*",
+        "dist/migrations/*/index"
       ]
     }
   },
   "files": [
     "src",
     "dist",
+    "migrations",
     "!dist/test",
     "!**/*.tsbuildinfo"
   ],
@@ -200,9 +207,5 @@
   },
   "browser": {
     "datastore-fs": "datastore-level"
-  },
-  "main": "src/index.js",
-  "publishConfig": {
-    "directory": "dist"
   }
 }

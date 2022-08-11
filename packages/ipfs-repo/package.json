@@ -224,9 +224,5 @@
   },
   "browser": {
     "rimraf": false
-  },
-  "main": "src/index.js",
-  "publishConfig": {
-    "directory": "dist"
   }
 }
