@@ -20,7 +20,8 @@ import { test as integrationTests } from './integration-test.js'
  * @param {string} dir
  */
 async function cleanup (dir) {
-  await new Promise((resolve, reject) => {
+  /** @type {Promise<void>} */
+  const p = new Promise((resolve, reject) => {
     rimraf(dir, (err) => {
       if (err) {
         reject(err)
@@ -30,6 +31,7 @@ async function cleanup (dir) {
       resolve()
     })
   })
+  await p
 }
 
 const CONFIGURATIONS = [{
