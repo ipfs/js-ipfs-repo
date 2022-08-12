@@ -194,7 +194,7 @@
     "aws-sdk": "^2.884.0",
     "blockstore-core": "^1.0.2",
     "blockstore-datastore-adapter": "^2.0.1",
-    "datastore-fs": "^7.0.0",
+    "datastore-fs": "^8.0.0",
     "datastore-level": "^8.0.0",
     "datastore-s3": "^9.0.0",
     "protobufjs-cli": "^1.0.0",
