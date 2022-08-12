@@ -176,7 +176,7 @@
     "datastore-core": "^7.0.0",
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
-    "interface-blockstore": "^2.0.2",
+    "interface-blockstore": "^3.0.0",
     "interface-datastore": "^6.0.2",
     "it-length": "^1.0.1",
     "multiaddr": "^10.0.1",
