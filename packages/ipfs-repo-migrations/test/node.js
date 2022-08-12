@@ -20,7 +20,16 @@ import { test as integrationTests } from './integration-test.js'
  * @param {string} dir
  */
 async function cleanup (dir) {
-  await rimraf.sync(dir)
+  await new Promise((resolve, reject) => {
+    rimraf(dir, (err) => {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      resolve()
+    })
+  })
 }
 
 const CONFIGURATIONS = [{
