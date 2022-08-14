@@ -1,26 +1,35 @@
-
 import loadFixture from 'aegir/fixtures'
 import { CONFIG_KEY, VERSION_KEY } from '../../src/utils.js'
+import fs from 'fs/promises'
 
 /**
  * @typedef {import('../../src/types').Backends} Backends
+ * @typedef {import('../types').SetupOptions} SetupOptions
+ * @typedef {import('../types').CreateBackends} CreateBackends
  */
 
 /**
- *
- * @param {(dir: string) => import('../../src/types').Backends} createBackends
- * @param {*} prefix
- * @returns
+ * @param {CreateBackends} createBackends
+ * @param {SetupOptions} [opts]
  */
-export async function createRepo (createBackends, prefix) {
-  const dir = `${prefix ? `${prefix}/` : ''}test-repo-for-${Date.now()}`
-  const backends = createBackends(dir)
+export async function createRepo (createBackends, opts = {}) {
+  let dir = opts.dir
+  const prefix = opts.prefix ?? ''
 
+  if (dir == null) {
+    dir = [prefix, `test-repo-for-${Date.now()}`].filter(Boolean).join('/')
+    await fs.mkdir(dir, {
+      recursive: true
+    })
+  }
+
+  const backends = createBackends(dir, opts.createBackends)
   await backends.root.open()
   await backends.root.close()
 
   return {
     dir,
+    prefix,
     backends
   }
 }
