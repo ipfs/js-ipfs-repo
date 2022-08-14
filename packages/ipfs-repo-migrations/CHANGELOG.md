@@ -1,3 +1,10 @@
+## [ipfs-repo-migrations-v13.0.2](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v13.0.1...ipfs-repo-migrations-v13.0.2) (2022-08-14)
+
+
+### Dependencies
+
+* update interface-datastore and friends ([#409](https://github.com/ipfs/js-ipfs-repo/issues/409)) ([1c42f42](https://github.com/ipfs/js-ipfs-repo/commit/1c42f42541fea316833555ea6cc8ade86aea9c48))
+
 ## [ipfs-repo-migrations-v13.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v13.0.0...ipfs-repo-migrations-v13.0.1) (2022-08-11)
 
 
