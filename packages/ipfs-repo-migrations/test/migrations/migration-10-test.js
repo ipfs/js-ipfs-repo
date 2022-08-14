@@ -53,62 +53,17 @@ async function validate (store) {
     if (store instanceof BaseBlockstore) {
       const key = CID.parse(`b${name.toLowerCase()}`)
 
-      expect(await store.has(key)).to.be.true(`Could not read key ${name}`)
-      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
+      await expect(store.has(key)).to.eventually.be.true(`Could not read key ${name} from blockstore`)
+      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]} from blockstore`)
     } else {
       const key = new Key(`/${name}`)
 
-      await expect(store.has(key)).to.eventually.be.true(`Could not read key ${name}`)
-      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
+      await expect(store.has(key)).to.eventually.be.true(`Could not read key ${name} from datastore`)
+      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]} from datastore`)
     }
   }
 
   await store.close()
-}
-
-/**
- * @param {Backends} backends
- * @param {*} LevelImpl
- * @returns {Backends}
- */
-function withLevels (backends, LevelImpl) {
-  const output = {
-    ...backends
-  }
-
-  Object.entries(backends)
-    .forEach(([key, value]) => {
-      // @ts-ignore it's ok
-      output[key] = withLevel(value, LevelImpl)
-    })
-
-  return output
-}
-
-/**
- * @param {Datastore} store
- * @param {*} LevelImpl
- */
-function withLevel (store, LevelImpl) {
-  let parent = {
-    child: store
-  }
-
-  while (parent.child) {
-    if (parent.child.constructor.name === 'LevelDatastore') {
-      // @ts-ignore undocumented properties
-      parent.child.database = LevelImpl
-      // @ts-ignore undocumented properties
-      delete parent.child.db
-
-      return store
-    }
-
-    // @ts-ignore undocumented properties
-    parent = parent.child
-  }
-
-  return store
 }
 
 /**
@@ -118,63 +73,164 @@ function withLevel (store, LevelImpl) {
 export function test (setup, cleanup) {
   describe('migration 10', function () {
     this.timeout(1024 * 1000)
-    /** @type {string} */
-    let dir
-    /** @type {import('../../src/types').Backends} */
-    let backends
-
-    beforeEach(async () => {
-      ({ dir, backends } = await setup())
-    })
-
-    afterEach(async () => {
-      await cleanup(dir)
-    })
 
     describe('forwards', () => {
+      /** @type {string} */
+      let dir
+      /** @type {import('../../src/types').Backends} */
+      let backends
+      /** @type {string} */
+      let prefix
+
       beforeEach(async () => {
+        ({ dir, prefix, backends } = await setup({
+          createBackends: {
+            createLevel: (path) => new Level5(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
         for (const backend of Object.values(backends)) {
-          await bootstrap(withLevel(backend, Level5))
+          await bootstrap(backend)
+        }
+      })
+
+      afterEach(async () => {
+        if (dir != null) {
+          await cleanup(dir)
         }
       })
 
       it('should migrate keys and values forward', async () => {
-        await migration.migrate(withLevels(backends, Level6), () => {})
+        ({ backends } = await setup({
+          dir,
+          prefix,
+          createBackends: {
+            createLevel: (path) => new Level6(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
+        await migration.migrate(backends, () => {})
 
         for (const backend of Object.values(backends)) {
-          await validate(withLevel(backend, Level6))
+          await validate(backend)
         }
       })
     })
 
     describe('backwards using level@6.x.x', () => {
+      /** @type {string} */
+      let dir
+      /** @type {import('../../src/types').Backends} */
+      let backends
+      /** @type {string} */
+      let prefix
+
       beforeEach(async () => {
+        ({ dir, prefix, backends } = await setup({
+          createBackends: {
+            createLevel: (path) => new Level6(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
         for (const backend of Object.values(backends)) {
-          await bootstrap(withLevel(backend, Level6))
+          await bootstrap(backend)
+        }
+      })
+
+      afterEach(async () => {
+        if (dir != null) {
+          await cleanup(dir)
         }
       })
 
       it('should migrate keys and values backward', async () => {
-        await migration.revert(withLevels(backends, Level6), () => {})
+        ({ backends } = await setup({
+          dir,
+          prefix,
+          createBackends: {
+            createLevel: (path) => new Level6(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
+        await migration.revert(backends, () => {})
+
+        ;({ backends } = await setup({
+          dir,
+          prefix,
+          createBackends: {
+            createLevel: (path) => new Level5(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
 
         for (const backend of Object.values(backends)) {
-          await validate(withLevel(backend, Level5))
+          await validate(backend)
         }
       })
     })
 
     describe('backwards using level@5.x.x', () => {
+      /** @type {string} */
+      let dir
+      /** @type {import('../../src/types').Backends} */
+      let backends
+      /** @type {string} */
+      let prefix
+
       beforeEach(async () => {
+        ({ dir, prefix, backends } = await setup({
+          createBackends: {
+            createLevel: (path) => new Level6(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
         for (const backend of Object.values(backends)) {
-          await bootstrap(withLevel(backend, Level6))
+          await bootstrap(backend)
+        }
+      })
+
+      afterEach(async () => {
+        if (dir != null) {
+          await cleanup(dir)
         }
       })
 
       it('should migrate keys and values backward', async () => {
-        await migration.revert(withLevels(backends, Level5), () => {})
+        ({ backends } = await setup({
+          dir,
+          prefix,
+          createBackends: {
+            createLevel: (path) => new Level5(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
+
+        await migration.revert(backends, () => {})
+
+        ;({ backends } = await setup({
+          dir,
+          prefix,
+          createBackends: {
+            createLevel: (path) => new Level5(path, {
+              valueEncoding: 'binary'
+            })
+          }
+        }))
 
         for (const backend of Object.values(backends)) {
-          await validate(withLevel(backend, Level5))
+          await validate(backend)
         }
       })
     })

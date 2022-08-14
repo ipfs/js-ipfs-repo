@@ -17,6 +17,14 @@ import { test as initTests } from './init-test.js'
 import { test as integrationTests } from './integration-test.js'
 
 /**
+ * @typedef {import('./types').CreateBackendsOptions} CreateBackendsOptions
+ * @typedef {import('./types').CreateBackends} CreateBackends
+ */
+
+/** @type {S3 | null} */
+let s3Instance
+
+/**
  * @param {string} dir
  */
 async function cleanup (dir) {
@@ -38,10 +46,11 @@ const CONFIGURATIONS = [{
   name: 'with sharding',
   cleanup,
   /**
-   * @param {string} prefix
-   * @returns {import('../src/types').Backends}
+   * @type {CreateBackends}
    */
-  createBackends: (prefix) => {
+  createBackends: (prefix, opts = {}) => {
+    const createLevel = opts.createLevel ?? ((path) => path)
+
     return {
       root: new FsDatastore(prefix),
       blocks: new BlockstoreDatastoreAdapter(
@@ -51,9 +60,9 @@ const CONFIGURATIONS = [{
           }),
           new NextToLast(2))
       ),
-      datastore: new LevelDatastore(`${prefix}/datastore`),
+      datastore: new LevelDatastore(createLevel(`${prefix}/datastore`)),
       keys: new FsDatastore(`${prefix}/keys`),
-      pins: new LevelDatastore(`${prefix}/pins`)
+      pins: new LevelDatastore(createLevel(`${prefix}/pins`))
     }
   }
 }, {
@@ -61,9 +70,12 @@ const CONFIGURATIONS = [{
   cleanup,
   /**
    * @param {string} prefix
+   * @param {CreateBackendsOptions} [opts]
    * @returns {import('../src/types').Backends}
    */
-  createBackends: (prefix) => {
+  createBackends: (prefix, opts = {}) => {
+    const createLevel = opts.createLevel ?? ((path) => path)
+
     return {
       root: new FsDatastore(prefix),
       blocks: new BlockstoreDatastoreAdapter(
@@ -71,25 +83,30 @@ const CONFIGURATIONS = [{
           extension: '.data'
         })
       ),
-      datastore: new LevelDatastore(`${prefix}/datastore`),
+      datastore: new LevelDatastore(createLevel(`${prefix}/datastore`)),
       keys: new FsDatastore(`${prefix}/keys`),
-      pins: new LevelDatastore(`${prefix}/pins`)
+      pins: new LevelDatastore(createLevel(`${prefix}/pins`))
     }
   }
 }, {
   name: 'with s3',
-  cleanup: async () => {},
+  cleanup: async () => {
+    s3Instance = null
+  },
   /**
    * @param {string} prefix
+   * @param {CreateBackendsOptions} [opts]
    * @returns {import('../src/types').Backends}
    */
-  createBackends: (prefix) => {
-    const s3Instance = new S3({
-      params: {
-        Bucket: 'test'
-      }
-    })
-    mockS3(s3Instance)
+  createBackends: (prefix, opts = {}) => {
+    if (s3Instance == null) {
+      s3Instance = new S3({
+        params: {
+          Bucket: 'test'
+        }
+      })
+      mockS3(s3Instance)
+    }
 
     return {
       root: new S3Datastore(prefix, {
@@ -122,7 +139,11 @@ const CONFIGURATIONS = [{
 }]
 
 CONFIGURATIONS.forEach(({ name, createBackends, cleanup }) => {
-  const setup = () => createRepo(createBackends, os.tmpdir())
+  /** @type {import('./types').SetupFunction} */
+  const setup = (opts = {}) => createRepo(createBackends, {
+    ...opts,
+    prefix: opts.prefix ?? os.tmpdir()
+  })
 
   describe(name, () => {
     describe('version tests', () => {
