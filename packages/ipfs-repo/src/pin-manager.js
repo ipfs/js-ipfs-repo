@@ -274,19 +274,11 @@ export class PinManager {
    * @param {AbortOptions} options
    */
   async fetchCompleteDag (cid, options) {
-    const seen = new Set()
-
     /**
      * @param {CID} cid
      * @param {AbortOptions} options
      */
     const walkDag = async (cid, options) => {
-      if (seen.has(cid.toString())) {
-        return
-      }
-
-      seen.add(cid.toString())
-
       const bytes = await this.blockstore.get(cid, options)
       const codec = await this.loadCodec(cid.code)
       const block = createUnsafe({ bytes, cid, codec })
