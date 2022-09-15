@@ -1,4 +1,4 @@
-/* eslint complexity: ["error", 27] */
+/* eslint complexity: ["error", 28] */
 
 import defaultMigrations from '../migrations/index.js'
 import * as repoVersion from './repo/version.js'
