@@ -43,8 +43,11 @@ export function getLatestMigrationVersion (migrations) {
  * @param {number} toVersion - Version to which the repo should be migrated.
  * @param {MigrationOptions} [options] - Options for migration
  */
-export async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
-  migrations = migrations || defaultMigrations
+export async function migrate (path, backends, repoOptions, toVersion, options = {}) {
+  const ignoreLock = options.ignoreLock ?? false
+  const onProgress = options.onProgress
+  const isDryRun = options.isDryRun ?? false
+  const migrations = options.migrations ?? defaultMigrations
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
@@ -143,8 +146,11 @@ export async function migrate (path, backends, repoOptions, toVersion, { ignoreL
  * @param {number} toVersion - Version to which the repo will be reverted.
  * @param {MigrationOptions} [options] - Options for the reversion
  */
-export async function revert (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
-  migrations = migrations || defaultMigrations
+export async function revert (path, backends, repoOptions, toVersion, options = {}) {
+  const ignoreLock = options.ignoreLock ?? false
+  const onProgress = options.onProgress
+  const isDryRun = options.isDryRun ?? false
+  const migrations = options.migrations ?? defaultMigrations
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
