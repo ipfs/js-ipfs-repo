@@ -9,6 +9,7 @@ import { CID } from 'multiformats/cid'
 import all from 'it-all'
 import { PinTypes } from '../src/pin-types.js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
+import Sinon from 'sinon'
 
 /**
  * @param {import('@ipld/dag-pb').PBNode} node
@@ -104,6 +105,32 @@ export default (repo) => {
 
         expect(pins.filter(p => p.cid.toString() === cid.toString()))
           .to.have.deep.nested.property('[0].metadata', metadata)
+      })
+
+      it('does not traverse the same linked node twice', async () => {
+        // @ts-expect-error blockstore property is private
+        const getSpy = Sinon.spy(repo.pins.blockstore, 'get')
+
+        const { cid: childCid, buf: childBuf } = await createDagPbNode()
+        await repo.blocks.put(childCid, childBuf)
+
+        // create a root block with duplicate links to the same block
+        const { cid: rootCid, buf: rootBuf } = await createDagPbNode({ Links: [{
+          Name: 'child-1',
+          Tsize: childBuf.byteLength,
+          Hash: childCid
+        }, {
+          Name: 'child-2',
+          Tsize: childBuf.byteLength,
+          Hash: childCid
+        }]})
+        await repo.blocks.put(rootCid, rootBuf)
+
+        await repo.pins.pinRecursively(rootCid)
+
+        expect(getSpy.callCount).to.equal(2, 'should only have loaded the child block once')
+        expect(getSpy.getCall(0).args[0]).to.deep.equal(rootCid)
+        expect(getSpy.getCall(1).args[0]).to.deep.equal(childCid)
       })
     })
 

@@ -13,6 +13,16 @@ import {
 } from './utils/blockstore.js'
 import { walkDag } from './utils/walk-dag.js'
 import { PinTypes } from './pin-types.js'
+import QuickLRU from 'quick-lru'
+
+/**
+ * @typedef {import('./types').PinType} PinType
+ * @typedef {import('./types').PinQueryType} PinQueryType
+ * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
+ * @typedef {import('./types').PinOptions} PinOptions
+ * @typedef {import('./types').AbortOptions} AbortOptions
+ * @typedef {import('./types').Pins} Pins
+ */
 
 /**
  * @typedef {object} PinInternal
@@ -23,13 +33,12 @@ import { PinTypes } from './pin-types.js'
  */
 
 /**
- * @typedef {import('./types').PinType} PinType
- * @typedef {import('./types').PinQueryType} PinQueryType
- * @typedef {import('multiformats/codecs/interface').BlockCodec<any, any>} BlockCodec
- * @typedef {import('./types').PinOptions} PinOptions
- * @typedef {import('./types').AbortOptions} AbortOptions
- * @typedef {import('./types').Pins} Pins
+ * @typedef {object} FetchCompleteDagOptions
+ * @property {AbortSignal} [signal]
+ * @property {number} [cidCacheMaxSize]
  */
+
+const CID_CACHE_MAX_SIZE = 2048
 
 /**
  * @param {string} type
@@ -95,7 +104,7 @@ export class PinManager {
 
   /**
    * @param {CID} cid
-   * @param {PinOptions & AbortOptions} [options]
+   * @param {PinOptions & FetchCompleteDagOptions & AbortOptions} [options]
    */
   async pinRecursively (cid, options = {}) {
     await this.fetchCompleteDag(cid, options)
@@ -271,14 +280,22 @@ export class PinManager {
 
   /**
    * @param {CID} cid
-   * @param {AbortOptions} options
+   * @param {FetchCompleteDagOptions} [options]
    */
-  async fetchCompleteDag (cid, options) {
+  async fetchCompleteDag (cid, options = {}) {
+    const seen = new QuickLRU({ maxSize: options.cidCacheMaxSize ?? CID_CACHE_MAX_SIZE })
+
     /**
      * @param {CID} cid
      * @param {AbortOptions} options
      */
     const walkDag = async (cid, options) => {
+      if (seen.has(cid.toString())) {
+        return
+      }
+
+      seen.set(cid.toString(), true)
+
       const bytes = await this.blockstore.get(cid, options)
       const codec = await this.loadCodec(cid.code)
       const block = createUnsafe({ bytes, cid, codec })
