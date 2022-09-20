@@ -115,15 +115,17 @@ export default (repo) => {
         await repo.blocks.put(childCid, childBuf)
 
         // create a root block with duplicate links to the same block
-        const { cid: rootCid, buf: rootBuf } = await createDagPbNode({ Links: [{
-          Name: 'child-1',
-          Tsize: childBuf.byteLength,
-          Hash: childCid
-        }, {
-          Name: 'child-2',
-          Tsize: childBuf.byteLength,
-          Hash: childCid
-        }]})
+        const { cid: rootCid, buf: rootBuf } = await createDagPbNode({
+          Links: [{
+            Name: 'child-1',
+            Tsize: childBuf.byteLength,
+            Hash: childCid
+          }, {
+            Name: 'child-2',
+            Tsize: childBuf.byteLength,
+            Hash: childCid
+          }]
+        })
         await repo.blocks.put(rootCid, rootBuf)
 
         await repo.pins.pinRecursively(rootCid)
