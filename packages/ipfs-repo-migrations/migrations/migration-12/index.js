@@ -10,7 +10,7 @@ import { Addresses } from './pb/address-book.js'
 import { Peer } from './pb/peer.js'
 import { Envelope } from './pb/envelope.js'
 import { PeerRecord } from './pb/peer-record.js'
-import { multiaddr } from '@multiformals/multiaddr'
+import { multiaddr } from '@multiformats/multiaddr'
 
 /**
  * @param {import('../../src/types').Backends} backends
