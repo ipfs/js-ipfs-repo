@@ -1,3 +1,10 @@
+## [ipfs-repo-v15.0.3](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v15.0.2...ipfs-repo-v15.0.3) (2022-09-21)
+
+
+### Bug Fixes
+
+* OOM on large DAGs ([#410](https://github.com/ipfs/js-ipfs-repo/issues/410)) ([336d0b9](https://github.com/ipfs/js-ipfs-repo/commit/336d0b9a4b93dad11674a4af4acaca5541bcce40))
+
 ## [ipfs-repo-v15.0.2](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v15.0.1...ipfs-repo-v15.0.2) (2022-08-14)
 
 
