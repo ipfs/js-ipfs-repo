@@ -10,7 +10,7 @@ import { Addresses } from './pb/address-book.js'
 import { Peer } from './pb/peer.js'
 import { Envelope } from './pb/envelope.js'
 import { PeerRecord } from './pb/peer-record.js'
-import { Multiaddr } from 'multiaddr'
+import { multiaddr } from '@multiformals/multiaddr'
 
 /**
  * @param {import('../../src/types').Backends} backends
@@ -59,7 +59,7 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
       const addrs = Addresses.decode(value)
 
       peers[peerId].addresses = addrs.addrs.sort((a, b) => {
-        return new Multiaddr(a.multiaddr).toString().localeCompare(new Multiaddr(b.multiaddr).toString())
+        return multiaddr(a.multiaddr).toString().localeCompare(multiaddr(b.multiaddr).toString())
       })
 
       if (addrs.certifiedRecord && addrs.certifiedRecord.raw) {
