@@ -1,3 +1,15 @@
+## [ipfs-repo-migrations-v13.0.3](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v13.0.2...ipfs-repo-migrations-v13.0.3) (2022-09-21)
+
+
+### Bug Fixes
+
+* OOM on large DAGs ([#410](https://github.com/ipfs/js-ipfs-repo/issues/410)) ([336d0b9](https://github.com/ipfs/js-ipfs-repo/commit/336d0b9a4b93dad11674a4af4acaca5541bcce40))
+
+
+### Dependencies
+
+* update @multiformats/multiaddr to 11.0.0 ([#411](https://github.com/ipfs/js-ipfs-repo/issues/411)) ([f7b34eb](https://github.com/ipfs/js-ipfs-repo/commit/f7b34eb5c46141baa7e8f4a752c15adbd6c70bc6))
+
 ## [ipfs-repo-migrations-v13.0.2](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v13.0.1...ipfs-repo-migrations-v13.0.2) (2022-08-14)
 
 
