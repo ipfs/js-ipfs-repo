@@ -180,7 +180,7 @@
     "interface-blockstore": "^3.0.0",
     "interface-datastore": "^7.0.0",
     "it-length": "^1.0.1",
-    "multiformats": "^9.0.4",
+    "multiformats": "^10.0.0",
     "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",
     "varint": "^6.0.0"
