@@ -182,7 +182,7 @@
     "it-length": "^1.0.1",
     "multiformats": "^9.0.4",
     "protobufjs": "^7.0.0",
-    "uint8arrays": "^3.0.0",
+    "uint8arrays": "^4.0.2",
     "varint": "^6.0.0"
   },
   "devDependencies": {
