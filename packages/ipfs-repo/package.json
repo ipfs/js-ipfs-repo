@@ -193,7 +193,7 @@
     "it-filter": "^1.0.2",
     "it-first": "^1.0.2",
     "it-map": "^1.0.5",
-    "it-merge": "^1.0.2",
+    "it-merge": "^2.0.0",
     "it-parallel-batch": "^1.0.9",
     "it-pipe": "^2.0.4",
     "it-pushable": "^3.1.0",
