@@ -179,7 +179,7 @@
     "fnv1a": "^1.0.1",
     "interface-blockstore": "^3.0.0",
     "interface-datastore": "^7.0.0",
-    "it-length": "^1.0.1",
+    "it-length": "^2.0.0",
     "multiformats": "^9.0.4",
     "protobufjs": "^7.0.0",
     "uint8arrays": "^3.0.0",
