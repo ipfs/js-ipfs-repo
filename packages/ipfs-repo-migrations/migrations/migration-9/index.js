@@ -14,7 +14,7 @@ import { base32 } from 'multiformats/bases/base32'
  * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  */
 
 /**

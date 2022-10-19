@@ -16,7 +16,7 @@ import { base32 } from 'multiformats/bases/base32'
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('interface-datastore').Key} Key
- * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
+ * @typedef {import('multiformats/cid').Version} CIDVersion
  * @typedef {{ car: Uint8Array, root: CID, pins: number }} Pinset
  */
 
