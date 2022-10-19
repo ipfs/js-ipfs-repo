@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import os from 'os'
-import rimraf from 'rimraf'
+import fs from 'fs/promises'
 import { FsDatastore } from 'datastore-fs'
 import { LevelDatastore } from 'datastore-level'
 import { S3Datastore } from 'datastore-s3'
@@ -28,18 +28,13 @@ let s3Instance
  * @param {string} dir
  */
 async function cleanup (dir) {
-  /** @type {Promise<void>} */
-  const p = new Promise((resolve, reject) => {
-    rimraf(dir, (err) => {
-      if (err) {
-        reject(err)
-        return
-      }
-
-      resolve()
+  try {
+    await fs.rmdir(dir, {
+      recursive: true
     })
-  })
-  await p
+  } catch (/** @type {any} **/ err) {
+    console.info('Could not delete', dir, err.stack) // eslint-disable-lint no-console
+  }
 }
 
 const CONFIGURATIONS = [{
