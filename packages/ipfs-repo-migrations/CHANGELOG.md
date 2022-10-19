@@ -1,3 +1,10 @@
+## [ipfs-repo-migrations-v14.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v14.0.0...ipfs-repo-migrations-v14.0.1) (2022-10-19)
+
+
+### Bug Fixes
+
+* move migrations to published folder ([#427](https://github.com/ipfs/js-ipfs-repo/issues/427)) ([12b8ac8](https://github.com/ipfs/js-ipfs-repo/commit/12b8ac89a6b643933d3440b2b42f9f5f142d0d35))
+
 ## [ipfs-repo-migrations-v14.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v13.0.3...ipfs-repo-migrations-v14.0.0) (2022-10-19)
 
 
