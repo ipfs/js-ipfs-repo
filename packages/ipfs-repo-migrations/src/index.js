@@ -1,6 +1,6 @@
 /* eslint complexity: ["error", 28] */
 
-import defaultMigrations from '../migrations/index.js'
+import defaultMigrations from './migrations/index.js'
 import * as repoVersion from './repo/version.js'
 import * as Errors from './errors.js'
 import { wrapBackends } from './utils.js'

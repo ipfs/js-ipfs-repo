@@ -3,7 +3,7 @@
 
 import { expect } from 'aegir/chai'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { migration } from '../../migrations/migration-8/index.js'
+import { migration } from '../../src/migrations/migration-8/index.js'
 import { Key } from 'interface-datastore/key'
 
 /**

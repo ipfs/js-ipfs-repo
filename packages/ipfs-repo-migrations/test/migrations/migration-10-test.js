@@ -4,7 +4,7 @@
 import { expect } from 'aegir/chai'
 import { CID } from 'multiformats/cid'
 import { BaseBlockstore } from 'blockstore-core/base'
-import { migration } from '../../migrations/migration-10/index.js'
+import { migration } from '../../src/migrations/migration-10/index.js'
 import { Key } from 'interface-datastore/key'
 import { fromString } from 'uint8arrays/from-string'
 import { equals } from 'uint8arrays/equals'

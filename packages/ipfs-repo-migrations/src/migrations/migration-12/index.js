@@ -13,8 +13,8 @@ import { PeerRecord } from './pb/peer-record.js'
 import { multiaddr } from '@multiformats/multiaddr'
 
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}) {
   onProgress(0, 'Storing each peerstore key under a single datastore key')
@@ -95,8 +95,8 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () => {}) {
   onProgress(0, 'Storing each peerstore key under a multiple datastore keys')
@@ -170,7 +170,7 @@ async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () =>
   onProgress(100, 'Stored each peerstore key under multiple datastore keys')
 }
 
-/** @type {import('../../src/types').Migration} */
+/** @type {import('../../types').Migration} */
 export const migration = {
   version: 12,
   description: 'Store each peerstore peer under a single datastore key',

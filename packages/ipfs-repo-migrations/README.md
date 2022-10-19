@@ -69,13 +69,13 @@ This framework:
 ### Use in Node.js
 
 ```js
-const migrations from 'ipfs-repo-migrations')
+import migrations from 'ipfs-repo-migrations'
 ```
 
 ### Use in a browser with browserify, webpack or any other bundler
 
 ```js
-const migrations from 'ipfs-repo-migrations')
+import migrations from 'ipfs-repo-migrations'
 ```
 
 ## Usage
@@ -83,7 +83,7 @@ const migrations from 'ipfs-repo-migrations')
 Example:
 
 ```js
-const migrations from 'ipfs-repo-migrations')
+import migrations from 'ipfs-repo-migrations'
 
 const repoPath = 'some/repo/path'
 const currentRepoVersion = 7
@@ -161,10 +161,10 @@ be run again.
 
 ### Architecture of a migration
 
-All migrations are placed in the `/migrations` folder. Each folder there represents one migration that follows the migration
+All migrations are placed in the `/src/migrations` folder. Each folder there represents one migration that follows the migration
 API.
 
-All migrations are collected in `/migrations/index.js`, which should not be edited manually.
+All migrations are collected in `/src/migrations/index.js`, which should not be edited manually.
 
 **The order of migrations is important and migrations must be sorted in ascending order**.
 

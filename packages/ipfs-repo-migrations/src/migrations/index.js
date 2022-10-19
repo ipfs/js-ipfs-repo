@@ -5,7 +5,7 @@ import { migration as migration11 } from './migration-11/index.js'
 import { migration as migration12 } from './migration-12/index.js'
 
 /**
- * @type {import('../src/types').Migration}
+ * @type {import('../types').Migration}
  */
 const emptyMigration = {
   description: 'Empty migration.',
