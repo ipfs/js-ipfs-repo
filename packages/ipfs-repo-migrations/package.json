@@ -181,7 +181,6 @@
   "devDependencies": {
     "@ipld/car": "^5.0.0",
     "@types/debug": "^4.1.5",
-    "@types/rimraf": "^3.0.2",
     "@types/varint": "^6.0.0",
     "aegir": "^37.5.0",
     "aws-sdk": "^2.884.0",
@@ -195,7 +194,6 @@
     "level-6": "npm:level@^6.0.0",
     "npm-run-all": "^4.1.5",
     "protobufjs-cli": "^1.0.0",
-    "rimraf": "^3.0.2",
     "sinon": "^14.0.0"
   },
   "browser": {
