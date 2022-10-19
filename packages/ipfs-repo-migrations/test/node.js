@@ -33,7 +33,7 @@ async function cleanup (dir) {
       recursive: true
     })
   } catch (/** @type {any} **/ err) {
-    console.info('Could not delete', dir, err.stack) // eslint-disable-lint no-console
+    console.info('Could not delete', dir, err.stack) // eslint-disable-line no-console
   }
 }
 
