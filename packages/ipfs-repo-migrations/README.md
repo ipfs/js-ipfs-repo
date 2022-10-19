@@ -36,9 +36,8 @@
     - [10](#10)
 - [Developer](#developer)
   - [Module versioning notes](#module-versioning-notes)
-- [Contribute](#contribute)
 - [License](#license)
-- [Contribute](#contribute-1)
+- [Contribute](#contribute)
 
 ## Install
 
@@ -293,17 +292,6 @@ Pins were migrated from a DAG to a Datastore - see [ipfs/js-ipfs#2771](https://g
 In order to have good overview of what version of package contains what kind of migration, to every release there
 should be appended version's metadata in format `migr-<versionOfLatestMigration>`. If for releasing is used `aegir`
 you can use the `release --metadata` option.
-
-## Contribute
-
-There are some ways you can make this module better:
-
-- Consult our [open issues](https://github.com/ipfs/js-ipfs-repo/issues) and take on one of them
-- Help our tests reach 100% coverage!
-
-This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
-
-[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
 ## License
 

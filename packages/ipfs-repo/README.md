@@ -55,9 +55,8 @@
     - [`Promise<boolean> lock.locked(dir)`](#promiseboolean-locklockeddir)
 - [Notes](#notes)
   - [Migrations](#migrations)
-- [Contribute](#contribute)
 - [License](#license)
-- [Contribute](#contribute-1)
+- [Contribute](#contribute)
 
 ## Install
 
@@ -382,15 +381,6 @@ forget to propagate the changes into the test repo (`test/test-repo`).
 **For tools that run mainly in the browser environment, be aware that disabling automatic
 migrations leaves the user with no way to run the migrations because there is no CLI in the browser. In such
 a case, you should provide a way to trigger migrations manually.**
-
-## Contribute
-
-There are some ways you can make this module better:
-
-- Consult our [open issues](https://github.com/ipfs/js-ipfs-repo/issues) and take on one of them
-- Help our tests reach 100% coverage!
-
-This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
 [![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/CONTRIBUTING.md)
 
