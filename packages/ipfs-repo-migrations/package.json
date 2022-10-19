@@ -54,7 +54,12 @@
     "extends": "ipfs",
     "parserOptions": {
       "sourceType": "module"
-    }
+    },
+    "ignorePatterns": [
+      "src/migrations/migration-9/pin.js",
+      "src/migrations/migration-9/pin.d.ts",
+      "src/migrations/migration-12/pb/*"
+    ]
   },
   "release": {
     "branches": [

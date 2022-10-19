@@ -1,9 +1,4 @@
-import $protobuf from "protobufjs/minimal.js"
-
-// @ts-expect-error Explicitly disable long.js support
-$protobuf.util.Long = undefined
-$protobuf.configure()
-
+import $protobuf from 'protobufjs/minimal.js'
 import { Key } from 'interface-datastore/key'
 import { Protocols } from './pb/proto-book.js'
 import { Addresses } from './pb/address-book.js'
@@ -11,6 +6,10 @@ import { Peer } from './pb/peer.js'
 import { Envelope } from './pb/envelope.js'
 import { PeerRecord } from './pb/peer-record.js'
 import { multiaddr } from '@multiformats/multiaddr'
+
+// @ts-expect-error Explicitly disable long.js support
+$protobuf.util.Long = undefined
+$protobuf.configure()
 
 /**
  * @param {import('../../types').Backends} backends
@@ -31,7 +30,7 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
   })) {
     keys.push(key)
     const keyStr = key.toString()
-    const [_, prefix, type, peerId, metadataKey] = keyStr.split('/')
+    const [, prefix, type, peerId, metadataKey] = keyStr.split('/')
 
     if (prefix !== 'peers') {
       continue
@@ -114,7 +113,7 @@ async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () =>
     keys.push(key)
     const keyStr = key.toString()
 
-    const [_, _prefix, peerId] = keyStr.split('/')
+    const [, , peerId] = keyStr.split('/')
 
     peers[peerId] = Peer.decode(value)
   }
