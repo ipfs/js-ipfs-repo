@@ -3,8 +3,8 @@
 
 import { expect } from 'aegir/chai'
 import * as cbor from 'cborg'
-import { migration } from '../../migrations/migration-9/index.js'
-import { PIN_DS_KEY } from '../../migrations/migration-9/utils.js'
+import { migration } from '../../src/migrations/migration-9/index.js'
+import { PIN_DS_KEY } from '../../src/migrations/migration-9/utils.js'
 import { CID } from 'multiformats/cid'
 import { CarReader } from '@ipld/car'
 import loadFixture from 'aegir/fixtures'

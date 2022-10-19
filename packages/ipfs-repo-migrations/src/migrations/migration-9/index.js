@@ -10,8 +10,8 @@ import * as mhd from 'multiformats/hashes/digest'
 import { base32 } from 'multiformats/bases/base32'
 
 /**
- * @typedef {import('../../src/types').Migration} Migration
- * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
+ * @typedef {import('../../types').Migration} Migration
+ * @typedef {import('../../types').MigrationProgressCallback} MigrationProgressCallback
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('multiformats/cid').Version} CIDVersion
@@ -129,7 +129,7 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
+ * @param {import('../../types').Backends} backends
  * @param {MigrationProgressCallback} onProgress
  * @param {*} fn
  */

@@ -4,8 +4,8 @@ import { Key } from 'interface-datastore/key'
 const MFS_ROOT_KEY = new Key('/local/filesroot')
 
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storeMfsRootInDatastore (backends, onProgress = () => {}) {
   onProgress(100, 'Migrating MFS root to repo datastore')
@@ -26,8 +26,8 @@ async function storeMfsRootInDatastore (backends, onProgress = () => {}) {
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storeMfsRootInRoot (backends, onProgress = () => {}) {
   onProgress(100, 'Migrating MFS root to repo root datastore')
@@ -47,7 +47,7 @@ async function storeMfsRootInRoot (backends, onProgress = () => {}) {
   onProgress(100, 'Stored MFS root in repo root datastore')
 }
 
-/** @type {import('../../src/types').Migration} */
+/** @type {import('../../types').Migration} */
 export const migration = {
   version: 11,
   description: 'Store mfs root in the datastore',

@@ -1,13 +1,13 @@
 
-import { findLevelJs } from '../../src/utils.js'
+import { findLevelJs } from '../../utils.js'
 import { fromString } from 'uint8arrays/from-string'
 import { toString } from 'uint8arrays/to-string'
 
 /**
- * @typedef {import('../../src/types').Migration} Migration
+ * @typedef {import('../../types').Migration} Migration
  * @typedef {import('interface-datastore').Datastore} Datastore
  * @typedef {import('interface-blockstore').Blockstore} Blockstore
- * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
+ * @typedef {import('../../types').MigrationProgressCallback} MigrationProgressCallback
  *
  * @typedef {{ type: 'del', key: string | Uint8Array } | { type: 'put', key: string | Uint8Array, value: Uint8Array }} Operation
  * @typedef {function (string, Uint8Array): Operation[]} UpgradeFunction
@@ -87,7 +87,7 @@ function unwrap (store) {
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
+ * @param {import('../../types').Backends} backends
  * @param {MigrationProgressCallback} onProgress
  * @param {*} fn
  */

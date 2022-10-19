@@ -3,7 +3,7 @@
 
 import { expect } from 'aegir/chai'
 import { CID } from 'multiformats/cid'
-import { migration } from '../../migrations/migration-11/index.js'
+import { migration } from '../../src/migrations/migration-11/index.js'
 import { Key } from 'interface-datastore/key'
 
 const MFS_ROOT_KEY = new Key('/local/filesroot')

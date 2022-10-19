@@ -6,12 +6,11 @@
   },
   "include": [
     "src",
-    "test",
-    "migrations"
+    "test"
   ],
   "exclude": [
-    "migrations/migration-9/pin.js",
-    "migrations/migration-9/pin.d.ts",
-    "migrations/migration-12/pb"
+    "src/migrations/migration-9/pin.js",
+    "src/migrations/migration-9/pin.d.ts",
+    "src/migrations/migration-12/pb"
   ]
 }

@@ -10,7 +10,7 @@ import * as mhd from 'multiformats/hashes/digest'
 const log = debug('ipfs:repo:migrator:migration-8')
 
 /**
- * @typedef {import('../../src/types').Migration} Migration
+ * @typedef {import('../../types').Migration} Migration
  * @typedef {import('interface-datastore').Datastore} Datastore
  */
 
@@ -64,7 +64,7 @@ function keyToCid (key) {
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
+ * @param {import('../../types').Backends} backends
  * @param {(percent: number, message: string) => void} onProgress
  * @param {(key: Key) => Key} keyFunction
  */

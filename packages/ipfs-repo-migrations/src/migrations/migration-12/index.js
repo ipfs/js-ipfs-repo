@@ -1,9 +1,4 @@
-import $protobuf from "protobufjs/minimal.js"
-
-// @ts-expect-error Explicitly disable long.js support
-$protobuf.util.Long = undefined
-$protobuf.configure()
-
+import $protobuf from 'protobufjs/minimal.js'
 import { Key } from 'interface-datastore/key'
 import { Protocols } from './pb/proto-book.js'
 import { Addresses } from './pb/address-book.js'
@@ -12,9 +7,13 @@ import { Envelope } from './pb/envelope.js'
 import { PeerRecord } from './pb/peer-record.js'
 import { multiaddr } from '@multiformats/multiaddr'
 
+// @ts-expect-error Explicitly disable long.js support
+$protobuf.util.Long = undefined
+$protobuf.configure()
+
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}) {
   onProgress(0, 'Storing each peerstore key under a single datastore key')
@@ -31,7 +30,7 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
   })) {
     keys.push(key)
     const keyStr = key.toString()
-    const [_, prefix, type, peerId, metadataKey] = keyStr.split('/')
+    const [, prefix, type, peerId, metadataKey] = keyStr.split('/')
 
     if (prefix !== 'peers') {
       continue
@@ -95,8 +94,8 @@ async function storePeerUnderSingleDatastoreKey (backends, onProgress = () => {}
 }
 
 /**
- * @param {import('../../src/types').Backends} backends
- * @param {import('../../src/types').MigrationProgressCallback} onProgress
+ * @param {import('../../types').Backends} backends
+ * @param {import('../../types').MigrationProgressCallback} onProgress
  */
 async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () => {}) {
   onProgress(0, 'Storing each peerstore key under a multiple datastore keys')
@@ -114,7 +113,7 @@ async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () =>
     keys.push(key)
     const keyStr = key.toString()
 
-    const [_, _prefix, peerId] = keyStr.split('/')
+    const [, , peerId] = keyStr.split('/')
 
     peers[peerId] = Peer.decode(value)
   }
@@ -170,7 +169,7 @@ async function storePeerUnderMultipleDatastoreKeys (backends, onProgress = () =>
   onProgress(100, 'Stored each peerstore key under multiple datastore keys')
 }
 
-/** @type {import('../../src/types').Migration} */
+/** @type {import('../../types').Migration} */
 export const migration = {
   version: 12,
   description: 'Store each peerstore peer under a single datastore key',

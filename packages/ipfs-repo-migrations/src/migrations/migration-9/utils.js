@@ -16,6 +16,6 @@ export const PinTypes = {
 /**
  * @param {import('multiformats').CID} cid
  */
- export function cidToKey (cid) {
+export function cidToKey (cid) {
   return new Key(`/${base32.encode(cid.multihash.bytes).toUpperCase().substring(1)}`)
 }
