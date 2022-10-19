@@ -1,3 +1,20 @@
+## [ipfs-repo-v16.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v15.0.3...ipfs-repo-v16.0.0) (2022-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* update multiformats to 10.x.x and all @ipld/* deps (#425)
+
+### Documentation
+
+* update readmes ([eb890b7](https://github.com/ipfs/js-ipfs-repo/commit/eb890b79f337c50ed9bc7241e51675c5a664b621))
+
+
+### Dependencies
+
+* update multiformats to 10.x.x and all @ipld/* deps ([#425](https://github.com/ipfs/js-ipfs-repo/issues/425)) ([d07db37](https://github.com/ipfs/js-ipfs-repo/commit/d07db37aef2c037916ada7cbd87730cdffbf6784))
+* update sibling dependencies ([60b6c9a](https://github.com/ipfs/js-ipfs-repo/commit/60b6c9a128d41038e750bfcc7ed4032aeac9ab23))
+
 ## [ipfs-repo-v15.0.3](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-v15.0.2...ipfs-repo-v15.0.3) (2022-09-21)
 
 
