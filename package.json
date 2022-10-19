@@ -32,8 +32,8 @@
     "dep-check": "lerna run dep-check",
     "release": "lerna run --concurrency 1 release -- --"
   },
-  "devDependencies": {
-    "lerna": "^5.0.0",
+  "dependencies": {
+    "lerna": "^6.0.0",
     "rimraf": "^3.0.2"
   },
   "workspaces": [

@@ -27,7 +27,7 @@ import QuickLRU from 'quick-lru'
 /**
  * @typedef {object} PinInternal
  * @property {number} depth
- * @property {import('multiformats/cid').CIDVersion} [version]
+ * @property {import('multiformats/cid').Version} [version]
  * @property {number} [codec]
  * @property {Record<string, any>} [metadata]
  */
