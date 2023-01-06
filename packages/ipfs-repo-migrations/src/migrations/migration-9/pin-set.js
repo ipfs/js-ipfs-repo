@@ -37,7 +37,7 @@ function readHeader (rootNode) {
   }
 
   const hdrLength = varint.decode(rootData)
-  const vBytes = varint.decode.bytes
+  const vBytes = varint.decode.bytes ?? 0
 
   if (vBytes <= 0) {
     throw new Error('Invalid Set header length')
