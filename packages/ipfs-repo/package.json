@@ -209,7 +209,7 @@
     "uint8arrays": "^4.0.2"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^8.0.0",
+    "@ipld/dag-cbor": "^9.0.0",
     "@types/bytes": "^3.1.0",
     "@types/debug": "^4.1.5",
     "@types/proper-lockfile": "^4.1.1",
