@@ -1,3 +1,14 @@
+## [ipfs-repo-migrations-v15.0.0](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v14.0.1...ipfs-repo-migrations-v15.0.0) (2023-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* update multiformats to v11.x.x (#435)
+
+### Bug Fixes
+
+* update multiformats to v11.x.x ([#435](https://github.com/ipfs/js-ipfs-repo/issues/435)) ([a487def](https://github.com/ipfs/js-ipfs-repo/commit/a487def236afef3a8372b204d0f7709a4a0b5424))
+
 ## [ipfs-repo-migrations-v14.0.1](https://github.com/ipfs/js-ipfs-repo/compare/ipfs-repo-migrations-v14.0.0...ipfs-repo-migrations-v14.0.1) (2022-10-19)
 
 
