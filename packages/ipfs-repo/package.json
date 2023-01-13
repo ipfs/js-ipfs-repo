@@ -214,7 +214,7 @@
     "@types/debug": "^4.1.5",
     "@types/proper-lockfile": "^4.1.1",
     "@types/rimraf": "^3.0.2",
-    "aegir": "^37.9.1",
+    "aegir": "^38.1.0",
     "blockstore-core": "^3.0.0",
     "blockstore-datastore-adapter": "^5.0.0",
     "ipfs-utils": "^9.0.7",
