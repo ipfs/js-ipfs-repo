@@ -220,7 +220,7 @@
     "ipfs-utils": "^9.0.7",
     "it-all": "^2.0.0",
     "just-range": "^4.1.1",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.7",
     "sinon": "^15.0.1"
   },
   "browser": {
