@@ -187,7 +187,7 @@
     "@ipld/car": "^5.0.0",
     "@types/debug": "^4.1.5",
     "@types/varint": "^6.0.0",
-    "aegir": "^37.9.1",
+    "aegir": "^38.1.3",
     "aws-sdk": "^2.884.0",
     "blockstore-core": "^3.0.0",
     "blockstore-datastore-adapter": "^5.0.0",
