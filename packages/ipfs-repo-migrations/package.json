@@ -191,7 +191,7 @@
     "aws-sdk": "^2.884.0",
     "blockstore-core": "^3.0.0",
     "blockstore-datastore-adapter": "^5.0.0",
-    "datastore-fs": "^8.0.0",
+    "datastore-fs": "^9.0.0",
     "datastore-level": "^9.0.0",
     "datastore-s3": "^10.0.0",
     "just-safe-set": "^4.1.1",
