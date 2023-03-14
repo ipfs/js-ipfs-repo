@@ -176,7 +176,7 @@
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-blockstore": "^4.0.0",
-    "interface-datastore": "^7.0.0",
+    "interface-datastore": "^8.0.0",
     "it-length": "^2.0.0",
     "multiformats": "^11.0.0",
     "protobufjs": "^7.0.0",
