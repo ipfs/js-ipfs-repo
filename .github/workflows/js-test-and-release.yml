@@ -115,7 +115,7 @@ jobs:
         with:
           flags: webkit
 
-  test-webkit:
+  test-webkit-webworker:
     needs: check
     runs-on: ${{ matrix.os }}
     matrix:
