@@ -100,7 +100,8 @@ jobs:
   test-webkit:
     needs: check
     runs-on: ${{ matrix.os }}
-    matrix:
+    strategy:
+      matrix:
         os: [ubuntu-latest, macos-latest]
         node: [lts/*]
       fail-fast: true
@@ -118,7 +119,8 @@ jobs:
   test-webkit-webworker:
     needs: check
     runs-on: ${{ matrix.os }}
-    matrix:
+    strategy:
+      matrix:
         os: [ubuntu-latest, macos-latest]
         node: [lts/*]
       fail-fast: true
