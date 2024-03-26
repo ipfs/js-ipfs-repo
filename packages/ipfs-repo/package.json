@@ -187,7 +187,7 @@
     "debug": "^4.1.0",
     "err-code": "^3.0.1",
     "interface-blockstore": "^4.0.0",
-    "interface-datastore": "^7.0.0",
+    "interface-datastore": "^8.0.0",
     "ipfs-repo-migrations": "^15.0.0",
     "it-drain": "^2.0.0",
     "it-filter": "^2.0.0",
